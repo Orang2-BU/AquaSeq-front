@@ -55,7 +55,7 @@ Props bersama yang dipakai aplikasi (subset): `borderRadius`, `intensity` (0-100
 
 ## 5. Aturan pemakaian di AquaSeq
 
-- Kaca hanya untuk: bottom bar, header melayang, sheet bawah, dan kartu hero gauge SDRI. Tabel data, heatmap plate, dan teks panjang di kartu **solid**.
+- Kaca hanya untuk: bottom bar, header melayang, sheet bawah, kartu status beranda, ubin pintasan, dan tombol kaca. Kartu kolom air SDRI memakai gradasi + rim (bukan blur). Tabel data, heatmap plate, dan teks panjang di kartu **solid**.
 - Satu efek berat per layar (aturan React Bits di CLAUDE.md). `prefers-reduced-motion`/`reduceTransparency` → pakai panel putih pekat tanpa blur.
 - Teks di atas kaca lolos kontras WCAG AA terhadap kondisi latar terburuk; label nonaktif tidak sepucat referensi.
 - Known issue Expo: `BlurView` harus dirender **setelah** konten dinamis (mis. `FlatList`) agar blur ikut diperbarui.

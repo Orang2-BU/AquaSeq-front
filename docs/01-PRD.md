@@ -1,7 +1,7 @@
 # 01 — PRD: AquaSeq (Frontend)
 
 > North Star projek. Semua dokumen lain harus konsisten dengan dokumen ini.
-> Status: ✅ ACC oleh user pada 23 Okt 2026 · Versi 1.0
+> Status: ✅ ACC oleh user pada 23 Okt 2026 · Versi 1.1
 > Rumus skor: `docs/sdri-v1.md` (dikunci). Konteks lomba: `riset-lomba-genohack-2026.md`.
 
 ## 1. Ringkasan
@@ -61,7 +61,7 @@ Satu kalimat jualan: **"Kami mengubah hasil lab menjadi skor risiko dan rekomend
 | # | Halaman | Rute | Peran | Tugas | Aksi utama | State khusus | Prioritas |
 |---|---|---|---|---|---|---|---|
 | P1 | Pilih peran (demo) | `/` | Semua | Masuk sebagai analis atau manajer | Pilih peran | — | Must |
-| P2 | Antrian run | `/lab` | Analis | Lihat run yang menunggu QC/terbit | Buka run, unggah baru | kosong, loading | Must |
+| P2 | Beranda analis (hub) | `/lab` | Analis | Alur sampel (diunggah, QC, ditolak, draf, terbit), pintasan halaman analis di luar bottom bar, tindakan teratas "Lanjutkan" | Buka pintasan, unggah run | kosong, loading | Must |
 | P3 | Unggah run qPCR | `/lab/run/baru` | Analis | Unggah CSV + metadata run | Unggah, validasi | galat parsing per baris | Must |
 | P4 | Ruang QC run | `/lab/run/[runId]` | Analis | Ringkasan QC + heatmap plate | Lanjut ke sampel, tolak run | run ditolak | Must |
 | P5 | Kurva standar | `/lab/run/[runId]/kurva` | Analis | Slope, efisiensi, R² | — | gagal efisiensi | Must |
@@ -74,7 +74,7 @@ Satu kalimat jualan: **"Kami mengubah hasil lab menjadi skor risiko dan rekomend
 | P12 | Tinjau & terbitkan laporan | `/lab/sampel/[sampleId]/laporan` | Analis | Periksa lalu terbitkan | Terbitkan | sudah terbit | Must |
 | P13 | Riwayat run | `/lab/riwayat` | Analis | Run lama | Filter | kosong | Should |
 | P14 | Panduan format | `/lab/format` | Analis | Format CSV & contoh | Unduh contoh | — | Should |
-| P15 | Beranda tambak | `/tambak` | Manajer | Semua kolam, urut risiko | Buka kolam | kosong | Must |
+| P15 | Beranda tambak (hub) | `/tambak` | Manajer | Pemilih tambak, peta kolam (ubin per kolam berwarna kelas + SDRI, urut risiko), fakta singkat sampel, pintasan halaman manajer di luar bottom bar, tindakan teratas "Perlu tindakan" | Buka kolam, buka pintasan | kosong | Must |
 | P16 | Detail kolam | `/tambak/kolam/[pondId]` | Manajer | SDRI terkini, tren EWMA, keyakinan | Buka patogen, laporan | belum ada sampel | Must |
 | P17 | Detail patogen | `/tambak/kolam/[pondId]/patogen/[target]` | Manajer | Riwayat copies/mL + keyakinan negatif | — | ND semua | Must |
 | P18 | Pusat peringatan | `/tambak/peringatan` | Manajer | Peringatan aktif semua kolam | Buka, tandai ditangani | kosong | Must |
@@ -87,7 +87,7 @@ Satu kalimat jualan: **"Kami mengubah hasil lab menjadi skor risiko dan rekomend
 | — | Ekspor PDF | (aksi di P12/P19) | Analis, Manajer | — | Unduh | — | Could |
 | — | Tidak ditemukan / offline | `+not-found`, banner | Semua | Pesan galat | Kembali | — | Must |
 
-**Navigasi:** menu utama analis: Antrian · Riwayat · Format · Pengaturan. Menu utama manajer: Beranda · Peringatan · Banding · Pengaturan. Hanya lewat tautan: detail run/well/sampel/jejak/laporan/WA.
+**Navigasi (bottom bar):** analis: Beranda · Riwayat · [Unggah run] · Format · Atur. Manajer: Beranda · Banding · [Peringatan] · Laporan · Atur. Halaman lain lewat pintasan beranda. Hanya lewat tautan: detail run/well/sampel/jejak/laporan/WA.
 
 ## 6. Di Luar Scope (MVP)
 
@@ -109,7 +109,7 @@ Satu kalimat jualan: **"Kami mengubah hasil lab menjadi skor risiko dan rekomend
 - **Budget / hosting:** Rp0 (hosting web statis gratis). Reimburse tools GENOHACK s.d. Rp3,75 jt per tim.
 - **Model bisnis:** Lisensi software ke lab dan tambak berlab (bentuk lisensi diputuskan tim); jasa pendampingan petambak kecil (lapis 2).
 - **Bahasa UI:** Bahasa Indonesia.
-- **Desain:** Mengikuti referensi dari user (menyusul, ditulis di `docs/08-DESIGN.md`).
+- **Desain:** Referensi Iconly Pro, gaya kaca terang (`docs/08-DESIGN.md` v2.1, ACC 24 Okt 2026).
 
 ## 8. Metrik Sukses
 
@@ -135,4 +135,5 @@ Satu kalimat jualan: **"Kami mengubah hasil lab menjadi skor risiko dan rekomend
 
 | Tanggal | Versi | Perubahan |
 |---|---|---|
+| 23 Okt 2026 | 1.1 | P2 dan P15 menjadi beranda hub (pola JALA): ringkasan 2×2 + pintasan + daftar tindakan |
 | 23 Okt 2026 | 1.0 | Dokumen awal: frontend, analis lab sebagai pengguna utama, qPCR + Nanopore + kimia air, SDRI v1 |
