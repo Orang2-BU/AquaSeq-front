@@ -8,8 +8,8 @@
 ## Ringkasan
 | Milestone | Total | ✅ Done | Progres |
 |---|---|---|---|
-| M1 — Fondasi | 3 | 0 | 0% |
-| M2 — Mesin SDRI v1 | 5 | 0 | 0% |
+| M1 — Fondasi | 3 | 2 | 67% |
+| M2 — Mesin SDRI v1 | 5 | 5 | 100% |
 | M3 — Data | 3 | 0 | 0% |
 | M4 — UI dasar | 4 | 0 | 0% |
 | M5 — Alur analis | 7 | 0 | 0% |
@@ -20,21 +20,21 @@
 ## Task
 | ID | Task | Status | Bukti verifikasi / Catatan | Update |
 |---|---|---|---|---|
-| T1.1 | Proyek Expo SDK 58 + TS strict, Router, ESLint, Prettier, jest-expo, knip, skrip verify | ⬜ Todo | — | 23 Okt 2026 |
-| T1.2 | Kerangka semua rute PRD + layout per peran | ⬜ Todo | — | 23 Okt 2026 |
-| T1.3 | Pasang dependensi stack | ⬜ Todo | — | 23 Okt 2026 |
-| T2.1 | `params/sdri-v1.ts` + tipe hasil dan trace | ⬜ Todo | — | 23 Okt 2026 |
-| T2.2 | Konversi: kurva standar, copies/mL, NH3, fold regulation | ⬜ Todo | — | 23 Okt 2026 |
-| T2.3 | Gerbang QC | ⬜ Todo | — | 23 Okt 2026 |
-| T2.4 | Komponen SDRI + gabungan + kelas (tes emas) | ⬜ Todo | — | 23 Okt 2026 |
-| T2.5 | Keyakinan negatif + EWMA + trace | ⬜ Todo | — | 23 Okt 2026 |
+| T1.1 | Proyek Expo SDK 58 + TS strict, Router, ESLint, Prettier, jest-expo, knip, skrip verify | ✅ Done | expo 58.0.17, RN 0.88, TS 6; tsc/lint/prettier/knip/test hijau; `expo export -p web` OK; dev server web jalan. Expo Go belum diuji (butuh HP) | 24 Okt 2026 |
+| T1.2 | Kerangka semua rute PRD + layout per peran | ✅ Done | 24 rute + `+not-found`; dicek di web: `/`, `/lab/run/RUN-23OKT/well/C6`, `/tambak/kolam/B-03/patogen/pirA`, rute salah → "Halaman tidak ditemukan" | 24 Okt 2026 |
+| T1.3 | Pasang dependensi stack | 🟦 In Progress | Expo Router + web sudah. Sisanya (Query, Zustand, papaparse, svg, blur, glass-effect, linear-gradient, lucide, AsyncStorage, expo-font) dipasang saat pertama dipakai, karena knip menolak dependensi tak terpakai | 24 Okt 2026 |
+| T2.1 | `params/sdri-v1.ts` + tipe hasil dan trace | ✅ Done | `src/engine/params/sdri-v1.ts`, `types.ts` (`Traced`) | 24 Okt 2026 |
+| T2.2 | Konversi: kurva standar, copies/mL, NH3, fold regulation | ✅ Done | Tes: efisiensi 98,84%, pirA POND-TOX 1,60e4/mL, NH3 4 arketipe cocok 4 desimal | 24 Okt 2026 |
+| T2.3 | Gerbang QC | ✅ Done | Tes: UNK-HUMIC DITOLAK "PPC 24,46 > 22", 16S, NTC, SD replikat, Nanopore, kimia kosong, run gagal kurva | 24 Okt 2026 |
+| T2.4 | Komponen SDRI + gabungan + kelas (tes emas) | ✅ Done | Tes emas 5/5 cocok `sdri_v1_check.py` (0 / 42,8 / 100 / 80 / DITOLAK); S_Micro + normalisasi bobot teruji | 24 Okt 2026 |
+| T2.5 | Keyakinan negatif + EWMA + trace | ✅ Done | Tes 45/70/91/97%, saran 6 sampel; EWMA sinyal pada deret naik; trace per komponen. Trace sampai well dirakit di T5.6 | 24 Okt 2026 |
 | T3.1 | Tipe + Repository + hook Query | ⬜ Todo | — | 23 Okt 2026 |
 | T3.2 | Seed SIMULASI + MockRepository (AsyncStorage) | ⬜ Todo | — | 23 Okt 2026 |
 | T3.3 | Parser CSV qPCR + Nanopore + file contoh | ⬜ Todo | — | 23 Okt 2026 |
-| T4.1 | Token tema + primitif | ⛔ Blocked | Menunggu 08-DESIGN | 23 Okt 2026 |
-| T4.2 | GlassSurface (web + native) | ⛔ Blocked | Menunggu 08-DESIGN, cek lisensi React Bits | 23 Okt 2026 |
-| T4.3 | BottomBar kaca + tombol tengah | ⛔ Blocked | Menunggu 08-DESIGN | 23 Okt 2026 |
-| T4.4 | Grafik SVG (Gauge, AreaTrend, SegmentBar, PlateHeatmap, StandardCurve, TraceFlow) | ⛔ Blocked | Menunggu 08-DESIGN | 23 Okt 2026 |
+| T4.1 | Token tema + primitif (Figtree lokal, ekspor dtcg) | ⬜ Todo | 08-DESIGN v2.1 ACC; menunggu T1.1 | 24 Okt 2026 |
+| T4.2 | GlassSurface (web + native) | ⬜ Todo | 08-DESIGN v2.1 ACC; cek lisensi React Bits | 24 Okt 2026 |
+| T4.3 | Nav pil kaca + FAB teal solid | ⬜ Todo | 08-DESIGN v2.1 ACC | 24 Okt 2026 |
+| T4.4 | Grafik SVG (WaterColumnCard, AreaTrend, SegmentBar, PlateHeatmap, StandardCurve, TraceFlow) | ⬜ Todo | 08-DESIGN v2.1 ACC | 24 Okt 2026 |
 | T5.1 | P1 pilih peran + P2 antrian run | ⬜ Todo | — | 23 Okt 2026 |
 | T5.2 | P3 unggah run | ⬜ Todo | — | 23 Okt 2026 |
 | T5.3 | P4 ruang QC + P5 kurva standar | ⬜ Todo | — | 23 Okt 2026 |
@@ -63,4 +63,6 @@
 ## Log Perubahan
 | Tanggal | Task | Ringkasan perubahan |
 |---|---|---|
+| 24 Okt 2026 | T1.1, T1.2, T2.1-T2.5 | Proyek Expo SDK 58 dibuat, 24 rute placeholder, mesin SDRI v1 (34 tes, cakupan engine 99%, tes emas 5/5) |
+| 24 Okt 2026 | T4.1-T4.4 | 08-DESIGN v2.1 (Iconly Pro, kaca terang) di-ACC; blokir T4.x dicabut; Gauge diganti WaterColumnCard; 6 file desain v1 dihapus |
 | 23 Okt 2026 | — | TODO dibuat dari 03-ARCHITECTURE |

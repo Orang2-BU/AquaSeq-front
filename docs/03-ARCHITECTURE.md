@@ -1,7 +1,7 @@
 # 03 — ARCHITECTURE & Rencana Implementasi
 
 > Turunan langsung dari 01-PRD (v1.0). ID task di sini = ID task di 04-TODO.
-> Rumus skor: `docs/sdri-v1.md`. Komponen kaca: `docs/glass-surface-port.md`. Desain: `docs/08-DESIGN.md` (menyusul).
+> Rumus skor: `docs/sdri-v1.md`. Komponen kaca: `docs/glass-surface-port.md`. Desain: `docs/08-DESIGN.md` (v2.1, ACC 24 Okt 2026).
 
 ## 1. Tech Stack
 
@@ -13,10 +13,10 @@
 | Data / state server | Pola **Repository** + TanStack Query v5 | Repository mock bisa ditukar ke API HTTP tanpa mengubah layar; Query mengurus cache, loading, galat |
 | State UI | Zustand v5 | Peran aktif, filter, well yang dikeluarkan sebelum disimpan |
 | Parsing CSV | `papaparse` | Teruji, jalan di RN dan web, tanpa dependensi native |
-| Grafik | `react-native-svg` + komponen grafik buatan sendiri | Bawaan Expo, sama persis di HP dan web; pola grafik referensi (gauge, area, bar tersegmen, diagram alir) sederhana |
+| Grafik | `react-native-svg` + komponen grafik buatan sendiri | Bawaan Expo, sama persis di HP dan web; pola grafik referensi (garis tren, meter kapsul, diagram alir) sederhana |
 | Kaca | `expo-blur`, `expo-glass-effect`, `expo-linear-gradient` + port React Bits GlassSurface (web) | Lihat `docs/glass-surface-port.md` |
 | Ikon | `lucide-react-native` | Satu keluarga ikon (aturan global) |
-| Font | `expo-font` (font lokal, `font-display: swap` di web) | Ditentukan di 08-DESIGN |
+| Font | `expo-font` + Figtree (OFL, berkas lokal di `assets/fonts`, `font-display: swap` di web) | Pengganti bebas lisensi Gellix (font Iconly), lihat 08-DESIGN |
 | Auth | Tidak ada. Pilih peran (demo) | Di luar scope PRD |
 | Hosting / deploy | EAS Hosting (`expo export -p web` → `eas deploy`) | Resmi Expo, rute dinamis langsung jalan, gratis untuk demo |
 | CI | Belum (hackathon). Skrip `npm run verify` lokal | Waktu ±36 jam; CI ditambah setelah lomba |
@@ -87,13 +87,14 @@ app/                       # rute (lihat 01-PRD §5b)
   pengaturan.tsx  tentang.tsx  simulator.tsx  +not-found.tsx
 src/
   engine/
-    params/sdri-v1.ts
-    parse/qpcr-csv.ts  nanopore-csv.ts
-    qc/gate.ts  standard-curve.ts  replicates.ts
-    convert/copies.ts  ammonia.ts  fold.ts
-    sdri/patho.ts  chem.ts  nitri.ts  micro.ts  combine.ts
-    confidence.ts  ewma.ts  trace.ts
-    __tests__/            # termasuk golden.test.ts (5 arketipe GSI)
+    params/sdri-v1.ts      # semua ambang/bobot
+    types.ts               # masukan, Traced { value, trace }
+    convert.ts             # kurva standar, copies/mL, NH3, fold regulation
+    qc.ts                  # gerbang run + sampel
+    sdri.ts                # 4 komponen + gabungan + kelas (evaluateSample)
+    confidence.ts  ewma.ts
+    parse/                 # parser CSV (T3.3)
+    __tests__/             # termasuk golden.test.ts (5 arketipe GSI)
   data/
     types.ts  repository.ts  mock-repository.ts  http-repository.ts (stub)
     seed/                  # JSON SIMULASI: kolam, run, sampel, Nanopore
@@ -101,7 +102,7 @@ src/
   features/                # komponen per fitur
   ui/
     glass/GlassSurface.tsx  GlassSurface.web.tsx  GlassSurface.native.tsx
-    charts/Gauge.tsx  AreaTrend.tsx  SegmentBar.tsx  PlateHeatmap.tsx  StandardCurve.tsx  TraceFlow.tsx
+    charts/WaterColumnCard.tsx  AreaTrend.tsx  SegmentBar.tsx  PlateHeatmap.tsx  StandardCurve.tsx  TraceFlow.tsx
     primitives/            # Text, Card, Button, Badge, Pill, Sheet
     nav/BottomBar.tsx
     theme/tokens.ts        # dari 08-DESIGN
@@ -203,7 +204,7 @@ Prioritas: alur demo dulu (unggah → QC → SDRI → jejak → laporan → WA),
 | T4.1 | Token tema dari 08-DESIGN + primitif (Text, Card, Button, Badge SIMULASI, Pill, Sheet) | F12 | Kontras teks lolos AA; badge SIMULASI tidak bisa disembunyikan |
 | T4.2 | GlassSurface (web port, native: GlassView/BlurView/gradien) | — | Tampil di web Chromium (refraksi), Safari (frosted), iOS, Android (blur dimezis); fallback reduce-transparency |
 | T4.3 | BottomBar kaca + tombol tengah per peran | — | Navigasi semua tab; label aksesibilitas; area sentuh ≥ 44 pt |
-| T4.4 | Grafik SVG: Gauge, AreaTrend (+ zona EWMA), SegmentBar, PlateHeatmap, StandardCurve, TraceFlow | F2, F7, F8, F10 | Render sama di web dan HP; setiap grafik punya ringkasan teks untuk pembaca layar |
+| T4.4 | Grafik SVG: WaterColumnCard (kartu kolom air SDRI), AreaTrend (+ zona EWMA), SegmentBar, PlateHeatmap, StandardCurve, TraceFlow | F2, F7, F8, F10 | Render sama di web dan HP; setiap grafik punya ringkasan teks untuk pembaca layar |
 
 ### Milestone M5 — Alur analis (demo inti)
 | ID | Task | Fitur PRD | Kriteria selesai |
@@ -213,7 +214,7 @@ Prioritas: alur demo dulu (unggah → QC → SDRI → jejak → laporan → WA),
 | T5.3 | P4 ruang QC + P5 kurva standar | F2 | Heatmap plate, status PPC/NTC/GDC, efisiensi, R²; run gagal kurva standar → status ditolak |
 | T5.4 | P6 detail well + keluarkan well | F3 | Alasan wajib; SDRI dihitung ulang; tercatat di jejak |
 | T5.5 | P7 daftar sampel + P8 kimia + P9 Nanopore | F4, F5 | NH3 tampil langsung saat mengetik; read < 5.000 → TINJAU |
-| T5.6 | P10 hasil SDRI + P11 jejak bukti | F6, F7, F8 | Gauge + komponen + rekomendasi; dari skor dapat diketuk sampai well |
+| T5.6 | P10 hasil SDRI + P11 jejak bukti | F6, F7, F8 | Kartu kolom air + komponen + rekomendasi; dari skor dapat diketuk sampai well |
 | T5.7 | P12 tinjau & terbitkan | F9 | Draf → Terbit; sampel DITOLAK tidak bisa diterbitkan |
 
 ### Milestone M6 — Alur manajer
@@ -228,7 +229,7 @@ Prioritas: alur demo dulu (unggah → QC → SDRI → jejak → laporan → WA),
 | ID | Task | Fitur PRD | Kriteria selesai |
 |---|---|---|---|
 | T7.1 | P23 tentang & disclaimer + halaman error/offline | F12 | Status data, batas klaim, decision support tertulis |
-| T7.2 | Audit a11y + kontras + reduced motion di 6 layar demo | — | Semua teks AA; VoiceOver/TalkBack membaca gauge sebagai kalimat |
+| T7.2 | Audit a11y + kontras + reduced motion di 6 layar demo | — | Semua teks AA; VoiceOver/TalkBack membaca kartu kolom air SDRI sebagai kalimat |
 | T7.3 | Ekspor web + deploy EAS Hosting + uji Expo Go di 1 iPhone dan 1 Android | — | Link publik hidup; alur demo jalan tanpa galat di 3 platform |
 | T7.4 | Naskah demo 6 menit + data demo terkunci | — | Gladi 2× ≤ 6 menit |
 
@@ -253,7 +254,7 @@ Prioritas: alur demo dulu (unggah → QC → SDRI → jejak → laporan → WA),
 | Q7 | Format Nanopore | Tabel kelimpahan CSV ala EPI2ME wf-16s/Emu | 23 Okt 2026 |
 | Q8 | Hosting | EAS Hosting | 23 Okt 2026 |
 | Q9 | Kaca | GlassSurface 3 implementasi (web React Bits, iOS 26 GlassView, BlurView iOS lama/Android dimezis); refraksi native Skia ditunda | 23 Okt 2026 |
-| Q10 | Gaya | Soft UI + kaca terang ala iPhone, aksen biru, bottom bar pil kaca + tombol tengah | 23 Okt 2026 |
+| Q10 | Gaya | Desain v2.1 dari 378 shot Iconly Pro (Dribbble): kaca terang di kanvas abu + bloom pastel, UI monokrom hitam-abu, satu aksen teal solid (FAB), ubin pintasan kaca transparan, font Figtree, ikon Lucide, kartu kolom air untuk SDRI, nav pil kaca + tombol tengah. Menggantikan v1 (soft UI aksen biru, pita biru) | 24 Okt 2026 |
 
 ## 8. Pertanyaan Terbuka
 
@@ -261,4 +262,3 @@ Prioritas: alur demo dulu (unggah → QC → SDRI → jejak → laporan → WA),
 - Keputusan tim POND-BIO (Waspada) dan POND-REM (Kritis) — bila berubah, naikkan versi parameter.
 - Format ekspor asli alat lab GSI (kolom CSV), untuk menyesuaikan parser T3.3.
 - Lisensi React Bits untuk port GlassSurface (cek sebelum T4.2).
-- Token desain final (menunggu 08-DESIGN).
