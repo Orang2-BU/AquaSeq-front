@@ -1,5 +1,8 @@
-import { Placeholder } from '@/ui/Placeholder';
+import { useLocalSearchParams } from 'expo-router';
 
-export default function Screen() {
-  return <Placeholder title="P20 Pratinjau WhatsApp" />;
+import { WaScreen } from '@/features/tambak';
+
+export default function Route() {
+  const p = useLocalSearchParams<{ reportId: string }>();
+  return <WaScreen reportId={p.reportId} />;
 }

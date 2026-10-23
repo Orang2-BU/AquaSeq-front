@@ -1,5 +1,8 @@
-import { Placeholder } from '@/ui/Placeholder';
+import { useLocalSearchParams } from 'expo-router';
 
-export default function Screen() {
-  return <Placeholder title="P9 Unggah Nanopore" />;
+import { NanoporeScreen } from '@/features/sample';
+
+export default function Route() {
+  const p = useLocalSearchParams<{ sampleId: string }>();
+  return <NanoporeScreen sampleId={p.sampleId} />;
 }

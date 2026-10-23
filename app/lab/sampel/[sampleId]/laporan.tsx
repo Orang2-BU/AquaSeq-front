@@ -1,5 +1,8 @@
-import { Placeholder } from '@/ui/Placeholder';
+import { useLocalSearchParams } from 'expo-router';
 
-export default function Screen() {
-  return <Placeholder title="P12 Tinjau & terbitkan laporan" />;
+import { PublishScreen } from '@/features/sample';
+
+export default function Route() {
+  const p = useLocalSearchParams<{ sampleId: string }>();
+  return <PublishScreen sampleId={p.sampleId} />;
 }

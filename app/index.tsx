@@ -1,5 +1,3 @@
-import { Placeholder } from '@/ui/Placeholder';
+import { RoleScreen } from '@/features/other';
 
-export default function Screen() {
-  return <Placeholder title="P1 Pilih peran" />;
-}
+export default RoleScreen;

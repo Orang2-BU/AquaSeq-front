@@ -1,5 +1,8 @@
-import { Placeholder } from '@/ui/Placeholder';
+import { useLocalSearchParams } from 'expo-router';
 
-export default function Screen() {
-  return <Placeholder title="P7 Daftar sampel run" />;
+import { RunSamplesScreen } from '@/features/lab';
+
+export default function Route() {
+  const p = useLocalSearchParams<{ runId: string }>();
+  return <RunSamplesScreen runId={p.runId} />;
 }

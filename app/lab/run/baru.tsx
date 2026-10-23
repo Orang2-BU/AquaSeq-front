@@ -1,5 +1,3 @@
-import { Placeholder } from '@/ui/Placeholder';
+import { UploadRunScreen } from '@/features/lab';
 
-export default function Screen() {
-  return <Placeholder title="P3 Unggah run qPCR" />;
-}
+export default UploadRunScreen;

@@ -1,5 +1,3 @@
-import { Placeholder } from '@/ui/Placeholder';
+import { HistoryScreen } from '@/features/lab';
 
-export default function Screen() {
-  return <Placeholder title="P13 Riwayat run" />;
-}
+export default HistoryScreen;

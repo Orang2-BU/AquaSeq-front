@@ -1,5 +1,3 @@
-import { Placeholder } from '@/ui/Placeholder';
+import { CompareScreen } from '@/features/tambak';
 
-export default function Screen() {
-  return <Placeholder title="P21 Banding kolam" />;
-}
+export default CompareScreen;

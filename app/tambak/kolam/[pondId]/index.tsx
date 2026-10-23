@@ -1,5 +1,8 @@
-import { Placeholder } from '@/ui/Placeholder';
+import { useLocalSearchParams } from 'expo-router';
 
-export default function Screen() {
-  return <Placeholder title="P16 Detail kolam" />;
+import { PondDetailScreen } from '@/features/tambak';
+
+export default function Route() {
+  const p = useLocalSearchParams<{ pondId: string }>();
+  return <PondDetailScreen pondId={p.pondId} />;
 }

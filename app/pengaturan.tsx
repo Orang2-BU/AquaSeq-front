@@ -1,5 +1,3 @@
-import { Placeholder } from '@/ui/Placeholder';
+import { SettingsScreen } from '@/features/other';
 
-export default function Screen() {
-  return <Placeholder title="P22 Pengaturan" />;
-}
+export default SettingsScreen;

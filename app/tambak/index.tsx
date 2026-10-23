@@ -1,5 +1,3 @@
-import { Placeholder } from '@/ui/Placeholder';
+import { TambakHub } from '@/features/tambak';
 
-export default function Screen() {
-  return <Placeholder title="P15 Beranda tambak" />;
-}
+export default TambakHub;

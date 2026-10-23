@@ -11,7 +11,7 @@
 | Framework | Expo SDK 58 + React Native (New Architecture) + Expo Router | Satu kode untuk Expo Go (iOS/Android) dan ekspor web; rute berbasis file sesuai peta halaman PRD |
 | Database | Tidak ada (frontend saja). Mock disimpan di `AsyncStorage` | Backend milik Hadi; frontend memakai kontrak §5 |
 | Data / state server | Pola **Repository** + TanStack Query v5 | Repository mock bisa ditukar ke API HTTP tanpa mengubah layar; Query mengurus cache, loading, galat |
-| State UI | Zustand v5 | Peran aktif, filter, well yang dikeluarkan sebelum disimpan |
+| State UI | State komponen React (Zustand ditunda) | Peran = bagian rute (/lab, /tambak); filter dan formulir cukup lokal per layar |
 | Parsing CSV | `papaparse` | Teruji, jalan di RN dan web, tanpa dependensi native |
 | Grafik | `react-native-svg` + komponen grafik buatan sendiri | Bawaan Expo, sama persis di HP dan web; pola grafik referensi (garis tren, meter kapsul, diagram alir) sederhana |
 | Kaca | `expo-blur`, `expo-glass-effect`, `expo-linear-gradient` + port React Bits GlassSurface (web) | Lihat `docs/glass-surface-port.md` |
@@ -254,6 +254,7 @@ Prioritas: alur demo dulu (unggah → QC → SDRI → jejak → laporan → WA),
 | Q7 | Format Nanopore | Tabel kelimpahan CSV ala EPI2ME wf-16s/Emu | 23 Okt 2026 |
 | Q8 | Hosting | EAS Hosting | 23 Okt 2026 |
 | Q9 | Kaca | GlassSurface 3 implementasi (web React Bits, iOS 26 GlassView, BlurView iOS lama/Android dimezis); refraksi native Skia ditunda | 23 Okt 2026 |
+| Q11 | Dependensi tambahan saat build UI | `@expo-google-fonts/figtree` (berkas font OFL lokal untuk expo-font), `expo-clipboard` (salin pesan WA); Zustand tidak dipasang | 24 Okt 2026 |
 | Q10 | Gaya | Desain v2.1 dari 378 shot Iconly Pro (Dribbble): kaca terang di kanvas abu + bloom pastel, UI monokrom hitam-abu, satu aksen teal solid (FAB), ubin pintasan kaca transparan, font Figtree, ikon Lucide, kartu kolom air untuk SDRI, nav pil kaca + tombol tengah. Menggantikan v1 (soft UI aksen biru, pita biru) | 24 Okt 2026 |
 
 ## 8. Pertanyaan Terbuka

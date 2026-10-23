@@ -1,5 +1,8 @@
-import { Placeholder } from '@/ui/Placeholder';
+import { useLocalSearchParams } from 'expo-router';
 
-export default function Screen() {
-  return <Placeholder title="P5 Kurva standar" />;
+import { CurveScreen } from '@/features/lab';
+
+export default function Route() {
+  const p = useLocalSearchParams<{ runId: string }>();
+  return <CurveScreen runId={p.runId} />;
 }

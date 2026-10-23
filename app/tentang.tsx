@@ -1,5 +1,3 @@
-import { Placeholder } from '@/ui/Placeholder';
+import { AboutScreen } from '@/features/other';
 
-export default function Screen() {
-  return <Placeholder title="P23 Tentang & disclaimer" />;
-}
+export default AboutScreen;

@@ -1,5 +1,10 @@
-import { Placeholder } from '@/ui/Placeholder';
+import { useLocalSearchParams } from 'expo-router';
 
-export default function Screen() {
-  return <Placeholder title="P17 Detail patogen" />;
+import type { Pathogen } from '@/engine/types';
+import { PathogenScreen } from '@/features/tambak';
+
+export default function Route() {
+  const p = useLocalSearchParams<{ pondId: string; target: string }>();
+  const target: Pathogen = p.target === 'vp28' || p.target === 'swp1' ? p.target : 'pirA';
+  return <PathogenScreen pondId={p.pondId} target={target} />;
 }

@@ -1,5 +1,3 @@
-import { Placeholder } from '@/ui/Placeholder';
+import { SimulatorScreen } from '@/features/other';
 
-export default function Screen() {
-  return <Placeholder title="P24 Simulator skenario" />;
-}
+export default SimulatorScreen;

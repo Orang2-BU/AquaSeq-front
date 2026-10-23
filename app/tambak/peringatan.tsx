@@ -1,5 +1,3 @@
-import { Placeholder } from '@/ui/Placeholder';
+import { AlertsScreen } from '@/features/tambak';
 
-export default function Screen() {
-  return <Placeholder title="P18 Pusat peringatan" />;
-}
+export default AlertsScreen;

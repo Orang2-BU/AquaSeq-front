@@ -1,5 +1,3 @@
-import { Placeholder } from '@/ui/Placeholder';
+import { FormatScreen } from '@/features/lab';
 
-export default function Screen() {
-  return <Placeholder title="P14 Panduan format" />;
-}
+export default FormatScreen;

@@ -1,5 +1,3 @@
-import { Placeholder } from '@/ui/Placeholder';
+import { LabHub } from '@/features/lab';
 
-export default function Screen() {
-  return <Placeholder title="P2 Beranda analis" />;
-}
+export default LabHub;
