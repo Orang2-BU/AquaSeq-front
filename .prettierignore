@@ -1,0 +1,6 @@
+docs/
+dist/
+assets/
+scripts/
+*.md
+package-lock.json

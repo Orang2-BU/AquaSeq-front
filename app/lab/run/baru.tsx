@@ -1,0 +1,5 @@
+import { Placeholder } from '@/ui/Placeholder';
+
+export default function Screen() {
+  return <Placeholder title="P3 Unggah run qPCR" />;
+}
