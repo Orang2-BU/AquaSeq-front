@@ -133,6 +133,8 @@ export interface Store {
   notifications: (Notifications["items"][number] & { user_id: string })[];
   activity: (Omit<Activity, "actor"> & { farm_id: string; actor_id: string })[];
   invitations: MockInvitation[];
+  /** Foto laporan yang diunggah teknisi (pengganti penyimpanan berkas backend, K5). */
+  files: Map<string, { body: ArrayBuffer; type: string }>;
   access: Map<string, { userId: string; expiresAt: number }>;
   refresh: Map<string, string>;
   models: {
@@ -321,6 +323,7 @@ function seed(): Store {
     notifications: [],
     activity: [],
     invitations: [],
+    files: new Map(),
     access: new Map(),
     refresh: new Map(),
     models: [
@@ -666,6 +669,63 @@ function seedTasks(store: Store) {
         { status: "diminta_ulang", by: "u-hendra", note: "Nilai pH belum diisi.", at: at(-1, 18) },
       ],
       { owner_note: "Nilai pH belum diisi." },
+    ),
+  );
+
+  // Tugas tambahan Rizky (akun demo teknisi) supaya Tugas saya berisi hari ini, besok, dan riwayat.
+  store.tasks.push(
+    task(
+      "t-b1-sampel",
+      "B1",
+      "u-rizky",
+      "ambil_sampel",
+      "Ambil sampel air B1 dan B4 untuk lab",
+      "Ambil 250 mL air dari 3 titik tiap kolam, campur, simpan di kotak es. Antar ke Lab Mikrobiologi Polije sebelum jam 10.",
+      at(1, 7),
+      at(0, 9),
+      [{ status: "baru", by: "u-hendra", note: null, at: at(0, 9) }],
+    ),
+    task(
+      "t-b3-air-sore",
+      "B3",
+      "u-rizky",
+      "catat_air",
+      "Catat kimia air sore kolam B3",
+      "Setelah siphon, ukur DO dan TAN untuk melihat apakah kondisi membaik.",
+      at(0, 18),
+      at(0, 10),
+      [
+        { status: "baru", by: "u-hendra", note: null, at: at(0, 10) },
+        { status: "dikerjakan", by: "u-rizky", note: null, at: at(0, 15) },
+      ],
+    ),
+    task(
+      "t-b4-kincir",
+      "B4",
+      "u-rizky",
+      "tindakan",
+      "Periksa kincir 2 kolam B4",
+      "Kincir 2 bunyi kasar sejak kemarin. Cek v-belt dan bantalan, ganti bila aus.",
+      at(-3, 12),
+      at(-4, 8),
+      [
+        { status: "baru", by: "u-hendra", note: null, at: at(-4, 8) },
+        { status: "dikerjakan", by: "u-rizky", note: null, at: at(-4, 9) },
+        { status: "dilaporkan", by: "u-rizky", note: null, at: at(-4, 11) },
+        { status: "selesai", by: "u-hendra", note: null, at: at(-4, 13) },
+      ],
+      {
+        reports: [
+          {
+            id: "r-b4-1",
+            note: "V-belt kincir 2 aus, sudah diganti. Bunyi hilang.",
+            measured: null,
+            photo_ids: [],
+            reported_by: "u-rizky",
+            reported_at: at(-4, 11),
+          },
+        ],
+      },
     ),
   );
 

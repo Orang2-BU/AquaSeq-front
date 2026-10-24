@@ -54,7 +54,7 @@ Untuk pemilik tambak udang vaname yang sudah menguji air tapi kebingungan membac
 
 | # | Halaman | Rute | Peran | Tugas | Info utama (besar) | Info pendukung (kecil) | Aksi utama | Aksi sekunder | State khusus | Prioritas |
 |---|---|---|---|---|---|---|---|---|---|---|
-| P1 | Landing | `/` | tamu | Meyakinkan pengunjung bahwa AquaSeq mengubah hasil lab jadi tindakan | Lihat section di bawah tabel | — | Coba demo | Masuk, Hubungi tim | reduced-motion: tanpa animasi; backend mati: kalkulator pakai contoh tersimpan | Must |
+| P1 | Landing | `/` | tamu | Meyakinkan petambak dan juri bahwa DNA air kolam bisa jadi peringatan dini yang bisa ditindaklanjuti | Lihat section di bawah tabel | — | Hubungi tim (WhatsApp) | Masuk | reduced-motion: tanpa animasi | Must |
 | P2 | Metode | `/metode` | tamu | Menjelaskan cara skor dihitung dan batasannya (untuk juri) | Gerbang PPC, subskor, model logit, kelas | Versi model, kalibrasi dari hasil siklus | Coba demo | — | — | Should |
 | P3 | Kontak | `/kontak` | tamu | Menghubungi tim | Email + WhatsApp tim | Politeknik Negeri Jember | Kirim email (mailto) | Salin nomor | — | Should |
 | P4 | Kebijakan privasi | `/privasi` | tamu | Data apa yang disimpan dan siapa yang bisa melihat | Ringkasan poin | Isi lengkap | — | — | — | Should |
@@ -64,13 +64,13 @@ Section landing P1 (urutan, satu file per section, detail visual di 08-DESIGN Ar
 
 | Section | Tugas | Isi | CTA |
 |---|---|---|---|
-| Hero | Membuktikan nilai sebelum scroll | Judul nilai + **kalkulator kolom air**: geser Ct pirAB, TAN, dan DO; backend (`sdri/preview`) mengembalikan peluang, kelas, dan rekomendasi; berlabel "Data simulasi" | Coba demo |
-| Masalah | Rasa sakit pemilik dengan kalimatnya sendiri | Angka Ct tidak terbaca; sampel jelek tetap dibaca; perintah ke teknisi hilang di chat | — |
-| Cara kerja | 3 langkah | Unggah hasil lab → risiko dan alasan per kolam → tugas ke teknisi sampai dilaporkan | — |
-| Kemampuan | Hasil, bukan nama fitur | Sampel terhambat inhibitor ditolak · skor bisa dirinci sampai well · tren kolam memberi tanda sebelum kelas tertinggi · tugas dan laporan foto · peringatan siap kirim WA | — |
-| Metode & batasan | Kejujuran untuk juri | Model logit V1-GSI dengan koefisien awal; akan dikalibrasi dari data hasil siklus; bukan diagnosis resmi | Baca metode (P2) |
-| FAQ | Keberatan umum | Perlu lab sendiri? Alat qPCR apa yang didukung? Data saya aman? Apakah menggantikan diagnosis? | — |
-| CTA penutup | CTA utama diulang | Akun demo pemilik + teknisi | Coba demo |
+| Hero | Nilai dalam satu layar | Kartu foto tambak, judul "AquaSeq membaca DNA air kolam untuk peringatan dini penyakit udang", kartu kecil alur sampel | Hubungi tim |
+| Pernyataan | Pembeda | Lapisan biologis (bakteri dan patogen) yang jarang diukur di samping DO, pH, pakan | — |
+| Dampak | Kenapa penting | Kerugian AHPND dunia dan 10-35 hari [riset], misi, foto petambak | — |
+| Cara kerja | 4 langkah | Ambil sampel air, sekuensing di lab mitra, diolah AquaSeq, qPCR mingguan | Hubungi tim |
+| Teknologi | Prinsip | Sekuensing untuk menemukan, qPCR untuk memantau; angka 3-5 penanda, 2-4 minggu, 75 sampel per run | Ke Dasar ilmiah |
+| Kenapa AquaSeq | Keberatan + batasan jujur | Bahasa Indonesia, bukan diagnosis resmi, lab mitra unggah langsung; AI tidak membuat angka | Hubungi tim |
+| Dasar ilmiah | Bukti untuk juri | 3 rujukan dari proposal (DOI) | Buka artikel |
 
 **Akun**
 
@@ -132,7 +132,7 @@ Section landing P1 (urutan, satu file per section, detail visual di 08-DESIGN Ar
 | P44 | Beranda peran | `/app` | pemilik, teknisi | Mengarahkan setelah masuk: pemilik → `/dasbor` (atau `/mulai` bila belum punya lokasi), teknisi → `/teknisi` | — (redirect) | — | Must |
 
 ### 5b. Struktur navigasi
-- **Landing (navbar):** Cara kerja, Kemampuan, Metode (P2), Masuk · CTA "Coba demo". Footer: Kontak, Privasi, Syarat.
+- **Landing (navbar):** Cara kerja, Teknologi, Kenapa AquaSeq, Dasar ilmiah · Masuk · tombol "Hubungi tim". Footer: Kontak, Privasi, Masuk.
 - **Pemilik, sidebar** (grup maks 4 item):
   - *Pantau:* Dasbor, Peringatan, Kolam
   - *Lab:* Unggah hasil lab, Riwayat unggahan
@@ -163,7 +163,7 @@ Section landing P1 (urutan, satu file per section, detail visual di 08-DESIGN Ar
 ## 7. Fitur
 | # | Fitur | Prioritas | Alur / halaman | Kriteria terima |
 |---|---|---|---|---|
-| F1 | Landing + kalkulator kolom air | Must | P1 | Semua section tampil di 375/768/1440; kalkulator memakai `sdri/preview` backend dengan cadangan contoh tersimpan; label "Data simulasi"; Lighthouse mobile Performance ≥ 90; animasi mati saat reduced-motion |
+| F1 | Landing DNA air kolam | Must | P1 | Semua section tampil di 375/768/1440; angka hanya dari proposal dan rujukannya; CTA ke WhatsApp tim; Lighthouse mobile Performance ≥ 90; animasi mati saat reduced-motion |
 | F2 | Auth pemilik | Must | Alur 1 · P6, P7, P44 | Daftar, masuk, keluar lewat backend; token di cookie httpOnly; refresh otomatis; pesan galat jelas |
 | F3 | Akun demo | Must | P6 | Tombol "Masuk sebagai demo pemilik / teknisi" membuka akun SIMULASI (mock atau `auth/demo`) |
 | F4 | Lokasi & kolam | Must | Alur 1 · P12, P14, P15, P27 | Buat/ubah/arsipkan; `CONFLICT` kode kolam tampil di field |
@@ -207,3 +207,4 @@ Section landing P1 (urutan, satu file per section, detail visual di 08-DESIGN Ar
 |---|---|
 | 24 Okt 2026 | Dokumen awal web (landing + aplikasi pemilik dan teknisi), menggantikan PRD Expo lama di commit `2aad8c8` |
 | 24 Okt 2026 | v1.1: auth dan data lewat backend Go tim; skor ikut backend (peluang %, kelas 1-4); Supabase, mesin skor web, Nanopore, meter keyakinan, EWMA dikeluarkan; P16 jadi Rincian skor, P18 Detail unggahan, P19 Riwayat unggahan, P21 Hasil siklus |
+| 24 Okt 2026 | Landing dibangun ulang mengikuti referensi user (Agroton, versi biru) dan proposal GenoHack: DNA air kolam jadi peringatan dini; kalkulator, Masalah, Metode di landing dihapus; CTA Hubungi tim lewat WhatsApp |

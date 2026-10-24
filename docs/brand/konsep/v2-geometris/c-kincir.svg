@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <title>AquaSeq konsep C</title>
+  <g fill="#000">
+    <path d="M24 124 V24 A100 100 0 0 1 124 124 Z"/>
+    <path d="M132 24 H232 A100 100 0 0 1 132 124 Z"/>
+    <path d="M232 132 V232 A100 100 0 0 1 132 132 Z"/>
+    <path d="M124 232 H24 A100 100 0 0 1 124 132 Z"/>
+  </g>
+</svg>

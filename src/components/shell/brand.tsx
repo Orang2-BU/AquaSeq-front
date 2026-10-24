@@ -1,15 +1,12 @@
-/** Simbol sementara (tetes air bergaris) sampai logo dibuat (08-DESIGN Shapes). */
-function BrandSymbol() {
+// Lencana kolam: udang vaname melingkar sebagai ruang negatif (docs/brand/, versi kecil untuk < 48px).
+const SYMBOL_PATH =
+  "M248 128 A120 120 0 1 0 8 128 A120 120 0 1 0 248 128 Z M151.46 198.15 A63.36 63.36 0 0 1 92.96 196.62 L114.18 158.33 A27.36 27.36 0 0 0 142.62 180.03 Z M83.81 190.44 A63.36 63.36 0 0 1 61.10 151.11 L115.59 142.48 A27.36 27.36 0 0 0 113.62 153.63 Z M60.33 140.09 A63.36 63.36 0 0 1 181.56 115.43 Q188.91 129.70 213.24 131.27 Q165.95 129.59 152.99 128.15 A27.36 27.36 0 0 0 116.20 141.07 Z M147.04 189.09 L134.63 158.38 A33.12 33.12 0 0 1 178.87 179.96 Z M197.45 105.22 L194.13 99.39 L190.35 93.86 L186.14 88.68 L181.52 83.86 L176.54 79.44 L171.23 75.46 L165.61 71.93 L159.74 68.87 L153.65 66.31 L147.39 64.26 L140.98 62.74 L134.49 61.74 L127.96 61.28 L121.41 61.36 L114.91 61.97 L108.50 63.10 L102.21 64.76 L96.09 66.91 L90.18 69.56 L84.51 72.67 L79.13 76.23 L74.07 80.21 L69.36 84.58 L65.04 89.32 L61.12 94.38 L57.64 99.73 L54.61 105.34 L52.05 111.16 L49.99 117.17 L48.42 123.31 L47.37 129.54 L46.83 135.83 L48.26 135.93 L49.10 129.80 L50.44 123.78 L52.25 117.91 L54.54 112.21 L57.28 106.73 L60.46 101.50 L64.04 96.56 L68.00 91.94 L72.32 87.67 L76.97 83.77 L81.91 80.28 L87.10 77.21 L92.52 74.57 L98.13 72.40 L103.88 70.69 L109.74 69.46 L115.66 68.72 L121.62 68.46 L127.56 68.70 L133.45 69.41 L139.25 70.60 L144.92 72.26 L150.42 74.38 L155.73 76.93 L160.79 79.89 L165.58 83.26 L170.08 87.00 L174.24 91.08 L178.04 95.48 L181.47 100.17 L184.49 105.11 L187.10 110.27 Z";
+
+/** Simbol logo AquaSeq (08-DESIGN Shapes); dekoratif karena selalu didampingi wordmark atau label. */
+export function BrandSymbol() {
   return (
-    <svg className="brand-symbol" viewBox="0 0 28 38" aria-hidden="true">
-      <path fill="var(--color-primary)" d="M14 1C14 1 2 15.5 2 24a12 12 0 0 0 24 0C26 15.5 14 1 14 1Z" />
-      <path
-        fill="none"
-        stroke="var(--color-surface)"
-        strokeWidth="2"
-        strokeLinecap="round"
-        d="M7.5 25.5c2.2-1.6 4.3-1.6 6.5 0s4.3 1.6 6.5 0"
-      />
+    <svg className="brand-symbol" viewBox="0 0 256 256" aria-hidden="true">
+      <path fill="var(--color-primary)" fillRule="evenodd" d={SYMBOL_PATH} />
     </svg>
   );
 }

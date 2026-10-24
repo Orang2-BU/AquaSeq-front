@@ -1,5 +1,6 @@
 import { api, type Pond } from "@/lib/api";
-import { withSession } from "@/lib/auth/session";
+import { getActiveFarms, getCurrentUser, withSession } from "@/lib/auth/session";
+import { dayOffset } from "@/lib/format";
 
 // Pembacaan data yang dipakai banyak halaman pemilik. Panggil di dalam `<Suspense>` (cacheComponents).
 
@@ -18,4 +19,27 @@ export async function taskOptions(farmId: string, ponds?: Pond[]) {
       .map((m) => ({ id: m.user_id, full_name: m.full_name }))
       .toSorted((a, b) => a.full_name.localeCompare(b.full_name)),
   };
+}
+
+/** Data area teknisi: kolam yang dipegang, tugasnya, dan catatan kimia air terakhir tiap kolam. */
+export async function technicianData() {
+  const [me, { current }, tasks] = await Promise.all([
+    getCurrentUser(),
+    getActiveFarms(),
+    withSession((token) => api.tasks.mine(token)),
+  ]);
+  const ponds = current ? await withSession((token) => api.ponds.list(token, current.id)) : [];
+  const logs = await Promise.all(ponds.map((p) => withSession((token) => api.ponds.waterLogs(token, p.id))));
+  const pondsWithLog = ponds
+    .map((pond, i) => {
+      const latest = logs[i][0] ?? null;
+      return {
+        ...pond,
+        latestLog: latest,
+        history: logs[i],
+        loggedToday: latest ? dayOffset(latest.measured_at) === 0 : false,
+      };
+    })
+    .toSorted((a, b) => a.pond_code.localeCompare(b.pond_code));
+  return { me, farm: current, tasks, ponds: pondsWithLog };
 }

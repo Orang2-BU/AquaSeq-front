@@ -3,6 +3,8 @@
 @import "../styles/theme.css";
 /* Komponen halaman pemilik (dasbor, detail, lab, tugas). */
 @import "../styles/app-pages.css";
+/* Area teknisi (HP): tugas saya, kerjakan, catat air, kolam saya. */
+@import "../styles/tech-pages.css";
 
 /* Shell & komponen: port dari implementasi acuan template Soft Op Dashboard (K-DASP / MilkGraph). */
 
@@ -21,6 +23,8 @@
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --sidebar-width: 264px;
   --shadow-overlay: 0 8px 24px rgb(20 20 20 / 0.08);
+  /* Latar halaman gaya Iconly Pro: kanvas abu di atas memudar lembut ke putih di bawah. */
+  --backdrop-soft: linear-gradient(180deg, var(--color-canvas) 0%, var(--color-surface) 100%);
 }
 * {
   box-sizing: border-box;
@@ -180,7 +184,7 @@ svg {
   display: flex;
   align-items: flex-start;
   min-height: 100dvh;
-  background: var(--color-canvas);
+  background: var(--backdrop-soft), var(--color-canvas);
 }
 .sidebar {
   position: sticky;
@@ -212,8 +216,8 @@ svg {
   white-space: nowrap;
 }
 .brand-symbol {
-  width: 28px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   flex-shrink: 0;
 }
 .brand-wordmark {
@@ -726,7 +730,7 @@ main {
 /* Halaman di luar shell: masuk, akun, publik */
 .solo-frame {
   min-height: 100dvh;
-  background: var(--color-canvas);
+  background: var(--backdrop-soft), var(--color-canvas);
   display: flex;
   flex-direction: column;
 }

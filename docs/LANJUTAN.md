@@ -4,9 +4,10 @@
 
 ## 1. Posisi sekarang
 - Branch kerja: `push-deployment`. Dilarang commit/push tanpa izin user.
-- Selesai: semua halaman **pemilik** di mode mock (P12-P29, P31-P34, P42, 404 dalam shell). Detail per task di `docs/04-TODO.md`. Integrasi kecerdasan backend 3 lapis (T51-T55): skema Zod + API klien + mock seed + tes kontrak selesai; desain visual UI di-freeze 100% mengikuti buatan teman user (tanpa kartu/chart/panel baru); teks antarmuka disesuaikan kamus istilah baru (eDNA air tambak, kadar jejak patogen, kontrol kualitas, panel jejak penyakit).
-- Belum: halaman **teknisi** (T11 Tugas saya, T12 Catat air, T22 Kerjakan tugas + foto, P39), publik (P2-P4, T37), landing (T26-T35), P30 banding dan P35 bantuan (Could), uji live dengan backend online di port 18080 (saat ini RED jujur: ECONNREFUSED).
-- Pemeriksaan terakhir frontend: 83 tes, typecheck, lint, format, knip hijau. Build 45 rute hijau sebelum penyelarasan terakhir skema. Live RED: ECONNREFUSED port 18080. UI fitur AI baru menunggu izin; hanya teks dan wiring input lama berubah.
+- Selesai: semua halaman **pemilik** di mode mock (P12-P29, P31-P34, P42, 404 dalam shell). Detail per task di `docs/04-TODO.md`.
+- Selesai dari branch rekan (`feat/web-setup`): halaman **teknisi** (T11, T12, T22, P39) dan **landing** baru dengan logo AquaSeq, Motion Primitives, dan GradualBlur.
+- Selesai dari branch deploy (`push-deployment`): integrasi Dokploy packaging, skema live API, kamus istilah baru eDNA, dan unit test lengkap.
+- Belum: publik (P2-P4, T37), nomor WhatsApp tim (`WHATSAPP_NUMBER` di `src/content/landing.ts`), P30 banding dan P35 bantuan (Could), uji live saat backend online.
 
 ## 2. Cara menjalankan
 ```bash

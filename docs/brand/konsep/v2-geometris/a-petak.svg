@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <title>AquaSeq konsep A</title>
+  <g fill="#000">
+    <rect x="24" y="24" width="100" height="100" rx="14"/>
+    <path d="M132 24 A100 100 0 0 1 232 124 H146 A14 14 0 0 1 132 110 Z"/>
+    <rect x="24" y="132" width="100" height="100" rx="14"/>
+    <rect x="132" y="132" width="100" height="100" rx="14"/>
+  </g>
+</svg>
