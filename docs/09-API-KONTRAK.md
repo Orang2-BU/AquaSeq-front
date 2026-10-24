@@ -34,12 +34,12 @@ Mekanisme usulan: **JWT access token (15 menit) + refresh token (30 hari, rotasi
 ## 3. Lokasi, kolam, anggota
 | Method | Endpoint | Status | Body / query | Data respons | Siapa |
 |---|---|---|---|---|---|
-| GET | `/farms` | ⬜ | — | `items: Farm[]` (lokasi tempat user jadi anggota) | semua |
+| GET | `/farms` | ⬜ | — | `items: Farm[]` (lokasi tempat user jadi anggota, **termasuk yang diarsipkan**; web memisahkannya lewat `archived_at`) | semua |
 | POST | `/farms` | 🔧 | `name, regency, address?` | `Farm` | pemilik (pemilik = user pembuat; `owner_name/phone` diambil dari user) |
 | PATCH | `/farms/{id}` | ⬜ | sebagian field | `Farm` | pemilik lokasi |
 | POST | `/farms/{id}/archive` | ⬜ | — | `Farm` | pemilik lokasi |
 | GET | `/farms/{id}/ponds` | ⬜ | `?status=ACTIVE&assignee_id=` | `items: Pond[]` **termasuk `latest_result`** | pemilik: semua; teknisi: hanya kolam yang ditugaskan |
-| POST | `/farms/{id}/ponds` | 🔧 | `pond_code, name?, system, area_sqm, stocked_at?, assignee_id?` | `Pond` | pemilik |
+| POST | `/farms/{id}/ponds` | 🔧 | `pond_code, name?, system, area_sqm?, stocked_at?, assignee_id?` | `Pond` | pemilik; `pond_code` huruf besar, `^[A-Z0-9-]{1,12}$`, unik per lokasi → bentrok `CONFLICT` dengan `fields.pond_code`. Onboarding memanggil endpoint ini per kode (maks 50) |
 | GET | `/ponds/{id}` | ⬜ | — | `Pond` + `latest_result` + `latest_water_log` | pemilik / teknisi pemegang |
 | PATCH | `/ponds/{id}` | ⬜ | sebagian field, termasuk `assignee_id`, `wa_target` | `Pond` | pemilik |
 | POST | `/ponds/{id}/archive` | ⬜ | — | `Pond` | pemilik |
@@ -50,7 +50,8 @@ Mekanisme usulan: **JWT access token (15 menit) + refresh token (30 hari, rotasi
 | GET | `/invitations/by-token/{token}` | ⬜ | — | `farm_name, owner_name, email, pond_codes[], expired` | publik |
 | POST | `/invitations/by-token/{token}/accept` | ⬜ | `full_name, password` | `user, access_token, refresh_token` | publik; token sekali pakai, kedaluwarsa 7 hari |
 
-- `Farm`: `{ id, name, regency, address, owner_id, provenance: "simulasi"|"nyata", archived_at, created_at }`
+- `Farm`: `{ id, name, regency, address, owner_id, provenance: "simulasi"|"nyata", archived_at, created_at, pond_count, technician_count, at_risk_count }`. Tiga angka terakhir untuk kartu lokasi (P27): jumlah kolam, teknisi aktif, dan kolam dengan sampel terakhir kelas 3-4.
+- `/auth/me` hanya memuat lokasi yang **belum** diarsipkan di `memberships`.
 - `Pond`: `{ id, farm_id, pond_code, name, system: "intensif"|"bioflok", area_sqm, current_cycle, stocked_at, assignee: { id, full_name } | null, wa_target, status, latest_result: SdriResult | null, latest_sampling_date }`
 - `Member`: `{ user_id, full_name, email, role, active, pond_codes[], open_tasks }`
 

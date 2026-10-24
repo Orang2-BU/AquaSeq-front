@@ -2,7 +2,8 @@
 
 import { useActionState } from "react";
 import { useSearchParams } from "next/navigation";
-import { demoLogin, login, type FormState } from "@/lib/auth/actions";
+import { demoLogin, login } from "@/lib/auth/actions";
+import type { FormState } from "@/lib/forms";
 import { Field } from "@/components/ui/field";
 
 const empty: FormState = {};

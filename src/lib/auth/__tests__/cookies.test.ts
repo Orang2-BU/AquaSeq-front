@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Me } from "@/lib/api";
-import { homeFor, roleOf, safeNext } from "../cookies";
+import { homeFor, pickFarm, roleOf, safeNext } from "../cookies";
 
 const me = (memberships: Me["memberships"]): Me => ({
   id: "u1",
@@ -36,5 +36,21 @@ describe("roleOf dan homeFor", () => {
 
   it("mengarahkan pemilik baru tanpa lokasi ke onboarding", () => {
     expect([roleOf(me([])), homeFor(me([]))]).toEqual(["pemilik", "/mulai"]);
+  });
+});
+
+describe("pickFarm", () => {
+  const farms = [{ id: "f1" }, { id: "f2" }];
+
+  it("memakai lokasi pilihan bila masih ada", () => {
+    expect(pickFarm(farms, "f2")?.id).toBe("f2");
+  });
+
+  it("kembali ke lokasi pertama bila pilihan sudah tidak ada (mis. diarsipkan)", () => {
+    expect(pickFarm(farms, "f9")?.id).toBe("f1");
+  });
+
+  it("kosong bila tidak punya lokasi", () => {
+    expect(pickFarm([], "f1")).toBeUndefined();
   });
 });

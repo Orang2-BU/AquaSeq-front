@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import { register, type FormState } from "@/lib/auth/actions";
+import { register } from "@/lib/auth/actions";
+import type { FormState } from "@/lib/forms";
 import { Field } from "@/components/ui/field";
 
 export function RegisterForm() {

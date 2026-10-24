@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { AppShell } from "@/components/shell/app-shell";
-import { getCurrentUser } from "@/lib/auth/session";
+import { getActiveFarms, getCurrentUser } from "@/lib/auth/session";
 import { roleOf } from "@/lib/auth/cookies";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -13,12 +13,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 }
 
 async function SessionShell({ children }: { children: React.ReactNode }) {
-  const me = await getCurrentUser();
+  const [me, { farms, current }] = await Promise.all([getCurrentUser(), getActiveFarms()]);
   const initials = me.full_name
     .split(/\s+/)
     .slice(0, 2)
     .map((word) => word[0]?.toUpperCase())
     .join("");
-  const account = { name: me.full_name, initials, role: roleOf(me), farms: me.memberships.map((m) => m.farm_name) };
+  const account = {
+    name: me.full_name,
+    initials,
+    role: roleOf(me),
+    farms: farms.map(({ id, name, regency, pond_count }) => ({ id, name, regency, pond_count })),
+    currentFarmId: current?.id,
+    simulated: current?.provenance === "simulasi",
+  };
   return <AppShell account={account}>{children}</AppShell>;
 }

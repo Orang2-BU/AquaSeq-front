@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Suspense, useEffect, useRef, useState, type ReactNode } from "react";
+import { Suspense, useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import {
   ArrowUpRight,
   Bell,
@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import type { Role } from "@/lib/api";
 import { logout } from "@/lib/auth/actions";
+import { selectFarm } from "@/app/(app)/actions";
 import { NAVIGATION, PAGES, TECHNICIAN_NAVIGATION, isActive, matchPage } from "@/lib/nav";
 import { Badge, Icon } from "@/components/ui";
 import { Modal } from "@/components/ui/modal";
@@ -28,7 +29,10 @@ export interface ShellAccount {
   name: string;
   initials: string;
   role: Role;
-  farms: string[];
+  farms: { id: string; name: string; regency: string; pond_count: number }[];
+  currentFarmId?: string;
+  /** Lokasi aktif berisi data simulasi (badge di top bar, 08-DESIGN Components). */
+  simulated: boolean;
 }
 
 // Notifikasi contoh sampai endpoint notifikasi tersambung (T40).
@@ -70,12 +74,14 @@ export function AppShell({ account, children }: { account: ShellAccount; childre
   const [collapsed, setCollapsed] = useState<boolean | null>(null);
   const [drawer, setDrawer] = useState(false);
   const [panel, setPanel] = useState<Panel | null>(null);
+  const [switching, startSwitch] = useTransition();
   const menuButton = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDialogElement>(null);
   const home = account.role === "teknisi" ? "/teknisi" : "/dasbor";
-  const location = account.farms[0] ?? "Belum ada lokasi";
+  const location = account.farms.find((f) => f.id === account.currentFarmId)?.name ?? "Belum ada lokasi";
   const roleLabel = account.role === "teknisi" ? "Teknisi" : "Pemilik";
-  const notifications = NOTIFICATIONS[account.role];
+  // Notifikasi contoh hanya untuk lokasi simulasi; akun nyata tidak boleh melihat angka palsu.
+  const notifications = account.simulated ? NOTIFICATIONS[account.role] : [];
   const guide = GUIDE[account.role];
 
   useEffect(() => {
@@ -178,7 +184,7 @@ export function AppShell({ account, children }: { account: ShellAccount; childre
             </Suspense>
           </div>
           <div className="topbar-actions">
-            <Badge tone="warn">Data simulasi</Badge>
+            {account.simulated && <Badge tone="warn">Data simulasi</Badge>}
             <button className="shift-button" onClick={() => setPanel("location")}>
               <Icon icon={MapPin} size={16} />
               <span>{location}</span>
@@ -186,11 +192,11 @@ export function AppShell({ account, children }: { account: ShellAccount; childre
             </button>
             <button
               className="icon-button notification"
-              aria-label={`Lihat ${notifications.length} notifikasi`}
+              aria-label={notifications.length ? `Lihat ${notifications.length} notifikasi` : "Notifikasi"}
               onClick={() => setPanel("notifications")}
             >
               <Icon icon={Bell} />
-              <span>{notifications.length}</span>
+              {notifications.length > 0 && <span>{notifications.length}</span>}
             </button>
             <button className="avatar top-avatar" aria-label="Lihat profil" onClick={() => setPanel("profile")}>
               {account.initials}
@@ -235,12 +241,30 @@ export function AppShell({ account, children }: { account: ShellAccount; childre
           {panel === "location" && (
             <>
               <p className="muted">Data di semua halaman mengikuti lokasi yang dipilih.</p>
-              {account.farms.map((farm, i) => (
-                <button key={farm} className="period-choice" onClick={() => setPanel(null)}>
-                  <strong>{farm}</strong>
-                  {i === 0 && <Badge tone="ok">Dipilih</Badge>}
-                </button>
-              ))}
+              {account.farms.map((farm) => {
+                const selected = farm.id === account.currentFarmId;
+                return (
+                  <button
+                    key={farm.id}
+                    className="period-choice"
+                    aria-pressed={selected}
+                    disabled={switching}
+                    onClick={() =>
+                      startSwitch(async () => {
+                        if (!selected) await selectFarm(farm.id);
+                        setPanel(null);
+                      })
+                    }
+                  >
+                    <strong>{farm.name}</strong>
+                    <span>
+                      {farm.regency} · {farm.pond_count} kolam
+                    </span>
+                    {selected && <Badge tone="ok">Dipilih</Badge>}
+                  </button>
+                );
+              })}
+              {account.farms.length === 0 && <p className="small muted">Belum ada lokasi aktif.</p>}
               {account.role === "pemilik" && (
                 <p className="small muted">
                   Kelola lokasi di{" "}
@@ -254,6 +278,7 @@ export function AppShell({ account, children }: { account: ShellAccount; childre
           )}
           {panel === "notifications" && (
             <div className="notification-list">
+              {notifications.length === 0 && <p className="muted">Belum ada notifikasi.</p>}
               {notifications.map((n) => (
                 <Link key={n.title} href={n.href} onClick={() => setPanel(null)}>
                   <span>

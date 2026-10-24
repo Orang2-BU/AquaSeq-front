@@ -1130,3 +1130,243 @@ main {
 .solo-card h1 + p {
   margin-top: 8px;
 }
+
+/* Dari CSS acuan template (starter/reference/kdasp-globals.css), bagian yang dipakai. */
+.panel {
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-muted);
+  min-width: 0;
+}
+.page-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.metric-icon {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-canvas);
+  color: var(--color-on-surface);
+  flex-shrink: 0;
+}
+.dialog-summary {
+  padding: 20px 0;
+  color: var(--color-on-surface-muted);
+}
+.dialog-actions {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.dialog-actions .secondary,
+.modal .form-field input {
+  background: var(--color-canvas);
+}
+
+/* Kartu lokasi (P27), pola tank-card template. */
+.location-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+.location-grid-skeleton {
+  min-height: 240px;
+}
+.location-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+.location-top {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.location-title h2 {
+  font-size: 16px;
+}
+.location-title p {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--color-on-surface-muted);
+}
+.location-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.location-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+.location-stats dt {
+  font-size: 11px;
+  color: var(--color-on-surface-muted);
+}
+.location-stats dd {
+  margin: 2px 0 0;
+  font-size: 20px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.risk-high {
+  color: var(--color-risk-tinggi);
+}
+.location-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+}
+.location-actions .more-menu {
+  margin-left: auto;
+}
+.location-actions .secondary {
+  background: var(--color-canvas);
+}
+.location-archived {
+  margin-top: 16px;
+}
+
+/* Menu ⋯ (aksi sekunder, A5) */
+.more-menu {
+  position: relative;
+}
+.more-menu > .icon-button {
+  background: var(--color-canvas);
+}
+.more-menu-list {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+  min-width: 180px;
+  padding: 6px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-overlay);
+  display: flex;
+  flex-direction: column;
+}
+.more-menu-list button {
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  font-size: 13px;
+}
+.more-menu-list button:hover,
+.more-menu-list button:focus-visible {
+  background: var(--color-surface-muted);
+}
+
+/* Select dan textarea mengikuti input form. */
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-canvas);
+  color: var(--color-on-surface);
+  font-size: 14px;
+}
+.form-field select {
+  height: 44px;
+  padding: 0 12px;
+}
+.form-field textarea {
+  min-height: 96px;
+  padding: 12px 14px;
+}
+@media (max-width: 767px) {
+  .form-field select,
+  .form-field textarea {
+    font-size: 16px;
+  }
+}
+
+/* Onboarding (P12) */
+.onboarding-card {
+  max-width: 600px;
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.onboarding-card > .muted {
+  margin-bottom: 8px;
+}
+.form-success {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-status-ok-soft);
+  color: var(--color-status-ok);
+  font-size: 13px;
+}
+.pond-picker {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pond-picker legend {
+  margin-bottom: 8px;
+}
+.pond-chip {
+  position: relative;
+  cursor: pointer;
+}
+.pond-chip input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+}
+.pond-chip span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 56px;
+  justify-content: center;
+  padding: 0 14px;
+  border-radius: var(--radius-full);
+  background: var(--color-canvas);
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 12px;
+  font-weight: 500;
+  transition:
+    background-color 180ms var(--ease),
+    color 180ms var(--ease);
+}
+.pond-chip input:checked + span {
+  background: var(--color-accent-soft);
+  color: var(--color-primary);
+}
+.pond-chip input:focus-visible + span {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+@media (max-width: 767px) {
+  .onboarding-card {
+    padding: 24px 20px;
+  }
+}

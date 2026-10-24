@@ -52,3 +52,14 @@ describe("proxy", () => {
     expect(response.cookies.get("aq_refresh")?.value).toBe("");
   });
 });
+
+describe("sesi berakhir", () => {
+  it("menghapus cookie sesi lalu mengarahkan ke masuk", async () => {
+    const { GET } = await import("../app/api/sesi/berakhir/route");
+    const response = GET(new NextRequest("http://localhost:3000/api/sesi/berakhir"));
+    expect(response.headers.get("location")).toBe("http://localhost:3000/masuk");
+    for (const name of ["aq_access", "aq_refresh", "aq_role", "aq_farm"]) {
+      expect(response.cookies.get(name)?.value).toBe("");
+    }
+  });
+});
