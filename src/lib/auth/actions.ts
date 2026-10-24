@@ -57,6 +57,23 @@ export async function register(_: FormState, formData: FormData): Promise<FormSt
   return startSession(result);
 }
 
+const acceptSchema = registerSchema.omit({ email: true }).extend({ token: z.string().min(1).max(200) });
+
+/** P11: teknisi membuat akun dari undangan, lalu langsung masuk. */
+export async function acceptInvitation(_: FormState, formData: FormData): Promise<FormState> {
+  const parsed = acceptSchema.safeParse(Object.fromEntries(formData));
+  const values = valuesOf(formData, ["full_name"]);
+  if (!parsed.success) return { fieldErrors: fieldErrorsOf(parsed.error), values };
+  const { token, ...body } = parsed.data;
+  let result: AuthResult;
+  try {
+    result = await api.invitations.accept(token, body);
+  } catch (error) {
+    return { ...messageOf(error), values };
+  }
+  return startSession(result);
+}
+
 export async function demoLogin(_: FormState, formData: FormData): Promise<FormState> {
   const role = z.enum(["pemilik", "teknisi"]).safeParse(formData.get("role"));
   if (!role.success) return { error: "Pilih akun demo." };

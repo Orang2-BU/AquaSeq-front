@@ -1,0 +1,2 @@
+# Semua file teks LF (Prettier endOfLine lf), termasuk di Windows dengan core.autocrlf.
+* text=auto eol=lf
