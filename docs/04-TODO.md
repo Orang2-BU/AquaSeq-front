@@ -11,8 +11,8 @@
 |---|---|---|---|---|---|
 | T1 | Scaffold Next.js + tooling + `.env.example` | Krisna | Must | ✅ | 24 Okt: Next 16.4.3; typecheck, lint, format:check, test (10), knip, build (42 rute) hijau |
 | T2 | Token 08-DESIGN + starter Soft Op + nav PRD + placeholder halaman | Krisna | Must | ✅ | 24 Okt: 38 halaman placeholder + not-found + error; shell dibandingkan dengan preview starter di 1440/768 (Chrome headless) dan 375 (emulasi): drawer, Esc, fokus kembali, tanpa scroll horizontal, target ≥ 44px, console bersih. `Modal` dipisah ke `ui/modal.tsx` supaya `Icon` bisa dipakai Server Component |
-| T3 | `src/lib/api`: skema Zod, klien live, pemilih `API_MODE`, tes kontrak | Krisna | Must | 🟦 | Amplop, `ApiError`, health, auth, farms (list/create/update/archive), ponds (list/create/update/archive), members (list/update/assignPonds), invitations (create/revoke/byToken/accept), skema `SdriResult`; live + mock. Endpoint lain ditambah per task. `server-only` belum dipasang (perlu izin dependency) |
-| T4 | Mock API + data SIMULASI + akun demo | Krisna | Must | 🟦 | Akun demo (Hendra pemilik; Rizky, Agus, Dwi teknisi), 2 lokasi simulasi, 18 kolam dengan sampel terakhir (peluang, kelas, tren; A4 ditolak, C3 belum ada sampel), keanggotaan aktif/nonaktif, undangan ber-hash (demo `/undangan/undangan-demo-sumber-rejeki`, satu kedaluwarsa). Sampel/tugas ditambah saat halamannya dibangun |
+| T3 | `src/lib/api`: skema Zod, klien live, pemilih `API_MODE`, tes kontrak | Krisna | Must | 🟦 | Semua endpoint halaman pemilik di kontrak 09 (lokasi, kolam, anggota, undangan, sampel, batch, kimia air, peringatan, tugas, siklus, notifikasi, aktivitas, WA, foto); live + mock. Endpoint teknisi (water-logs POST, laporan tugas) menyusul. `server-only` belum dipasang (perlu izin dependency) |
+| T4 | Mock API + data SIMULASI + akun demo | Krisna | Must | 🟦 | `src/lib/api/mock/`: 18 kolam dengan riwayat sampel mingguan (6 titik, sesuai tren), 12 batch + well, kimia air 7 hari, 6 tugas (1 dilaporkan dengan foto, 1 terlambat, 1 diminta ulang), notifikasi, aktivitas, siklus, undangan demo. Skor dari tabel seed/arketipe, bukan rumus |
 | T5 | Sesi cookie httpOnly + `proxy.ts` | Krisna | Must | ✅ | 24 Okt: cookie httpOnly/SameSite=Lax/Secure(prod), refresh otomatis di proxy, pelindung rute + peran, `next` anti open redirect; 6 tes proxy + 5 tes mock auth + 6 tes cookie; `document.cookie` kosong di browser |
 | T6 | Masuk, daftar, keluar, akun demo, redirect peran, akses ditolak | Krisna | Must | ✅ | 24 Okt: diuji di browser: validasi per field, sandi salah (pesan generik), demo pemilik → /dasbor, demo teknisi → /teknisi (menu teknisi), silang peran → /akses-ditolak, keluar → /masuk, daftar → /mulai. Header keamanan dasar aktif; CSP menyusul di T26 |
 | T7 | Onboarding `/mulai` | Krisna | Must | ✅ | 24 Okt: diuji di browser dengan akun baru: lokasi → 4 kolam (pratinjau jumlah, huruf besar otomatis) → undang teknisi dengan 2 kolam (form dikosongkan, bisa undang lagi) → dasbor. Lokasi baru langsung jadi lokasi aktif |
@@ -21,18 +21,18 @@
 | T10 | Tim P25 + undangan P11 + bagi kolam | Krisna | Must | ✅ | 24 Okt: tabel teknisi + undangan tertunda (badge Kedaluwarsa), undang (form onboarding dipakai ulang), bagi kolam (PUT atomik), nonaktifkan/aktifkan, batalkan undangan. P11: token tidak berlaku/kedaluwarsa/valid → akun teknisi → `/teknisi` |
 | T11 | Shell teknisi + Tugas saya P36 | Krisna | Must | 🟦 | Shell + menu teknisi sudah ada (T6); halaman Tugas saya belum |
 | T12 | Catat kimia air P38 | Krisna | Must | ⬜ | — |
-| T13 | `src/lib/csv`: parser + ringkas Ct + tes | Krisna | Must | ⬜ | — |
-| T14 | Unggah P17 langkah 1-2 + Format CSV P20 + template | Krisna | Must | ⬜ | — |
-| T15 | Unggah P17 langkah 3-4: pratinjau QC, cocokkan kolam, kimia air, kirim batch | Krisna | Must | ⬜ | — |
-| T16 | Detail unggahan P18 | Krisna | Must | ⬜ | — |
-| T17 | Rincian skor P16 | Krisna | Must | ⬜ | — |
-| T18 | Detail kolam P15 + catat hasil siklus | Krisna | Must | ⬜ | — |
-| T19 | Dasbor P13 | Krisna | Must | ⬜ | — |
-| T20 | Peringatan P22 | Krisna | Must | ⬜ | — |
-| T21 | Modal buat tugas + Daftar tugas P23 | Krisna | Must | ⬜ | — |
+| T13 | `src/lib/csv`: parser + ringkas Ct + tes | Krisna | Must | ✅ | 24 Okt (mock): `src/lib/csv/qpcr.ts` tanpa dependency: koma/titik koma, deteksi kolom alat (CFX96, QuantStudio), galat per baris, ringkas Ct, kontrol, kurva standar; 8 tes |
+| T14 | Unggah P17 langkah 1-2 + Format CSV P20 + template | Krisna | Must | ✅ | 24 Okt (mock): langkah pilih file (seret/pilih, maks 2 MB) + cocokkan kolom manual; P20 + template dan contoh terisi di `public/templates` |
+| T15 | Unggah P17 langkah 3-4: pratinjau QC, cocokkan kolam, kimia air, kirim batch | Krisna | Must | ✅ | 24 Okt (mock): pratinjau QC (pipeline kontrol, plate, keluarkan well + alasan), cocokkan kolam otomatis dari kode, kimia air dari catatan terakhir (bisa diubah), CSV diparse ulang di server lalu `POST /samples/batch` |
+| T16 | Detail unggahan P18 | Krisna | Must | ✅ | 24 Okt (mock): hasil per sampel urut risiko, plate dari `meta.wells`, metrik, state semua ditolak |
+| T17 | Rincian skor P16 | Krisna | Must | ✅ | 24 Okt (mock): rantai peluang → Z → subskor → fitur (Ct, kopi/mL, kimia) → well + plate; versi model, alasan ditolak, tombol tugaskan uji ulang |
+| T18 | Detail kolam P15 + catat hasil siklus | Krisna | Must | ✅ | 24 Okt (mock): skor 48px + badge, sorotan rekomendasi + pesan tren, grafik riwayat SVG (ambang kelas, sampel ditolak), tab Sampel/Kimia air/Tugas, modal ubah/catat siklus/WA/arsip |
+| T19 | Dasbor P13 | Krisna | Must | ✅ | 24 Okt (mock): 4 metrik, kartu sorotan navy kolam paling berisiko (buat tugas/lihat tugas), kolam dipantau, tugas jatuh tempo, rata-rata peluang per lokasi |
+| T20 | Peringatan P22 | Krisna | Must | ✅ | 24 Okt (mock): filter jenis, urut paling mendesak, buat tugas (terisi), pratinjau WA, tandai ditangani |
+| T21 | Modal buat tugas + Daftar tugas P23 | Krisna | Must | ✅ | 24 Okt (mock): modal bersama (kolam + teknisi pemegang terisi, instruksi dari `recommendation`, jatuh tempo wajib); P23 filter status/teknisi, terlambat ditandai |
 | T22 | Kerjakan tugas P37 + foto | Krisna | Must | ⬜ | — |
-| T23 | Detail tugas P24 + proxy foto | Krisna | Must | ⬜ | — |
-| T24 | Halaman galat + penanganan 401/403/skema | Krisna | Must | ⬜ | — |
+| T23 | Detail tugas P24 + proxy foto | Krisna | Must | ✅ | 24 Okt (mock): instruksi, laporan (catatan, angka ukur, foto lewat `/api/files/[id]` dengan CSP), riwayat status, tutup/minta ulang (catatan wajib)/ubah/batalkan |
+| T24 | Halaman galat + penanganan 401/403/skema | Krisna | Must | 🟦 | 24 Okt: 404 dalam shell (`(app)/not-found.tsx`), 403 → `/akses-ditolak` (P42 dibangun) lewat `loadEntity`; 401 lewat `withSession`. Uji skema rusak di mode live belum |
 | T25 | Uji alur inti end-to-end di mock (1440 + 375) | Krisna | Must | ⬜ | — |
 | T26 | Landing: token + SmoothScroll + Motion Primitives + reduced-motion | Krisna | Must | ⬜ | — |
 | T27 | Landing: Section, navbar, footer, `pill-link` | Krisna | Must | ⬜ | — |
@@ -46,14 +46,14 @@
 | T35 | Landing: audit performa + a11y + impeccable | Krisna | Must | ⬜ | — |
 | T36 | Sambung ke backend live per kelompok endpoint + uji alur inti | Krisna | Must | ⬜ | Menunggu endpoint backend (09-API-KONTRAK) |
 | T37 | Verifikasi email, lupa sandi, atur sandi | Krisna | Should | ⬜ | — |
-| T38 | Riwayat unggahan P19 + riwayat kimia air P28 + ekspor | Krisna | Should | ⬜ | — |
-| T39 | Pratinjau peringatan WA | Krisna | Should | ⬜ | Endpoint sudah ada |
-| T40 | Notifikasi P32 | Krisna | Should | ⬜ | — |
-| T41 | Detail teknisi P26 + Kolam saya P39 | Krisna | Should | ⬜ | — |
-| T42 | Laporan periode P29 | Krisna | Should | ⬜ | — |
-| T43 | Log aktivitas P31 | Krisna | Should | ⬜ | — |
-| T44 | Pengaturan akun P33 + tambak P34 | Krisna | Should | ⬜ | — |
-| T45 | Publik: Metode P2, Kontak P3, Privasi P4 + Hasil siklus P21 | Krisna | Should | ⬜ | — |
+| T38 | Riwayat unggahan P19 + riwayat kimia air P28 + ekspor | Krisna | Should | ✅ | 24 Okt (mock): P19 filter bulan; P28 filter kolam, penanda di luar rentang acuan; ekspor CSV kolam dan kimia air (aman injeksi rumus) |
+| T39 | Pratinjau peringatan WA | Krisna | Should | ✅ | 24 Okt (mock): modal WA di P15 dan P22: teks dari `/reports/whatsapp`, salin, buka `wa.me` ke nomor kolam |
+| T40 | Notifikasi P32 | Krisna | Should | ✅ | 24 Okt (mock): P32 + lonceng top bar memakai data notifikasi (belum dibaca, buka = tandai dibaca) |
+| T41 | Detail teknisi P26 + Kolam saya P39 | Krisna | Should | 🟦 | 24 Okt: P26 detail teknisi ✅ (kolam, tugas terbuka, terlambat, catatan kimia air, beri tugas, bagi kolam). P39 teknisi belum |
+| T42 | Laporan periode P29 | Krisna | Should | ✅ | 24 Okt (mock): periode 7/30/90 hari, sebaran kelas, kolam perlu perhatian, unggahan, tugas selesai/terlambat, cetak |
+| T43 | Log aktivitas P31 | Krisna | Should | ✅ | 24 Okt (mock): kronologi per hari, filter pelaku/jenis, tautan ke entitas |
+| T44 | Pengaturan akun P33 + tambak P34 | Krisna | Should | ✅ | 24 Okt (mock): P33 profil + ganti sandi (usulan endpoint baru di kontrak), P34 nomor WA per kolam |
+| T45 | Publik: Metode P2, Kontak P3, Privasi P4 + Hasil siklus P21 | Krisna | Should | 🟦 | 24 Okt: P21 hasil siklus ✅. P2, P3, P4 (publik) belum |
 | T46 | Tugas terlambat ditandai + notifikasi | Krisna | Could | ⬜ | Fitur kecil bernilai besar |
 | T47 | "Pakai nilai kemarin" di catat air | Krisna | Could | ⬜ | Fitur kecil bernilai besar |
 | T48 | Banding kolam P30 | Krisna | Could | ⬜ | Fitur kecil bernilai besar |
@@ -63,12 +63,12 @@
 ## Alur Inti Check
 | Langkah | Status | Dicek |
 |---|---|---|
-| 1. Siapkan tambak (daftar, lokasi, kolam, undang teknisi) | ⬜ | — |
+| 1. Siapkan tambak (daftar, lokasi, kolam, undang teknisi) | ✅ | 24 Okt mock (T7-T10) |
 | 2. Teknisi catat kimia air dari HP | ⬜ | — |
-| 3. Unggah hasil lab, pratinjau QC, kirim batch | ⬜ | — |
-| 4. Baca risiko (dasbor, peringatan, rincian skor) | ⬜ | — |
-| 5. Tugaskan teknisi dari peringatan | ⬜ | — |
-| 6. Teknisi lapor foto, pemilik tutup tugas | ⬜ | — |
+| 3. Unggah hasil lab, pratinjau QC, kirim batch | ✅ | 24 Okt mock: contoh terisi 7 sampel, 1 well dikeluarkan, batch terkirim |
+| 4. Baca risiko (dasbor, peringatan, rincian skor) | ✅ | 24 Okt mock |
+| 5. Tugaskan teknisi dari peringatan | ✅ | 24 Okt mock: tugas A2 dari peringatan, notifikasi ke teknisi |
+| 6. Teknisi lapor foto, pemilik tutup tugas | 🟦 | 24 Okt mock: sisi pemilik (nilai laporan B3, tutup, minta ulang) ✅; sisi teknisi (P37) belum |
 
 ## Halaman
 > Dari 01-PRD §5. Selesai = halaman jalan dengan data (mock lalu live) + semua state (kosong, loading, error) + responsif.
@@ -87,28 +87,28 @@
 | P10 | Atur sandi baru | Should | ⬜ | — |
 | P11 | Terima undangan | Must | ✅ | — |
 | P12 | Mulai (onboarding) | Must | ✅ | — |
-| P13 | Dasbor | Must | ⬜ | — |
+| P13 | Dasbor | Must | ✅ | — |
 | P14 | Daftar kolam | Must | ✅ | — |
-| P15 | Detail kolam | Must | ⬜ | — |
-| P16 | Rincian skor | Must | ⬜ | — |
-| P17 | Unggah hasil lab | Must | ⬜ | — |
-| P18 | Detail unggahan | Must | ⬜ | — |
-| P19 | Riwayat unggahan | Should | ⬜ | — |
-| P20 | Format CSV | Must | ⬜ | — |
-| P21 | Hasil siklus | Should | ⬜ | — |
-| P22 | Peringatan | Must | ⬜ | — |
-| P23 | Daftar tugas | Must | ⬜ | — |
-| P24 | Detail tugas | Must | ⬜ | — |
+| P15 | Detail kolam | Must | ✅ | — |
+| P16 | Rincian skor | Must | ✅ | — |
+| P17 | Unggah hasil lab | Must | ✅ | — |
+| P18 | Detail unggahan | Must | ✅ | — |
+| P19 | Riwayat unggahan | Should | ✅ | — |
+| P20 | Format CSV | Must | ✅ | — |
+| P21 | Hasil siklus | Should | ✅ | — |
+| P22 | Peringatan | Must | ✅ | — |
+| P23 | Daftar tugas | Must | ✅ | — |
+| P24 | Detail tugas | Must | ✅ | — |
 | P25 | Tim | Must | ✅ | — |
-| P26 | Detail teknisi | Should | ⬜ | — |
+| P26 | Detail teknisi | Should | ✅ | — |
 | P27 | Lokasi | Must | ✅ | — |
-| P28 | Riwayat kimia air | Should | ⬜ | — |
-| P29 | Laporan | Should | ⬜ | — |
+| P28 | Riwayat kimia air | Should | ✅ | — |
+| P29 | Laporan | Should | ✅ | — |
 | P30 | Banding kolam | Could | ⬜ | — |
-| P31 | Log aktivitas | Should | ⬜ | — |
-| P32 | Notifikasi | Should | ⬜ | — |
-| P33 | Pengaturan akun | Should | ⬜ | — |
-| P34 | Pengaturan tambak | Should | ⬜ | — |
+| P31 | Log aktivitas | Should | ✅ | — |
+| P32 | Notifikasi | Should | ✅ | — |
+| P33 | Pengaturan akun | Should | ✅ | — |
+| P34 | Pengaturan tambak | Should | ✅ | — |
 | P35 | Bantuan | Could | ⬜ | — |
 | P36 | Tugas saya (teknisi) | Must | ⬜ | — |
 | P37 | Kerjakan tugas (teknisi) | Must | ⬜ | — |
@@ -116,7 +116,7 @@
 | P39 | Kolam saya (teknisi) | Should | ⬜ | — |
 | P40 | Tidak ditemukan | Must | ⬜ | — |
 | P41 | Terjadi galat | Must | ⬜ | — |
-| P42 | Akses ditolak | Must | ⬜ | — |
+| P42 | Akses ditolak | Must | ✅ | — |
 | P43 | Pemeliharaan | Could | ⬜ | — |
 | P44 | Beranda peran (redirect) | Must | ✅ | Di proxy.ts |
 
@@ -134,3 +134,4 @@
 | 24 Okt 2026 | Milestone Akun: T5 ✅, T6 ✅, T3/T4 lanjut. Catatan: jangan jalankan `npm run build` saat dev server hidup (berbagi `.next`, memicu reload berantai) |
 | 24 Okt 2026 | T7 ✅, T8 ✅. Diperbaiki: siklus redirect saat backend menolak token yang masih tersimpan (sekarang lewat `/api/sesi/berakhir`), notifikasi contoh tampil di akun nyata, peringatan validasi `Date.now()` di dev |
 | 24 Okt 2026 | T9 ✅, T10 ✅ (P11, P14, P25). Kontrak 09: `Pond.trend`, `PUT /farms/{id}/members/{user_id}/ponds`, kode `EXPIRED`, pertanyaan K7 (penomoran `risk_class` backend 0/1/2/4/9) |
+| 24 Okt 2026 | Semua halaman pemilik dibangun di mock: P13, P15-P24, P26, P28, P29, P31-P34, P42 + 404 dalam shell. Mock dipecah ke `src/lib/api/mock/` (riwayat sampel mingguan, batch + well, kimia air, tugas, peringatan, notifikasi, aktivitas, siklus). Kontrak 09: usulan `PATCH /auth/me`, `POST /auth/password`, tren `MODERATE_INCREASE`, K8. Belum: halaman teknisi (T11, T12, T22, P39), publik, landing, P30 banding, P35 bantuan |

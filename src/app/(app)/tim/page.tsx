@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Rocket, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import { api } from "@/lib/api";
 import { getActiveFarms, withSession } from "@/lib/auth/session";
 import { formatDate, isPast } from "@/lib/format";
-import { EmptyState } from "@/components/app/empty-state";
-import { Badge, Icon } from "@/components/ui";
+import { EmptyState, NoFarmState } from "@/components/app/empty-state";
+import { Badge } from "@/components/ui";
 import { InvitationRowActions, InviteButton, MemberRowActions } from "./team-actions";
 
 export const metadata: Metadata = { title: "Tim" };
@@ -38,16 +38,7 @@ async function Team() {
         <div className="page-heading">
           <h1>Tim</h1>
         </div>
-        <EmptyState
-          icon={Users}
-          title="Belum ada lokasi aktif"
-          text="Buat lokasi tambak dulu, lalu undang teknisi ke sana."
-        >
-          <Link className="button primary" href="/mulai">
-            <Icon icon={Rocket} />
-            Siapkan tambak
-          </Link>
-        </EmptyState>
+        <NoFarmState text="Buat lokasi tambak dulu, lalu undang teknisi ke sana." />
       </>
     );
   }
@@ -112,7 +103,9 @@ async function Team() {
                     {technicians.map((member) => (
                       <tr key={member.user_id}>
                         <td data-label="Nama" className="table-title">
-                          <span>{member.full_name}</span>
+                          <Link className="table-link plain" href={`/tim/${member.user_id}`}>
+                            {member.full_name}
+                          </Link>
                           <span className="table-sub">{member.email}</span>
                         </td>
                         <td data-label="Kolam dipegang">

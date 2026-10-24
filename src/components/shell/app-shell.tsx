@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import type { Role } from "@/lib/api";
 import { logout } from "@/lib/auth/actions";
+import { openNotification } from "@/app/(app)/notifikasi/actions";
 import { selectFarm } from "@/app/(app)/actions";
 import { NAVIGATION, PAGES, TECHNICIAN_NAVIGATION, isActive, matchPage } from "@/lib/nav";
 import { Badge, Icon } from "@/components/ui";
@@ -33,20 +34,10 @@ export interface ShellAccount {
   currentFarmId?: string;
   /** Lokasi aktif berisi data simulasi (badge di top bar, 08-DESIGN Components). */
   simulated: boolean;
+  /** Notifikasi terbaru (P32) dan jumlah yang belum dibaca. */
+  notifications: { id: string; title: string; subtitle: string; unread: boolean }[];
+  unread: number;
 }
-
-// Notifikasi contoh sampai endpoint notifikasi tersambung (T40).
-const NOTIFICATIONS: Record<Role, { title: string; subtitle: string; href: string }[]> = {
-  pemilik: [
-    { title: "Kolam B3 Waspada tinggi (34,8%)", subtitle: "Sampel 23 Okt · pirAB dan TOM naik", href: "/peringatan" },
-    { title: "Rizky Pratama melaporkan tugas", subtitle: "Ganti air 20% kolam B3 · 2 foto", href: "/tugas" },
-    { title: "Sampel A4-1023 ditolak", subtitle: "PPC di luar rentang · ambil sampel ulang", href: "/lab" },
-  ],
-  teknisi: [
-    { title: "Tugas baru: ganti air 20% kolam B3", subtitle: "Dari Hendra Kusuma · batas 10.00", href: "/teknisi" },
-    { title: "Catat kimia air pagi belum diisi", subtitle: "Kolam B1 dan B2", href: "/teknisi/catat-air" },
-  ],
-};
 
 const GUIDE: Record<Role, { intro: string; steps: [string, string][] }> = {
   pemilik: {
@@ -80,8 +71,7 @@ export function AppShell({ account, children }: { account: ShellAccount; childre
   const home = account.role === "teknisi" ? "/teknisi" : "/dasbor";
   const location = account.farms.find((f) => f.id === account.currentFarmId)?.name ?? "Belum ada lokasi";
   const roleLabel = account.role === "teknisi" ? "Teknisi" : "Pemilik";
-  // Notifikasi contoh hanya untuk lokasi simulasi; akun nyata tidak boleh melihat angka palsu.
-  const notifications = account.simulated ? NOTIFICATIONS[account.role] : [];
+  const { notifications, unread } = account;
   const guide = GUIDE[account.role];
 
   useEffect(() => {
@@ -192,11 +182,11 @@ export function AppShell({ account, children }: { account: ShellAccount; childre
             </button>
             <button
               className="icon-button notification"
-              aria-label={notifications.length ? `Lihat ${notifications.length} notifikasi` : "Notifikasi"}
+              aria-label={unread ? `Lihat notifikasi, ${unread} belum dibaca` : "Notifikasi"}
               onClick={() => setPanel("notifications")}
             >
               <Icon icon={Bell} />
-              {notifications.length > 0 && <span>{notifications.length}</span>}
+              {unread > 0 && <span>{unread > 9 ? "9+" : unread}</span>}
             </button>
             <button className="avatar top-avatar" aria-label="Lihat profil" onClick={() => setPanel("profile")}>
               {account.initials}
@@ -280,14 +270,20 @@ export function AppShell({ account, children }: { account: ShellAccount; childre
             <div className="notification-list">
               {notifications.length === 0 && <p className="muted">Belum ada notifikasi.</p>}
               {notifications.map((n) => (
-                <Link key={n.title} href={n.href} onClick={() => setPanel(null)}>
-                  <span>
-                    <strong>{n.title}</strong>
-                    <span>{n.subtitle}</span>
-                  </span>
-                  <Icon icon={ArrowUpRight} />
-                </Link>
+                <form key={n.id} action={openNotification} onSubmit={() => setPanel(null)}>
+                  <input type="hidden" name="id" value={n.id} />
+                  <button type="submit" className={n.unread ? "unread" : undefined}>
+                    <span>
+                      <strong>{n.title}</strong>
+                      <span>{n.subtitle}</span>
+                    </span>
+                    <Icon icon={ArrowUpRight} />
+                  </button>
+                </form>
               ))}
+              <Link className="text-link small" href="/notifikasi" onClick={() => setPanel(null)}>
+                Semua notifikasi
+              </Link>
             </div>
           )}
           {panel === "profile" && (
@@ -302,9 +298,16 @@ export function AppShell({ account, children }: { account: ShellAccount; childre
                 <Link className="button secondary" href="/pengaturan" onClick={() => setPanel(null)}>
                   Pengaturan akun
                 </Link>
-                <Link className="button secondary" href="/notifikasi" onClick={() => setPanel(null)}>
-                  Semua notifikasi
-                </Link>
+                {account.role === "pemilik" && (
+                  <>
+                    <Link className="button secondary" href="/pengaturan/tambak" onClick={() => setPanel(null)}>
+                      Pengaturan tambak
+                    </Link>
+                    <Link className="button secondary" href="/aktivitas" onClick={() => setPanel(null)}>
+                      Log aktivitas
+                    </Link>
+                  </>
+                )}
                 <form action={logout}>
                   <button className="button secondary wide" type="submit">
                     <Icon icon={LogOut} />

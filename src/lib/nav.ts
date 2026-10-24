@@ -91,6 +91,7 @@ const PAGE_MAP = {
     icon: LogIn,
     parent: "/",
     description: "Masuk dengan email dan sandi, atau coba akun demo.",
+    core: true,
   },
   "/daftar": {
     id: "P7",
@@ -99,6 +100,7 @@ const PAGE_MAP = {
     icon: UserPlus,
     parent: "/masuk",
     description: "Membuat akun pemilik tambak.",
+    core: true,
   },
   "/verifikasi": {
     id: "P8",
@@ -131,6 +133,7 @@ const PAGE_MAP = {
     icon: Ticket,
     parent: "/masuk",
     description: "Teknisi bergabung ke lokasi tambak pemilik.",
+    core: true,
   },
   "/akses-ditolak": {
     id: "P42",
@@ -139,6 +142,7 @@ const PAGE_MAP = {
     icon: ShieldAlert,
     parent: "/app",
     description: "Halaman ini butuh peran atau lokasi lain.",
+    core: true,
   },
   "/mulai": {
     id: "P12",
@@ -146,6 +150,7 @@ const PAGE_MAP = {
     group: "Tambak",
     icon: Rocket,
     description: "Membuat lokasi pertama, kolam, dan mengundang teknisi.",
+    core: true,
   },
   "/dasbor": {
     id: "P13",
@@ -153,6 +158,7 @@ const PAGE_MAP = {
     group: "Pantau",
     icon: LayoutDashboard,
     description: "Melihat kolam mana yang harus ditangani hari ini.",
+    core: true,
   },
   "/peringatan": {
     id: "P22",
@@ -160,6 +166,7 @@ const PAGE_MAP = {
     group: "Pantau",
     icon: TriangleAlert,
     description: "Menindaklanjuti kolam berisiko, sampel ditolak, dan tren naik.",
+    core: true,
   },
   "/kolam": {
     id: "P14",
@@ -176,6 +183,7 @@ const PAGE_MAP = {
     icon: Waves,
     parent: "/kolam",
     description: "Memahami risiko satu kolam dan menugaskan teknisi.",
+    core: true,
   },
   "/kolam/[pondId]/siklus": {
     id: "P21",
@@ -184,6 +192,7 @@ const PAGE_MAP = {
     icon: RefreshCcw,
     parent: "/kolam",
     description: "Mencatat akhir siklus (panen atau wabah) untuk kalibrasi model.",
+    core: true,
   },
   "/sampel/[sampleId]": {
     id: "P16",
@@ -192,6 +201,7 @@ const PAGE_MAP = {
     icon: ScanSearch,
     parent: "/kolam",
     description: "Melihat dari mana angka peluang berasal, sampai ke well.",
+    core: true,
   },
   "/lab/unggah": {
     id: "P17",
@@ -199,6 +209,7 @@ const PAGE_MAP = {
     group: "Lab",
     icon: Upload,
     description: "Mengunggah CSV qPCR, memeriksa QC, lalu mengirim ke analisis.",
+    core: true,
   },
   "/lab": {
     id: "P19",
@@ -206,6 +217,7 @@ const PAGE_MAP = {
     group: "Lab",
     icon: History,
     description: "Membuka batch hasil lab yang pernah diunggah.",
+    core: true,
   },
   "/lab/unggahan/[batchId]": {
     id: "P18",
@@ -214,6 +226,7 @@ const PAGE_MAP = {
     icon: FileSpreadsheet,
     parent: "/lab",
     description: "Melihat hasil analisis per sampel dalam satu batch.",
+    core: true,
   },
   "/lab/format": {
     id: "P20",
@@ -222,6 +235,7 @@ const PAGE_MAP = {
     icon: FileText,
     parent: "/lab/unggah",
     description: "Format kolom yang diterima dan template untuk diunduh.",
+    core: true,
   },
   "/tugas": {
     id: "P23",
@@ -229,6 +243,7 @@ const PAGE_MAP = {
     group: "Tim",
     icon: ClipboardList,
     description: "Memantau semua tugas teknisi.",
+    core: true,
   },
   "/tugas/[taskId]": {
     id: "P24",
@@ -237,6 +252,7 @@ const PAGE_MAP = {
     icon: ClipboardCheck,
     parent: "/tugas",
     description: "Menilai laporan teknisi, lalu menutup atau meminta ulang.",
+    core: true,
   },
   "/tim": {
     id: "P25",
@@ -253,6 +269,7 @@ const PAGE_MAP = {
     icon: UserRound,
     parent: "/tim",
     description: "Melihat beban kerja dan riwayat satu teknisi.",
+    core: true,
   },
   "/lokasi": {
     id: "P27",
@@ -268,6 +285,7 @@ const PAGE_MAP = {
     group: "Tambak",
     icon: BarChart3,
     description: "Ringkasan risiko dan tugas per periode.",
+    core: true,
   },
   "/kimia-air": {
     id: "P28",
@@ -276,6 +294,7 @@ const PAGE_MAP = {
     icon: Droplets,
     parent: "/kolam",
     description: "Membandingkan catatan kimia air antar kolam.",
+    core: true,
   },
   "/aktivitas": {
     id: "P31",
@@ -283,6 +302,7 @@ const PAGE_MAP = {
     group: "Akun",
     icon: Activity,
     description: "Melihat siapa melakukan apa.",
+    core: true,
   },
   "/notifikasi": {
     id: "P32",
@@ -290,6 +310,7 @@ const PAGE_MAP = {
     group: "Akun",
     icon: Bell,
     description: "Tugas baru, laporan masuk, dan peringatan baru.",
+    core: true,
   },
   "/pengaturan": {
     id: "P33",
@@ -297,6 +318,7 @@ const PAGE_MAP = {
     group: "Akun",
     icon: Settings,
     description: "Mengubah profil dan sandi.",
+    core: true,
   },
   "/pengaturan/tambak": {
     id: "P34",
@@ -305,6 +327,7 @@ const PAGE_MAP = {
     icon: SlidersHorizontal,
     parent: "/pengaturan",
     description: "Nomor WhatsApp tujuan peringatan per kolam.",
+    core: true,
   },
   "/teknisi": {
     id: "P36",

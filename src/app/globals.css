@@ -1,6 +1,8 @@
 @import "tailwindcss";
 /* Token resmi dari docs/08-DESIGN.md (hasil designmd export, jangan diedit tangan). */
 @import "../styles/theme.css";
+/* Komponen halaman pemilik (dasbor, detail, lab, tugas). */
+@import "../styles/app-pages.css";
 
 /* Shell & komponen: port dari implementasi acuan template Soft Op Dashboard (K-DASP / MilkGraph). */
 

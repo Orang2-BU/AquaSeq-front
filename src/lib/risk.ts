@@ -17,6 +17,9 @@ export const RISK_FILTERS: { tone: RiskTone; label: string }[] = [
   { tone: "ditolak", label: "Ditolak" },
 ];
 
+/** Batas peluang tiap kelas dari backend (`classifyRisk`), hanya untuk garis acuan grafik. */
+export const CLASS_THRESHOLDS = [5, 25, 60];
+
 /** Label dan nada warna hasil skor. Sampel ditolak tidak punya kelas. */
 export function riskOf(result: Pick<SdriResult, "status" | "risk_class">): { label: string; tone: RiskTone } {
   if (result.status !== "VALID") return { label: "Ditolak", tone: "ditolak" };
@@ -30,6 +33,7 @@ export function formatProbability(pct: number): string {
 
 export const TREND_LABEL: Record<Pond["trend"], string> = {
   RAPID_INCREASE: "Naik cepat",
+  MODERATE_INCREASE: "Naik perlahan",
   STABLE: "Stabil",
   DECREASING: "Turun",
   INSUFFICIENT_DATA: "Data belum cukup",
@@ -39,4 +43,25 @@ export const TREND_LABEL: Record<Pond["trend"], string> = {
 export function riskRank(result: Pick<SdriResult, "status" | "probability_pct"> | null): number {
   if (!result) return -2;
   return result.status === "VALID" ? result.probability_pct : -1;
+}
+
+/** Alasan penolakan sampel untuk ditampilkan; sampel valid tidak punya alasan. */
+export function rejectedReason(status: SdriResult["status"]): string {
+  return status === "REJECTED_INHIBITOR"
+    ? "PPC di luar rentang: reaksi PCR terhambat inhibitor"
+    : status === "REJECTED_INVALID_QC"
+      ? "Kontrol mutu run tidak lolos"
+      : "";
+}
+
+export const SUBSCORES = [
+  { key: "s_qpcr", label: "S_qPCR", meaning: "Beban patogen (pirA, vp28, swp1)" },
+  { key: "s_bio", label: "S_Bio", meaning: "Bioindikator (amoA terhadap 16S)" },
+  { key: "s_chem", label: "S_Chem", meaning: "Kimia air (DO, TAN, NO₂, H₂S, TOM)" },
+] as const;
+
+/** Subskor terbesar sebagai "pemicu utama" di pesan WA. Hanya memilih, tidak menghitung skor. */
+export function primaryDriver(result: Pick<SdriResult, "s_qpcr" | "s_bio" | "s_chem">): string {
+  const top = SUBSCORES.toSorted((a, b) => result[b.key] - result[a.key])[0];
+  return `${top.meaning} (${top.label} ${result[top.key].toLocaleString("id-ID")})`;
 }
