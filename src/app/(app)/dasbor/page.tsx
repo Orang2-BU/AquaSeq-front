@@ -33,8 +33,8 @@ async function weeklyAverage(ponds: Pond[]) {
   const trajectories = await Promise.all(ponds.map((p) => withSession((token) => api.ponds.trajectory(token, p.id))));
   const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
   return {
-    now: mean(trajectories.flatMap((t) => t.history.slice(-1).map((h) => h.probability_pct))),
-    before: mean(trajectories.flatMap((t) => t.history.slice(-2, -1).map((h) => h.probability_pct))),
+    now: mean(trajectories.flatMap((t) => (t.history ?? []).slice(-1).map((h) => h.probability_pct))),
+    before: mean(trajectories.flatMap((t) => (t.history ?? []).slice(-2, -1).map((h) => h.probability_pct))),
   };
 }
 

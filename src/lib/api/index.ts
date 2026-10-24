@@ -74,8 +74,8 @@ const sdriResultSchema = z.object({
   s_chem: z.number(),
   model_version: z.string(),
   recommendation: z.string(),
-  disease_name: z.string().optional(),
-  predicted_disease: z.string().optional(),
+  disease_name: z.string().nullish(),
+  predicted_disease: z.string().nullish(),
   evidence: z
     .array(
       z.object({
@@ -85,7 +85,7 @@ const sdriResultSchema = z.object({
         status: z.string(),
       }),
     )
-    .optional(),
+    .nullish(),
   mitigation_actions: z
     .array(
       z.union([
@@ -93,8 +93,8 @@ const sdriResultSchema = z.object({
         z.object({ action: z.string(), source: z.string(), priority: z.enum(["tinggi", "sedang", "rendah"]) }),
       ]),
     )
-    .optional(),
-  ai_explanation: z.string().optional(),
+    .nullish(),
+  ai_explanation: z.string().nullish(),
 });
 
 const trendSchema = z.enum(["RAPID_INCREASE", "MODERATE_INCREASE", "STABLE", "DECREASING", "INSUFFICIENT_DATA"]);
@@ -148,14 +148,17 @@ const trajectorySchema = z.object({
   trend: trendSchema,
   trajectory_alert: z.boolean(),
   alert_message: z.string(),
-  history: z.array(
-    z.object({
-      sampling_date: z.string(),
-      cycle_day: z.number().int(),
-      probability_pct: z.number(),
-      risk_class: z.number().int(),
-    }),
-  ),
+  history: z
+    .array(
+      z.object({
+        sampling_date: z.string(),
+        cycle_day: z.number().int(),
+        probability_pct: z.number(),
+        risk_class: z.number().int(),
+      }),
+    )
+    .nullish()
+    .transform((h) => h ?? []),
 });
 
 const pondSampleSchema = z.object({

@@ -6,7 +6,10 @@ import { clearSession } from "@/lib/auth/cookies";
  * mengubah cookie, jadi hapus di sini; tanpa ini proxy terus mengarahkan /masuk → /app → /masuk.
  */
 export function GET(request: NextRequest) {
-  const response = NextResponse.redirect(new URL("/masuk", request.url));
+  const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
+  const proto = request.headers.get("x-forwarded-proto") || "https";
+  const base = host ? `${proto}://${host}` : request.url;
+  const response = NextResponse.redirect(new URL("/masuk", base));
   clearSession(response.cookies);
   return response;
 }
