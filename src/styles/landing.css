@@ -952,7 +952,95 @@
     grid-row: auto;
   }
   .research-side .research-card {
-    grid-template-columns: 1fr;
+    grid-template-columns: 104px 1fr;
+    gap: 12px;
+  }
+  .research-side .research-photo {
+    min-height: 104px;
+  }
+  .research-side .research-text {
+    display: none;
+  }
+  .research-body {
+    padding: 4px 48px 4px 4px;
+  }
+  .section-head {
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .section-action {
+    margin-top: 24px;
+  }
+  .hero {
+    min-height: 560px;
+  }
+  .hero-copy h1 {
+    font-size: 32px;
+  }
+  .hero-copy p {
+    margin: 16px 0 24px;
+  }
+  .statement-text {
+    font-size: 20px;
+  }
+  .impact-copy {
+    padding: 8px;
+  }
+  .impact-copy p {
+    padding-top: 20px;
+  }
+  .impact-mission {
+    min-height: 0;
+    gap: 16px;
+    padding: 20px;
+  }
+  .impact-photo {
+    min-height: 200px;
+  }
+  /* Kartu langkah jadi baris ringkas: foto kecil di kiri, teks di kanan. */
+  .step-cards {
+    gap: 10px;
+  }
+  .step-card {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 20px;
+  }
+  .step-photo {
+    aspect-ratio: 1;
+    border-radius: 14px;
+  }
+  .step-body {
+    align-items: center;
+    padding: 0 4px 0 0;
+  }
+  .step-body h3 {
+    font-size: 16px;
+  }
+  .chips {
+    margin-bottom: 24px;
+  }
+  .reasons {
+    gap: 32px;
+  }
+  .reason-grid {
+    gap: 10px;
+  }
+  .reason-card {
+    min-height: 0;
+    padding: 20px;
+  }
+  .reason-card p {
+    margin-top: 8px;
+  }
+  .reason-photo {
+    min-height: 160px;
+  }
+  #riset {
+    padding-bottom: 64px;
   }
   .landing-footer-grid {
     grid-template-columns: 1fr;
