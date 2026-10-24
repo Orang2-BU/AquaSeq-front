@@ -5,8 +5,9 @@
 ## 1. Posisi sekarang
 - Branch kerja: `feat/web-setup`. **Commit/push hanya ke branch ini, jangan ke `main`** (permintaan user 24 Okt).
 - Selesai: semua halaman **pemilik** di mode mock (P12-P29, P31-P34, P42, 404 dalam shell). Detail per task di `docs/04-TODO.md`.
-- Belum: halaman **teknisi** (T11 Tugas saya, T12 Catat air, T22 Kerjakan tugas + foto, P39), publik (P2-P4, T37), landing (T26-T35), P30 banding dan P35 bantuan (Could), uji live (T36).
-- Semua cek terakhir hijau: 75 tes, typecheck, lint, format, knip, audit, build.
+- Selesai juga: halaman **teknisi** (T11, T12, T22, P39) dan **landing** (referensi "Agroton" dari user versi biru, isi proposal GenoHack; 08-DESIGN Area Landing).
+- Belum: publik (P2-P4, T37), audit landing T35 (Lighthouse), nomor WhatsApp tim (`WHATSAPP_NUMBER` di `src/content/landing.ts`), P30 banding dan P35 bantuan (Could), uji live (T36).
+- Semua cek terakhir hijau: 85 tes, typecheck, lint, format, knip, build.
 
 ## 2. Cara menjalankan
 ```bash

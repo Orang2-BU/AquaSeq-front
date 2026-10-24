@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <title>AquaSeq konsep A</title>
+  <g fill="#000">
+    <rect x="93.5" y="24.0" width="69.0" height="22" rx="11.0"/>
+    <rect x="71.0" y="55.0" width="35.5" height="22" rx="11.0"/>
+    <rect x="149.5" y="55.0" width="35.5" height="22" rx="11.0"/>
+    <rect x="69.5" y="86.0" width="33.5" height="22" rx="11.0"/>
+    <rect x="87.5" y="117.0" width="81.0" height="22" rx="11.0"/>
+    <rect x="153.0" y="148.0" width="33.5" height="22" rx="11.0"/>
+    <rect x="71.0" y="179.0" width="35.5" height="22" rx="11.0"/>
+    <rect x="149.5" y="179.0" width="35.5" height="22" rx="11.0"/>
+    <rect x="93.5" y="210.0" width="69.0" height="22" rx="11.0"/>
+  </g>
+</svg>

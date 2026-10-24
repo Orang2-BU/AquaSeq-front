@@ -1,9 +1,24 @@
-import { SoloFrame } from "@/components/solo/solo-frame";
+import { Suspense } from "react";
+import { Manrope } from "next/font/google";
+import "@/styles/landing.css";
+import { Footer } from "@/components/marketing/footer";
+import { Navbar } from "@/components/marketing/navbar";
+import { SmoothScroll } from "@/components/motion/smooth-scroll";
+
+// Font hanya untuk area landing (08-DESIGN Typography, Area Landing).
+const manrope = Manrope({ subsets: ["latin"], display: "swap", variable: "--font-manrope" });
 
 export default function MarketingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SoloFrame>
-      <main className="public-main">{children}</main>
-    </SoloFrame>
+    <div className={`landing ${manrope.variable}`}>
+      <SmoothScroll>
+        {/* usePathname di navbar butuh Suspense (cacheComponents); fallback markup sama, mode transparan. */}
+        <Suspense fallback={<div className="landing-nav" />}>
+          <Navbar />
+        </Suspense>
+        <main id="konten">{children}</main>
+        <Footer />
+      </SmoothScroll>
+    </div>
   );
 }

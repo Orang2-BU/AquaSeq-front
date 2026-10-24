@@ -1,7 +1,7 @@
 ---
 version: alpha
 name: "AquaSeq"
-description: "Tenang, presisi, padat data untuk aplikasi; air dalam yang jernih dan meyakinkan untuk landing"
+description: "Tenang, presisi, padat data untuk aplikasi; foto tambak, kartu putih membulat, dan biru air untuk landing"
 colors:
   canvas: "#F4F4F3"
   surface: "#FFFFFF"
@@ -33,17 +33,18 @@ colors:
   risk-tinggi-soft: "#FDE8D8"
   risk-bahaya: "#B91C1C"
   risk-bahaya-soft: "#FCE9E9"
-  landing-deep: "#06131F"
-  landing-deep-raised: "#0D2234"
-  landing-on-deep: "#EAF2FA"
-  landing-on-deep-muted: "#9DB3C8"
-  landing-line-deep: "#1E3448"
-  landing-accent: "#5CB8FF"
-  landing-on-accent: "#04121E"
-  landing-paper: "#F3F6F5"
-  landing-ink: "#0C1620"
-  landing-ink-muted: "#4B5863"
-  landing-line: "#D6DEDB"
+  landing-canvas: "#EEF3F8"
+  landing-surface: "#FFFFFF"
+  landing-ink: "#0F1B2A"
+  landing-ink-muted: "#4F5D6C"
+  landing-line: "#D8E1EA"
+  landing-dark: "#13212F"
+  landing-on-dark: "#F2F6FA"
+  landing-on-dark-muted: "#A9B8C7"
+  landing-accent: "#5AA6EE"
+  landing-accent-soft: "#CFE2F6"
+  landing-accent-on-dark: "#8CC6FF"
+  landing-on-photo: "#FFFFFF"
 typography:
   display:
     fontFamily: Onest
@@ -78,33 +79,38 @@ typography:
     fontWeight: 500
     lineHeight: 1.4
   landing-display-xl:
-    fontFamily: Bricolage Grotesque
-    fontSize: 88px
-    fontWeight: 700
-    lineHeight: 0.98
-    letterSpacing: -0.035em
-  landing-display-lg:
-    fontFamily: Bricolage Grotesque
+    fontFamily: Manrope
     fontSize: 56px
-    fontWeight: 700
-    lineHeight: 1.04
-    letterSpacing: -0.03em
-  landing-title:
-    fontFamily: Bricolage Grotesque
-    fontSize: 28px
     fontWeight: 600
+    lineHeight: 1.1
+    letterSpacing: -0.02em
+  landing-display-light:
+    fontFamily: Manrope
+    fontSize: 56px
+    fontWeight: 300
+    lineHeight: 1.1
+    letterSpacing: -0.02em
+  landing-display-lg:
+    fontFamily: Manrope
+    fontSize: 36px
+    fontWeight: 500
     lineHeight: 1.2
     letterSpacing: -0.015em
-  landing-body:
-    fontFamily: Onest
+  landing-title:
+    fontFamily: Manrope
     fontSize: 18px
+    fontWeight: 600
+    lineHeight: 1.35
+  landing-body:
+    fontFamily: Manrope
+    fontSize: 16px
     fontWeight: 400
     lineHeight: 1.6
   landing-body-sm:
-    fontFamily: Onest
-    fontSize: 15px
+    fontFamily: Manrope
+    fontSize: 14px
     fontWeight: 400
-    lineHeight: 1.55
+    lineHeight: 1.5
 rounded:
   sm: 10px
   md: 16px
@@ -118,8 +124,8 @@ spacing:
   lg: 24px
   xl: 32px
   2xl: 48px
-  landing-section-y: 128px
-  landing-section-y-mobile: 80px
+  landing-section-y: 96px
+  landing-section-y-mobile: 64px
   landing-gutter: 24px
 components:
   app-page:
@@ -240,65 +246,85 @@ components:
   focus-ring:
     backgroundColor: "{colors.focus}"
     textColor: "{colors.on-inverse}"
-  landing-hero:
-    backgroundColor: "{colors.landing-deep}"
-    textColor: "{colors.landing-on-deep}"
-    typography: "{typography.landing-display-xl}"
-  landing-hero-sub:
-    backgroundColor: "{colors.landing-deep}"
-    textColor: "{colors.landing-on-deep-muted}"
+  landing-page:
+    backgroundColor: "{colors.landing-canvas}"
+    textColor: "{colors.landing-ink}"
     typography: "{typography.landing-body}"
-  landing-deep-card:
-    backgroundColor: "{colors.landing-deep-raised}"
-    textColor: "{colors.landing-on-deep}"
-    rounded: "{rounded.xl}"
-  landing-deep-card-muted:
-    backgroundColor: "{colors.landing-deep-raised}"
-    textColor: "{colors.landing-on-deep-muted}"
+  landing-page-muted:
+    backgroundColor: "{colors.landing-canvas}"
+    textColor: "{colors.landing-ink-muted}"
     typography: "{typography.landing-body-sm}"
-  landing-deep-line:
-    backgroundColor: "{colors.landing-line-deep}"
-    textColor: "{colors.landing-on-deep}"
-  landing-accent-on-deep:
-    backgroundColor: "{colors.landing-deep}"
-    textColor: "{colors.landing-accent}"
-    typography: "{typography.landing-title}"
-  landing-cta:
-    backgroundColor: "{colors.landing-accent}"
-    textColor: "{colors.landing-on-accent}"
-    typography: "{typography.landing-body-sm}"
-    rounded: "{rounded.full}"
-    height: 52px
-  landing-cta-secondary:
-    backgroundColor: "{colors.landing-on-deep}"
-    textColor: "{colors.landing-deep}"
-    typography: "{typography.landing-body-sm}"
-    rounded: "{rounded.full}"
-    height: 52px
-  landing-paper-section:
-    backgroundColor: "{colors.landing-paper}"
+  landing-hero:
+    backgroundColor: "{colors.landing-accent-soft}"
+    textColor: "{colors.landing-ink}"
+    typography: "{typography.landing-display-xl}"
+    rounded: "{rounded.lg}"
+  landing-statement:
+    backgroundColor: "{colors.landing-canvas}"
     textColor: "{colors.landing-ink}"
     typography: "{typography.landing-display-lg}"
-  landing-paper-body:
-    backgroundColor: "{colors.landing-paper}"
-    textColor: "{colors.landing-ink-muted}"
-    typography: "{typography.landing-body}"
-  landing-paper-line:
-    backgroundColor: "{colors.landing-line}"
+  landing-card:
+    backgroundColor: "{colors.landing-surface}"
     textColor: "{colors.landing-ink}"
-  landing-paper-cta:
+    typography: "{typography.landing-title}"
+    rounded: "{rounded.lg}"
+  landing-card-muted:
+    backgroundColor: "{colors.landing-surface}"
+    textColor: "{colors.landing-ink-muted}"
+    typography: "{typography.landing-body-sm}"
+  landing-card-accent:
+    backgroundColor: "{colors.landing-accent-soft}"
+    textColor: "{colors.landing-ink}"
+    typography: "{typography.landing-title}"
+    rounded: "{rounded.lg}"
+  landing-dark-block:
+    backgroundColor: "{colors.landing-dark}"
+    textColor: "{colors.landing-on-dark}"
+    typography: "{typography.landing-display-lg}"
+    rounded: "{rounded.lg}"
+  landing-dark-muted:
+    backgroundColor: "{colors.landing-dark}"
+    textColor: "{colors.landing-on-dark-muted}"
+    typography: "{typography.landing-body-sm}"
+  landing-dark-highlight:
+    backgroundColor: "{colors.landing-dark}"
+    textColor: "{colors.landing-accent-on-dark}"
+    typography: "{typography.landing-body-sm}"
+  landing-cta:
     backgroundColor: "{colors.landing-ink}"
-    textColor: "{colors.landing-paper}"
+    textColor: "{colors.landing-surface}"
     typography: "{typography.landing-body-sm}"
     rounded: "{rounded.full}"
-    height: 52px
+    height: 48px
+  landing-cta-icon:
+    backgroundColor: "{colors.landing-surface}"
+    textColor: "{colors.landing-ink}"
+    rounded: "{rounded.full}"
+    size: 36px
+  landing-arrow:
+    backgroundColor: "{colors.landing-accent}"
+    textColor: "{colors.landing-ink}"
+    rounded: "{rounded.full}"
+    size: 36px
+  landing-chip:
+    backgroundColor: "{colors.landing-surface}"
+    textColor: "{colors.landing-ink}"
+    typography: "{typography.landing-body-sm}"
+    rounded: "{rounded.full}"
+  landing-line:
+    backgroundColor: "{colors.landing-line}"
+    textColor: "{colors.landing-ink}"
+  landing-photo-caption:
+    backgroundColor: "{colors.landing-dark}"
+    textColor: "{colors.landing-on-photo}"
+    typography: "{typography.landing-body-sm}"
 ---
 
 # AquaSeq — Design System
 
 > Sumber kebenaran untuk semua kerja UI. Format: [Google DESIGN.md spec](https://github.com/google-labs-code/design.md) (alpha). Token di YAML di atas adalah nilai resmi; jangan pakai warna, ukuran, radius, atau shadow di luar token.
 > Status: ✅ ACC 24 Okt 2026 · Kemiripan referensi: belum diukur (tanpa preview) · Lint: 0 error, 0 warning
-> Template: Soft Op Dashboard (asal K-DASP) untuk Area Aplikasi, warna merek: biru AquaSeq (dipilih AI dari domain air, selaras dengan mockup mobile tim). Area Landing: arah dipilih AI (impeccable mode Persuade), tanpa situs inspirasi dari user.
+> Template: Soft Op Dashboard (asal K-DASP) untuk Area Aplikasi, warna merek: biru AquaSeq (dipilih AI dari domain air, selaras dengan mockup mobile tim). Area Landing: referensi dari user (desain landing "Agroton", produsen agrikultur): layout, konsep, dan gaya diikuti persis, warna kuning diganti biru AquaSeq dan foto gandum diganti foto tambak udang dan lab (Pexels), 24 Okt 2026.
 
 ## Overview
 
@@ -313,9 +339,9 @@ Aturan: kerjakan file Landing → baca Bersama + Area Landing saja, abaikan Area
 
 ### Bersama
 - **Merek:** satu biru (`primary` #1764C0 untuk teks/tombol, `accent-fill` #2B8AE2 untuk grafik/isian besar). Biru tidak pernah berarti status: risiko memakai skala `risk-*`.
-- **Font:** Onest untuk semua teks, JetBrains Mono hanya untuk ID, kode sampel, posisi well, dan rumus. Landing menambah Bricolage Grotesque khusus judul display.
+- **Font:** Onest untuk semua teks, JetBrains Mono hanya untuk ID, kode sampel, posisi well, dan rumus. Landing memakai Manrope untuk semua teksnya.
 - **Ikon:** Lucide, stroke 1.75, satu gaya.
-- **Mode:** Aplikasi light. Landing berselang-seling deep (gelap) dan paper (terang); token deep tetap berawalan `landing-` karena itu area, bukan tema alternatif.
+- **Mode:** Aplikasi light. Landing light (kanvas biru pucat + kartu putih) dengan satu blok gelap.
 - **Kejujuran data:** setiap angka contoh berlabel "Data simulasi". Skor dari backend ditulis "peluang wabah (model V1-GSI)" dan versi model selalu bisa dilihat; tidak ada klaim akurasi.
 - **Dihindari:** gradien ungu-biru bawaan AI, glassmorphism dekoratif, emoji, em-dash di teks UI, warna merek untuk menyatakan bahaya.
 
@@ -323,7 +349,7 @@ Aturan: kerjakan file Landing → baca Bersama + Area Landing saja, abaikan Area
 Tenang, lembut, padat data. Untuk pemilik tambak yang membuka dasbor tiap pagi di laptop, dan teknisi yang membuka tugas di HP di pematang kolam saat terik. Kanvas abu terang, panel abu berisi kartu putih membulat besar, navigasi pill, satu warna merek sebagai aksen, satu kartu sorotan navy per layar untuk kolam paling berisiko. Kedalaman dari lapisan warna, bukan bayangan. Mode light dipilih karena teknisi membaca di bawah matahari.
 
 ### Area Landing
-"Air dalam yang jernih." Pengunjung adalah calon pemilik tambak dan juri: mereka perlu yakin dalam 10 detik bahwa AquaSeq mengubah angka lab jadi tindakan, lalu cukup jujur soal batasnya. Hero gelap seperti kolom air dalam dengan satu alat yang bisa dicoba (kalkulator kolom air). Section berselang-seling deep dan paper supaya ritmenya berganti padat-lega. Satu ide visual khas: **kolom air**, batang vertikal berlapis (S_qPCR, S_Bio, S_Chem) yang terisi sesuai subskor dari backend.
+"Foto tambak, kartu membulat, biru air." Mengikuti referensi Agroton dari user: kanvas pucat, hero berupa kartu foto besar membulat dengan judul setengah tebal setengah tipis, kalimat pernyataan besar dengan gambar kecil, satu blok gelap berisi angka dan misi, deretan kartu putih bergambar dengan tombol bulat, kartu foto lebar dengan teks raksasa samar, grid alasan, dan kartu bacaan. Isi mengikuti proposal GenoHack: sampel air kolam (eDNA) diurutkan di lab mitra, diolah AquaSeq, lalu jadi peringatan dalam bahasa Indonesia; qPCR mingguan memantau penanda terpilih. Pembaca: petambak (bagian atas) dan juri (dasar ilmiah, batasan).
 
 ## Colors
 
@@ -354,11 +380,11 @@ Tenang, lembut, padat data. Untuk pemilik tambak yang membuka dasbor tiap pagi d
 - Warna masuk lewat data (kelas risiko, tren, status tugas), bukan lewat tombol atau ikon dekoratif.
 
 ### Area Landing
-- **Deep (#06131F) / Deep-raised (#0D2234) / Line-deep (#1E3448):** latar section gelap / kartu di atasnya / garis.
-- **On-deep (#EAF2FA) / On-deep-muted (#9DB3C8):** teks di section gelap.
-- **Accent (#5CB8FF) + On-accent (#04121E):** CTA utama di section gelap, isian kolom air, angka hasil kalkulator. Biru terang yang sama dengan mockup mobile tim.
-- **Paper (#F3F6F5) / Ink (#0C1620) / Ink-muted (#4B5863) / Line (#D6DEDB):** section terang.
-- Skala `risk-*` dipakai juga di kalkulator hero (di atas kartu `landing-on-deep` sebagai chip terang supaya kontrasnya tetap AA).
+- **Canvas (#EEF3F8) / Surface (#FFFFFF) / Line (#D8E1EA):** latar halaman (pengganti krem referensi) / kartu / garis.
+- **Ink (#0F1B2A) / Ink-muted (#4F5D6C):** teks utama dan tombol pill gelap / teks pendukung serta bagian judul bertipe tipis.
+- **Accent (#5AA6EE):** isian tombol bulat panah (pengganti kuning referensi), panah ink di atasnya. **Accent-soft (#CFE2F6):** kartu misi, kartu sorotan, latar hero sebelum foto termuat.
+- **Dark (#13212F) / On-dark (#F2F6FA) / On-dark-muted (#A9B8C7) / Accent-on-dark (#8CC6FF):** blok gelap dan kartu kecil gelap di atas foto; kata yang disorot di blok gelap memakai accent-on-dark.
+- **On-photo (#FFFFFF):** teks raksasa samar di kartu foto (opasitas 0.35, dekoratif, `aria-hidden`).
 
 ## Typography
 
@@ -380,13 +406,13 @@ Peluang besar di detail kolam dan kartu sorotan memakai `metric` diperbesar 48px
 ### Area Landing
 | Token | Ukuran | Pakai |
 |---|---|---|
-| `landing-display-xl` | `clamp(44px, 7vw, 88px)` / 0.98, Bricolage Grotesque 700, -0.035em | judul hero saja |
-| `landing-display-lg` | `clamp(34px, 4.6vw, 56px)` / 1.04 | judul section |
-| `landing-title` | 28/1.2 600 | judul kartu, langkah cara kerja |
-| `landing-body` | 18/1.6 | paragraf (maks 62ch) |
-| `landing-body-sm` | 15/1.55 | caption, FAQ jawaban, tombol |
+| `landing-display-xl` + `landing-display-light` | `clamp(34px, 4.2vw, 56px)` / 1.1, Manrope 600 lalu 300 | judul hero: bagian awal tebal, sisanya tipis |
+| `landing-display-lg` | `clamp(24px, 2.8vw, 36px)` / 1.2, 500 (sisa kalimat 300 warna ink-muted) | kalimat pernyataan dan judul section |
+| `landing-title` | 18/1.35 600 | judul kartu |
+| `landing-body` | 16/1.6 | paragraf |
+| `landing-body-sm` | 14/1.5 | label section bertitik, caption, isi kartu, tombol |
 
-Rumus di section Metode memakai JetBrains Mono (rumus adalah kode, bukan kostum). Tanpa eyebrow label di atas judul.
+Label section kecil (titik biru + "AquaSeq") ditaruh di kolom kiri sejajar judul, bukan di atas judul (bukan eyebrow).
 
 ## Layout
 
@@ -430,22 +456,22 @@ Spesifikasi shell persis template (sumber: `starter/`):
 | Kosong/galat | semua daftar, P40-P42 | Placeholder starter: ikon dalam lingkaran 64px, judul, satu kalimat, satu aksi | Apa yang terjadi | Langkah berikutnya |
 
 ### Area Landing
-- Konten maks 1200px, gutter `landing-gutter` 24px (16px mobile); paragraf maks 62ch.
-- Ritme section: padding vertikal `landing-section-y` 128px desktop, `landing-section-y-mobile` 80px; section padat diikuti section lega.
-- **Urutan section dan pola:**
+- Lebar konten maks 1280px, gutter 24px (16px mobile). Kartu besar (hero, blok gelap, kartu foto) memakai sudut `rounded.lg` 24px.
+- Ritme section: 96px desktop, 64px mobile.
+- **Urutan section (sama dengan referensi):**
 
-| # | Section | Latar | Pola | Isi |
-|---|---|---|---|---|
-| 1 | Hero | deep | Kiri 6 kolom: judul `landing-display-xl` "Hasil lab masuk. Kolam mana yang ditangani hari ini?" + satu paragraf + CTA "Coba demo" (accent) + "Masuk" (secondary). Kanan 6 kolom: **kalkulator kolom air** di kartu `landing-deep-raised`: kolom air vertikal (3 lapis: S_qPCR, S_Bio, S_Chem) + 3 slider (Ct pirAB, TAN mg/L, DO mg/L) + peluang besar + chip kelas + rekomendasi + label "Data simulasi". Hasil dari `sdri/preview`; bila backend mati, slider berganti jadi pilihan 5 contoh tersimpan. Mobile: judul dulu, kalkulator di bawah | `min-h-[100dvh]` |
-| 2 | Masalah | paper | Satu kalimat besar `landing-display-lg` di kiri + tiga baris masalah bernomor tidak (baris berpemisah garis, kalimat pengguna dalam tanda kutip) | Angka Ct tidak terbaca; "tidak terdeteksi" dikira aman; perintah ke teknisi hilang di chat |
-| 3 | Cara kerja | deep | Pipeline horizontal 3 node dihubungkan garis `landing-line-deep` (mengulang pola pipeline aplikasi); mobile vertikal | Unggah hasil lab → skor + alasan per kolam → tugas ke teknisi sampai dilaporkan |
-| 4 | Kemampuan | paper | Asimetris: satu blok besar 7 kolom "Skor bisa dirinci sampai well" dengan cuplikan rantai rincian; 5 kolom berisi 4 baris pendek (sampel terhambat ditolak, tanda tren, tugas + foto, peringatan WA) | Hasil, bukan nama fitur |
-| 5 | Metode & batasan | deep | Kiri: rumus logit V1-GSI dalam `mono` di kartu raised; kanan: 3 batasan jujur (koefisien awal GSI, dikalibrasi ulang dari data hasil siklus, bukan diagnosis resmi) + link "Baca metode" | Untuk juri |
-| 6 | FAQ | paper | Akordeon `<details>` satu kolom maks 760px | 4-6 pertanyaan |
-| 7 | CTA penutup | deep | Judul pendek + dua kartu akun demo (Pemilik, Teknisi) yang masing-masing tombol | "Coba sebagai pemilik" / "Coba sebagai teknisi" |
+| # | Section | Pola referensi | Isi AquaSeq |
+|---|---|---|---|
+| 1 | Hero | Kartu foto besar penuh lebar; kiri atas judul (tebal + tipis), kutipan kecil, tombol pill gelap dengan lingkaran panah; kanan bawah kartu gelap kecil berisi teks + foto + tombol bulat | Foto kincir tambak. "AquaSeq membaca DNA air kolam untuk peringatan dini penyakit udang". Kartu kecil: alur sampel ke peringatan, ke #cara-kerja |
+| 2 | Pernyataan | Label kiri + gambar kecil, kalimat besar tengah (awal gelap, sisa abu), gambar persegi kanan | Lapisan biologis yang hilang dari pemantauan tambak |
+| 3 | Blok gelap | Kiri judul + teks dengan kata disorot; tengah kartu biru pucat "Misi kami"; kanan foto | Kerugian AHPND dunia [riset], misi, foto petambak |
+| 4 | Kartu bergambar | Label kiri + judul tengah, 4 kartu putih (foto, judul, keterangan, tombol bulat), tombol pill tengah | 4 langkah: ambil sampel air, urutkan di lab mitra, pantau qPCR mingguan, peringatan ke tambak |
+| 5 | Kartu foto lebar | Foto lebar, judul di atas, teks raksasa samar, kartu gelap kecil kiri, 3 kartu angka kanan bawah | "Temukan lewat sekuensing. Pantau tiap minggu." Angka dari proposal (2-4 minggu, 3-5 penanda, 10-35 hari) |
+| 6 | Alasan | Kiri: chip, judul, teks, tombol pill; kanan grid 2x2 kartu (satu biru pucat, satu foto) | Kenapa AquaSeq: bahasa Indonesia, berbasis bukti, lab mitra unggah langsung, bukan diagnosis |
+| 7 | Dasar ilmiah | Judul tengah + tombol panah; kiri satu kartu besar bergambar, kanan dua kartu kecil bergambar | 3 rujukan nyata dari proposal (tautan DOI) |
 
-- **Navbar:** transparan di atas hero, jadi `landing-deep` 92% + garis bawah setelah scroll 24px; kiri logo, tengah tautan anchor, kanan "Masuk" + CTA. Mobile: burger + drawer kanan.
-- **Footer:** deep, 3 kolom (AquaSeq + kalimat, tautan, kontak) + baris "Data di situs ini adalah simulasi".
+- **Navbar:** logo kiri, tautan di tengah, kanan tautan "Masuk" + tombol pill gelap "Hubungi tim". Putih 92% + garis setelah scroll 24px. Mobile: burger + drawer.
+- **Footer:** kanvas, logo + kalimat, tautan, tim, catatan foto Pexels.
 
 ## Elevation & Depth
 
@@ -453,14 +479,14 @@ Spesifikasi shell persis template (sumber: `starter/`):
 Kedalaman dari lapisan warna (canvas → panel → kartu), bukan bayangan. Satu-satunya bayangan: dialog `0 24px 48px -12px rgba(20,20,20,.25)` dan drawer.
 
 ### Area Landing
-Kartu raised di atas deep tanpa bayangan, dibedakan warna + garis `landing-line-deep`. Kalkulator hero boleh satu cahaya lembut biru di belakang kolom air (efek khas satu-satunya di halaman).
+Tanpa bayangan. Kedalaman dari kartu putih di atas kanvas pucat dan kartu gelap di atas foto.
 
 ## Shapes
 
 ### Bersama
 - **Radius:** `sm` 10px chip kecil/sel heatmap · `md` 16px input, kartu akun · `lg` 24px kartu & panel · `xl` 32px kartu landing · `full` tombol, badge, pill.
 - **Ikon:** Lucide, outline, stroke 1.75, 19px di navigasi, 16px inline, 20px di tombol bulat 44px. Tanpa emoji.
-- **Logo:** belum ada; sementara simbol tetes air bergaris + wordmark "AquaSeq" Onest 600 (konsep logo bisa dibuat lewat `logo-design`).
+- **Logo:** lencana kolam (konsep C, 24 Okt 2026): lingkaran `primary` #1764C0 dengan udang vaname melingkar sebagai ruang negatif (perut bersegmen, dua antena, kipas ekor), dibangun dari grid lingkaran. Wordmark "AquaSeq" Onest 600 (outline path). File di `docs/brand/`: `aquaseq-symbol.svg` (utama), `aquaseq-symbol-small.svg` (di bawah 48px: segmen lebih sedikit, satu antena, tanpa mata), `-black`/`-white`, `aquaseq-horizontal(-white|-black).svg`, set ikon web di `docs/brand/web/`. Ruang bebas minimal setengah diameter lencana; ukuran minimal 16px memakai versi kecil.
 - **Foto:** foto laporan tugas radius `md`, rasio 1:1 di grid, buka penuh di dialog.
 
 ## Components
@@ -487,16 +513,14 @@ Kartu raised di atas deep tanpa bayangan, dibedakan warna + garis `landing-line-
 - **Toast:** kecil di kanan bawah, `surface-inverse`, 4 detik, untuk konfirmasi simpan.
 
 ### Area Landing
-- **Tombol (gaya rekomendasi AI):** `pill-link` 52px, panah geser 3px saat hover, tekan `scale-[0.97]`, ring fokus. CTA utama `landing-cta` (accent) maks satu per section; secondary `landing-cta-secondary`; di paper `landing-paper-cta`.
-- **Kalkulator kolom air:** slider native `<input type="range">` bergaya token (track `landing-line-deep`, thumb `landing-accent` 24px), label dan nilai terbaca screen reader (`aria-valuetext` "Ct pirAB 31,5"); hasil dari backend `sdri/preview` lewat `/api/kalkulator` (debounce 250ms); perubahan kelas diumumkan lewat `aria-live="polite"`.
-- **Kolom air:** 4 lapis vertikal, tinggi tiap lapis = kontribusi komponen; isian `landing-accent` dengan opasitas bertingkat; transisi `scaleY` 400ms.
-- **Baris berpanah** (`action-row` dari skill): hanya pada baris yang benar-benar link.
-- **Token gerak** (`src/lib/motion.ts`):
+- **Tombol pill:** `landing-cta` (ink) 48px, teks lalu lingkaran putih 36px berisi panah serong; hover: lingkaran berputar 45deg dan latar sedikit terang, tekan `scale-[0.97]`, ring fokus. Satu gaya untuk semua CTA.
+- **Tombol bulat panah:** `landing-arrow` 36px (44px area sentuh) di pojok kartu; hanya pada kartu yang benar-benar tautan.
+- **Kartu bergambar:** foto di atas (rasio 4:3), judul + keterangan, tombol bulat; hover: kartu naik 2px, foto zoom 1.04.
+- **Teks raksasa samar:** satu kali di kartu foto lebar, `aria-hidden`.
+- **Token gerak:**
   - Lenis: `lerp 0.1`, `anchors: true`; tidak diinisialisasi saat reduced-motion.
-  - Hero: `text-effect` fade per kata sekali, 600ms total (satu-satunya efek teks di halaman); kolom air terisi dari 0 saat pertama tampil.
-  - Section: `in-view` naik 24px + opacity, 500ms ease-out, stagger anak 80ms; hanya judul dan blok utama, bukan setiap elemen.
-  - Angka peluang kalkulator: `animated-number` 400ms.
-  - Reduced-motion: semua animasi scroll mati, konten langsung tampil; transisi warna tetap.
+  - `Reveal`: naik 24px + opacity, 500ms ease-out, hanya judul dan blok utama.
+  - Reduced-motion: semua gerak mati; transisi warna tetap.
 
 ## Do's and Don'ts
 
@@ -536,14 +560,12 @@ Kartu raised di atas deep tanpa bayangan, dibedakan warna + garis `landing-line-
 - Data simulasi diberi badge.
 
 **Larangan AI slop (Area Landing)**
-- Hero generik (judul tengah + dua tombol + gradien + mockup miring). Hero AquaSeq = kalkulator kolom air yang bisa dicoba.
-- Grid fitur 3 kolom ikon-dalam-lingkaran. Kemampuan memakai blok asimetris.
-- Eyebrow label di atas judul.
-- Gradient text, blob blur, glow di mana-mana (hanya satu cahaya di kolom air).
-- Animasi di semua elemen; lebih dari satu efek teks.
-- Testimoni atau logo klien karangan. Belum ada pengguna nyata, jadi section testimoni tidak dibuat.
+- Gradient text, blob blur, glow, glassmorphism.
+- Ikon dalam lingkaran sebagai pengganti foto; kartu langkah selalu memakai foto nyata.
+- Eyebrow label di atas judul (label section ada di kolom kiri).
+- Animasi di semua elemen; efek teks per kata.
+- Testimoni, logo klien, atau angka karangan. Angka hanya dari proposal dan rujukannya.
 - Kata klise dan em-dash.
-- Ritme section seragam.
 
 **Aksesibilitas**
 - Do: kontras ≥ 4.5:1 (teks besar/elemen UI ≥ 3:1, dicek `lint`); fokus selalu terlihat; semua aksi bisa lewat keyboard (heatmap: panah untuk berpindah sel); target ≥ 44px di bawah 1200px; label untuk setiap input; `aria-label` untuk ikon tanpa teks; grafik punya ringkasan teks.
@@ -564,7 +586,7 @@ Kartu raised di atas deep tanpa bayangan, dibedakan warna + garis `landing-line-
 | Warna merek | K-DASP oranye #C2410C | Biru #1764C0 / #2B8AE2 | Slot merek per projek (TEMPLATE §3b); domain air, selaras mockup mobile tim |
 | Skala status | 3 tingkat (`status-ok/warn/crit`) | Tambah skala 4 kelas `risk-*` khusus skor | Kebutuhan PRD: kelas Aman/Waspada ringan/Waspada tinggi/Bahaya dari backend harus bisa dibedakan |
 | Bingkai | Preview K-DASP membulat 12px | Penuh layar tanpa sudut | Revisi template (PANTARA, Okt 2026) |
-| Font | Onest saja | Landing menambah Bricolage Grotesque untuk display | Landing butuh suara sendiri (mode Persuade); aplikasi tetap Onest |
+| Font | Onest saja | Landing memakai Manrope | Mendekati huruf referensi Agroton (geometris, berat tipis dan tebal); aplikasi tetap Onest |
 
 ## Implementation
 
@@ -586,3 +608,5 @@ npx -p @google/design.md designmd export --format css-tailwind docs/08-DESIGN.md
 |---|---|
 | 24 Okt 2026 | Dokumen awal: Soft Op Dashboard + merek biru + skala risiko + Area Landing. Kemiripan belum diukur (tanpa preview); preview dan penyamaan ≥95% bisa dijalankan nanti lewat skill `project-design` |
 | 24 Okt 2026 | Skala risiko mengikuti kelas backend (Aman, Waspada ringan, Waspada tinggi, Bahaya); meter keyakinan dan EWMA dihapus; kalkulator memakai `sdri/preview` |
+| 24 Okt 2026 | Area Landing mengikuti referensi user (Agroton) persis dengan warna biru dan foto tambak; isi mengikuti proposal GenoHack (DNA air kolam, bukan kimia air). Token deep/paper lama dihapus |
+| 24 Okt 2026 | Logo AquaSeq: lencana kolam dengan udang melingkar (`docs/brand/`) |
