@@ -10,12 +10,12 @@ import { PageSkeleton } from "@/components/app/page-parts";
 import { Icon } from "@/components/ui";
 import { UploadWizard, type PondOption } from "./upload-wizard";
 
-export const metadata: Metadata = { title: "Unggah hasil lab" };
+export const metadata: Metadata = { title: "Unggah data eDNA" };
 
 export default function Page() {
   return (
     <div className="page-enter">
-      <Suspense fallback={<PageSkeleton title="Unggah hasil lab" />}>
+      <Suspense fallback={<PageSkeleton title="Unggah data eDNA" />}>
         <Upload />
       </Suspense>
     </div>
@@ -27,8 +27,10 @@ async function Upload() {
   const heading = (
     <div className="page-heading">
       <div>
-        <h1>Unggah hasil lab</h1>
-        <p>{current ? `${current.name} · CSV qPCR satu run plate` : "CSV qPCR satu run plate"}</p>
+        <h1>Unggah data eDNA</h1>
+        <p>
+          {current ? `${current.name} · Data eDNA air tambak satu run plate` : "Data eDNA air tambak satu run plate"}
+        </p>
       </div>
       <div className="page-actions">
         <Link className="button secondary" href="/lab/format">
@@ -42,7 +44,7 @@ async function Upload() {
     return (
       <>
         {heading}
-        <NoFarmState text="Hasil lab dicocokkan ke kolam. Siapkan lokasi dan kolam dulu." />
+        <NoFarmState text="Data eDNA dicocokkan ke kolam. Siapkan lokasi dan kolam dulu." />
       </>
     );
   }

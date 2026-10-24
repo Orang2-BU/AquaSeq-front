@@ -3,9 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { api, type BatchInput } from "@/lib/api";
+import { api, type BatchInput, type DocumentIngest } from "@/lib/api";
+import { documentError } from "@/lib/documents";
 import { getActiveFarms, withSession } from "@/lib/auth/session";
-import { MAX_CSV_BYTES, parseQpcr, summarize, toMetaWells } from "@/lib/csv/qpcr";
+import { MAX_CSV_BYTES, parseQpcr, summarize, toMetaWells, transportTargets } from "@/lib/csv/qpcr";
 import { messageOf, type FormState } from "@/lib/forms";
 
 const chem = (min: number, max: number) => z.number().min(min).max(max).nullable();
@@ -50,6 +51,22 @@ const payloadSchema = z.object({
 
 export type UploadPayload = z.input<typeof payloadSchema>;
 
+export async function ingestDocument(
+  _: FormState<DocumentIngest>,
+  formData: FormData,
+): Promise<FormState<DocumentIngest>> {
+  const file = formData.get("file");
+  if (!(file instanceof File)) return { error: "Pilih dokumen dulu." };
+  const error = documentError(file);
+  if (error) return { error };
+  try {
+    const data = await withSession((token) => api.documents.ingest(token, file));
+    return { ok: true, data };
+  } catch (error) {
+    return { ...messageOf(error) };
+  }
+}
+
 const DAY_MS = 86_400_000;
 
 /** Langkah terakhir P17: validasi ulang CSV di server, ringkas Ct, kirim satu batch atomik ke backend. */
@@ -79,7 +96,9 @@ export async function submitBatch(_: FormState, formData: FormData): Promise<For
     if (!summary) return { error: `Sampel ${s.sample_code} tidak ada di CSV.` };
     if (!pond) return { error: `Kolam untuk sampel ${s.sample_code} tidak ditemukan di lokasi ini.` };
     if (summary.ct.ct_ppc === null) {
-      return { error: `Sampel ${s.sample_code} tidak punya Ct PPC. Tambahkan well PPC atau jangan kirim sampel ini.` };
+      return {
+        error: `Sampel ${s.sample_code} tidak punya kontrol kualitas. Tambahkan well kontrol kualitas atau jangan kirim sampel ini.`,
+      };
     }
     const doc = pond.stocked_at
       ? Math.max(0, Math.round((Date.parse(s.sampling_date) - Date.parse(pond.stocked_at)) / DAY_MS))
@@ -90,7 +109,12 @@ export async function submitBatch(_: FormState, formData: FormData): Promise<For
       sampling_date: s.sampling_date,
       cycle_day: doc,
       source_type: "GSI_LAB",
-      features: { ...summary.ct, ct_ppc: summary.ct.ct_ppc, ...s.chemistry },
+      features: {
+        ...summary.ct,
+        ...transportTargets(result.wells, s.sample_code, excluded),
+        ct_ppc: summary.ct.ct_ppc,
+        ...s.chemistry,
+      },
       meta: {
         wells: toMetaWells(result.wells, s.sample_code, excluded),
         standards: result.standards,

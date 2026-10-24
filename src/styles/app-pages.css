@@ -1189,6 +1189,215 @@
   gap: 4px 16px;
 }
 
+/* Temuan eDNA mikroba (dugaan penyakit, bukti ambang, mitigasi) */
+.disease-line {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--color-status-crit);
+}
+.disease-line svg {
+  flex: none;
+  margin-top: 2px;
+}
+.disease-line.clear {
+  color: var(--color-status-ok);
+}
+.disease-line.inverse,
+.disease-line.inverse.clear {
+  margin-top: 0;
+  color: var(--color-on-inverse);
+}
+.disease-kicker {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-on-surface-muted);
+}
+.disease-line.inverse .disease-kicker {
+  color: var(--color-on-inverse-muted);
+}
+.spotlight-mitigation,
+.reason-mitigation {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.edna-card {
+  margin-bottom: 20px;
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.edna-head {
+  display: flex;
+  align-items: start;
+  gap: 14px;
+}
+.edna-head h2 {
+  font-size: 16px;
+}
+.edna-icon {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-accent-soft);
+  color: var(--color-primary);
+}
+.edna-clear {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-status-ok-soft);
+  color: var(--color-status-ok);
+}
+.edna-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+.edna-group {
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+}
+.edna-group h3,
+.edna-actions h3,
+.insight-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-on-surface-muted);
+  margin-bottom: 10px;
+}
+.edna-group ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.edna-group li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 12px;
+}
+.edna-group li .badge {
+  grid-column: 2;
+  justify-self: end;
+}
+.edna-feature {
+  grid-row: span 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.edna-value {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.edna-actions ol,
+.insight-actions {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  line-height: 1.55;
+}
+.edna-actions li span {
+  display: block;
+}
+.edna-note {
+  line-height: 1.5;
+}
+
+/* Insight kolam: prakiraan, anomali, kasus serupa */
+.insights {
+  margin-bottom: 20px;
+  gap: 16px;
+}
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.insight-card {
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  line-height: 1.55;
+  min-width: 0;
+}
+.insight-card.wide {
+  grid-column: 1 / -1;
+}
+.insight-card h3 {
+  margin-bottom: 0;
+}
+.forecast-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+.forecast-tile {
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.forecast-tile strong {
+  font-size: 24px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.contributor-list,
+.case-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.contributor-list li,
+.case-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
 @media print {
   .sidebar,
   .topbar,
@@ -1232,6 +1441,15 @@
   }
 }
 @media (max-width: 767px) {
+  .insights-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .edna-card {
+    padding: 20px 16px;
+  }
+  .edna-groups {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .metric-card {
     padding: 16px;
   }

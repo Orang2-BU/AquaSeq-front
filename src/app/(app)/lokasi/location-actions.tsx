@@ -79,7 +79,7 @@ function ArchiveDialog({ farm, onClose }: { farm: FarmFields; onClose: () => voi
   return (
     <Modal title={`Arsipkan ${farm.name}?`} onClose={onClose}>
       <p className="dialog-summary">
-        Lokasi ini hilang dari pemilih lokasi dan tidak bisa diberi tugas baru. Kolam, hasil lab, dan riwayat tugas
+        Lokasi ini hilang dari pemilih lokasi dan tidak bisa diberi tugas baru. Kolam, data eDNA, dan riwayat tugas
         tetap tersimpan.
       </p>
       {state.error && (

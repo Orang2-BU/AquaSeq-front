@@ -48,7 +48,7 @@ async function Alerts({ searchParams }: Pick<PageProps<"/peringatan">, "searchPa
         <div className="page-heading">
           <h1>Peringatan</h1>
         </div>
-        <NoFarmState text="Peringatan muncul setelah kolam punya hasil lab." />
+        <NoFarmState text="Peringatan muncul setelah kolam punya data eDNA." />
       </>
     );
   }
@@ -77,7 +77,7 @@ async function Alerts({ searchParams }: Pick<PageProps<"/peringatan">, "searchPa
         <EmptyState
           icon={BellOff}
           title="Tidak ada peringatan"
-          text="Semua kolam aman pada sampling terakhir dan tidak ada tren naik. Peringatan baru muncul setelah hasil lab berikutnya."
+          text="Semua kolam aman pada sampling terakhir dan tidak ada tren naik. Peringatan baru muncul setelah data eDNA berikutnya."
         />
       ) : (
         <section className="panel">

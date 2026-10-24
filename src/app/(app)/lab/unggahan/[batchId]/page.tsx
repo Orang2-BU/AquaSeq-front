@@ -59,14 +59,14 @@ async function BatchDetail({ params }: Pick<PageProps<"/lab/unggahan/[batchId]">
           Kelas Waspada tinggi atau Bahaya
         </Metric>
         <Metric icon={TriangleAlert} label="Sampel ditolak" value={batch.rejected_count}>
-          {batch.rejected_count ? "Perlu ambil sampel ulang" : "Semua lolos gerbang PPC"}
+          {batch.rejected_count ? "Perlu ambil sampel ulang" : "Semua lolos kontrol kualitas"}
         </Metric>
       </section>
 
       {allRejected && (
         <section className="reject-box" role="status">
           <h2>Semua sampel ditolak</h2>
-          <p>Periksa PPC dan proses ekstraksi run ini, lalu uji ulang sampelnya.</p>
+          <p>Periksa kontrol kualitas dan proses ekstraksi run ini, lalu uji ulang sampelnya.</p>
         </section>
       )}
 

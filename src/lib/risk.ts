@@ -48,14 +48,14 @@ export function riskRank(result: Pick<SdriResult, "status" | "probability_pct"> 
 /** Alasan penolakan sampel untuk ditampilkan; sampel valid tidak punya alasan. */
 export function rejectedReason(status: SdriResult["status"]): string {
   return status === "REJECTED_INHIBITOR"
-    ? "PPC di luar rentang: reaksi PCR terhambat inhibitor"
+    ? "Kontrol kualitas di luar rentang: reaksi terhambat inhibitor"
     : status === "REJECTED_INVALID_QC"
-      ? "Kontrol mutu run tidak lolos"
+      ? "Data eDNA atau kimia air belum lengkap atau tidak valid"
       : "";
 }
 
 export const SUBSCORES = [
-  { key: "s_qpcr", label: "S_qPCR", meaning: "Beban patogen (pirA, vp28, swp1)" },
+  { key: "s_qpcr", label: "S_qPCR", meaning: "Kadar jejak patogen (panel jejak penyakit)" },
   { key: "s_bio", label: "S_Bio", meaning: "Bioindikator (amoA terhadap 16S)" },
   { key: "s_chem", label: "S_Chem", meaning: "Kimia air (DO, TAN, NO₂, H₂S, TOM)" },
 ] as const;

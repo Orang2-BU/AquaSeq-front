@@ -9,6 +9,8 @@ import { formatDateTime, formatNumber } from "@/lib/format";
 import { formatProbability, riskOf } from "@/lib/risk";
 import { TASK_KIND, dueLabel } from "@/lib/tasks";
 import { WATER_PARAMS } from "@/lib/water";
+import { mitigationList } from "@/lib/edna";
+import { DiseaseLine } from "@/components/app/edna-findings";
 import { PageSkeleton } from "@/components/app/page-parts";
 import { RiskBadge } from "@/components/app/risk-badge";
 import { KIND_ICON } from "@/components/app/tech-task-card";
@@ -107,16 +109,26 @@ async function WorkTask({ params }: Pick<PageProps<"/teknisi/tugas/[taskId]">, "
       {result && (
         <section className={`reason-box tone-${riskOf(result).tone}`} aria-labelledby="reason-title">
           <div className="reason-head">
-            <h2 id="reason-title">Alasan dari hasil lab</h2>
+            <h2 id="reason-title">Alasan dari data eDNA</h2>
             <RiskBadge result={result} />
           </div>
           <p>
             Sampel {sample.sample_code}
             {result.status === "VALID"
               ? `: peluang wabah ${formatProbability(result.probability_pct)}.`
-              : " ditolak lab."}{" "}
+              : " ditolak kontrol kualitas."}{" "}
             {result.recommendation}
           </p>
+          <DiseaseLine result={result} />
+          {result.status === "VALID" && mitigationList(result).length > 0 && (
+            <ol className="reason-mitigation">
+              {mitigationList(result)
+                .slice(0, 3)
+                .map((m) => (
+                  <li key={m.action}>{m.action}</li>
+                ))}
+            </ol>
+          )}
         </section>
       )}
 

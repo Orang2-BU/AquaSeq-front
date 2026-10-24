@@ -6,7 +6,7 @@ import "./globals.css";
 const onest = Onest({ subsets: ["latin"], display: "swap", variable: "--font-onest" });
 const mono = JetBrains_Mono({ subsets: ["latin"], display: "swap", variable: "--font-jetbrains" });
 
-const description = "Hasil qPCR air tambak jadi urutan kolam berisiko dan tugas untuk teknisi.";
+const description = "Data eDNA air tambak jadi skor risiko per kolam dan tugas untuk teknisi.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

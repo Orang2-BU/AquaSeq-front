@@ -32,6 +32,8 @@ Jika ada pemeriksaan yang gagal:
 - Melemahkan test: menghapus/men-skip test, melonggarkan assertion, menambah `@ts-ignore`, `eslint-disable`, `any`, atau sejenisnya hanya agar lolos.
 - Memanggil backend dari browser, menaruh token di luar cookie httpOnly, atau mencetak token ke log.
 - Menghitung skor, kelas, atau rekomendasi di web, atau menyimpan salinan rumus backend.
+- Menjalankan AI/LLM langsung dari web atau membuat chatbot bebas. Backend menjalankan Lapis A (SDRI deterministik), B (belajar pola, prakiraan, kalibrasi), C (bahasa Jev/TypeSafe). LLM hanya menstrukturkan input dan menjelaskan hasil mesin, tidak menghitung atau mengarang angka.
+- Mengubah bobot aktif diam-diam. V1 beku; hasil belajar berupa kandidat versi baru, promosi pemilik dengan catatan wajib dan audit nama/waktu.
 - Meng-cast respons backend (`as`) tanpa validasi Zod.
 - Mengubah bentuk API di mock/live tanpa memperbarui `docs/09-API-KONTRAK.md`.
 - Menyamarkan data simulasi sebagai data nyata, atau menghilangkan badge "Data simulasi".

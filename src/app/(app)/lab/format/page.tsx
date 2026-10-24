@@ -19,7 +19,7 @@ const TARGETS = [
   ["swp1", "EHP (Enterocytozoon hepatopenaei)", "Satu atau dua replikat"],
   ["amoA", "Bakteri nitrifikasi (bioindikator)", "Satu"],
   ["16S", "Total bakteri, pembanding amoA", "Satu"],
-  ["PPC", "Kontrol proses positif: gerbang inhibitor", "Wajib, satu per sampel"],
+  ["PPC", "Kontrol kualitas: gerbang inhibitor", "Wajib, satu per sampel"],
 ];
 
 export default function Page() {
@@ -27,11 +27,11 @@ export default function Page() {
     <div className="page-enter">
       <Link className="back-link" href="/lab/unggah">
         <Icon icon={ArrowLeft} size={16} />
-        Unggah hasil lab
+        Unggah data eDNA
       </Link>
       <div className="page-heading">
         <div>
-          <h1>Format CSV qPCR</h1>
+          <h1>Format CSV data eDNA air tambak</h1>
           <p>
             Satu berkas = satu run plate. Ekspor dari alat boleh dipakai langsung; nama kolom bisa dicocokkan saat
             unggah.
@@ -149,7 +149,9 @@ STD-3,10000,26.50`}</pre>
               <h2>Sebelum mengunggah</h2>
             </div>
             <ul className="plain-list">
-              <li>Setiap sampel punya satu well PPC. PPC di luar rentang membuat sampel ditolak backend.</li>
+              <li>
+                Setiap sampel punya satu well kontrol kualitas. Nilai di luar rentang membuat sampel ditolak backend.
+              </li>
               <li>Sertakan NTC untuk pirA, vp28, dan swp1 supaya kontaminasi run terlihat.</li>
               <li>Kode sampel diawali kode kolam supaya cocok otomatis.</li>
             </ul>

@@ -137,6 +137,17 @@ export interface Store {
   files: Map<string, { body: ArrayBuffer; type: string }>;
   access: Map<string, { userId: string; expiresAt: number }>;
   refresh: Map<string, string>;
+  models: {
+    version: string;
+    status: "kandidat" | "aktif" | "arsip";
+    metrics: Record<string, number | string>;
+    n_labels: number;
+    synthetic: boolean;
+    trained_at?: string;
+    promoted_at?: string | null;
+    promoted_by?: string | null;
+    note?: string | null;
+  }[];
 }
 
 /** Teks backend per kelas (`internal/sdri/engine.go`: gerbang PPC dan classifyRisk). */
@@ -315,6 +326,30 @@ function seed(): Store {
     files: new Map(),
     access: new Map(),
     refresh: new Map(),
+    models: [
+      {
+        version: "V1-GSI",
+        status: "aktif",
+        metrics: { dasar: "Bobot empiris awal, belum validasi lapangan" },
+        n_labels: 0,
+        synthetic: true,
+        trained_at: "2026-10-01T00:00:00+07:00",
+        promoted_at: "2026-10-01T00:00:00+07:00",
+        promoted_by: null,
+        note: "Bobot empiris awal GSI terkalibrasi 5 arketipe emas.",
+      },
+      {
+        version: "V2-Kandidat",
+        status: "kandidat",
+        metrics: { brier_score: 0.054, auc_roc: 0.97, lead_time_gain_steps: 2 },
+        n_labels: 48,
+        synthetic: true,
+        trained_at: "2026-10-23T18:00:00+07:00",
+        promoted_at: null,
+        promoted_by: null,
+        note: "Model hasil kalibrasi trajektori multivariat. Dilatih di data sintetik klaster Puger Jember; tervalidasi pada pipeline evaluasi.",
+      },
+    ],
   };
 
   // [kode, kelas sampel terakhir (0 = ditolak, null = belum ada sampel), peluang %, tren, teknisi]
@@ -735,7 +770,7 @@ function seedTasks(store: Store) {
     "batch.unggah",
     "batch",
     "b-sumber-rejeki-1023",
-    "Mengunggah hasil lab 23 Okt (11 sampel, 1 ditolak)",
+    "Mengunggah data eDNA 23 Okt (11 sampel, 1 ditolak)",
     ISO("2026-10-23", "15:05"),
   );
   log("u-hendra", "tugas.buat", "task", "t-b3-pakan", "Membuat tugas kolam B3 untuk Rizky Pratama", at(-1, 8));

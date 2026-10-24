@@ -63,7 +63,7 @@ describe("mock tugas", () => {
   });
 });
 
-describe("mock unggah hasil lab", () => {
+describe("mock unggah data eDNA", () => {
   const features = (ct_ppc: number, ct_ahpnd: number | null) => ({
     ct_ahpnd,
     ct_wssv: null,

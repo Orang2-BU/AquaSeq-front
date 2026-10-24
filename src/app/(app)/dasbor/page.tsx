@@ -14,6 +14,7 @@ import { RiskBadge } from "@/components/app/risk-badge";
 import { RiskDistribution } from "@/components/app/risk-distribution";
 import { CreateTaskButton } from "@/components/app/task-dialog";
 import { Trend } from "@/components/app/trend";
+import { DiseaseLine } from "@/components/app/edna-findings";
 import { Badge, Icon } from "@/components/ui";
 
 export const metadata: Metadata = { title: "Dasbor" };
@@ -33,8 +34,8 @@ async function weeklyAverage(ponds: Pond[]) {
   const trajectories = await Promise.all(ponds.map((p) => withSession((token) => api.ponds.trajectory(token, p.id))));
   const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
   return {
-    now: mean(trajectories.flatMap((t) => t.history.slice(-1).map((h) => h.probability_pct))),
-    before: mean(trajectories.flatMap((t) => t.history.slice(-2, -1).map((h) => h.probability_pct))),
+    now: mean(trajectories.flatMap((t) => (t.history ?? []).slice(-1).map((h) => h.probability_pct))),
+    before: mean(trajectories.flatMap((t) => (t.history ?? []).slice(-2, -1).map((h) => h.probability_pct))),
   };
 }
 
@@ -46,7 +47,7 @@ async function Dashboard() {
         <div className="page-heading">
           <h1>Dasbor</h1>
         </div>
-        <NoFarmState text="Buat lokasi, tambahkan kolam, lalu unggah hasil lab pertama untuk melihat risiko." />
+        <NoFarmState text="Buat lokasi, tambahkan kolam, lalu unggah data eDNA pertama untuk melihat risiko." />
       </>
     );
   }
@@ -84,7 +85,7 @@ async function Dashboard() {
       <div className="page-actions">
         <Link className="button secondary" href="/lab/unggah">
           <Icon icon={Upload} />
-          Unggah hasil lab
+          Unggah data eDNA
         </Link>
       </div>
     </div>
@@ -96,12 +97,12 @@ async function Dashboard() {
         {heading}
         <EmptyState
           icon={FlaskConical}
-          title="Belum ada hasil lab"
-          text="Unggah CSV qPCR pertama untuk melihat peluang wabah dan kelas risiko tiap kolam."
+          title="Belum ada data eDNA"
+          text="Unggah data eDNA air tambak pertama untuk melihat peluang wabah dan kelas risiko tiap kolam."
         >
           <Link className="button primary" href="/lab/unggah">
             <Icon icon={Upload} />
-            Unggah hasil lab
+            Unggah data eDNA
           </Link>
         </EmptyState>
       </>
@@ -164,6 +165,7 @@ async function Dashboard() {
               <RiskBadge result={topResult} />
               <Trend trend={top.trend} />
             </div>
+            <DiseaseLine result={topResult} inverse />
             <p className="spotlight-reason">{topResult.recommendation}</p>
             <dl className="spotlight-facts">
               <div>
@@ -285,7 +287,7 @@ async function Dashboard() {
               <li key={farm.id}>
                 <span className="bar-label">{farm.name}</span>
                 {now === null ? (
-                  <span className="small muted">Belum ada hasil lab</span>
+                  <span className="small muted">Belum ada data eDNA</span>
                 ) : (
                   <>
                     <span className="bar-track" aria-hidden="true">

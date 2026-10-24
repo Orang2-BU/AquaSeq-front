@@ -22,9 +22,9 @@
 > (Jawaban pilihan) backend dari teman tim, "BE dari sini https://github.com/Orang2-BU/AquaSeq-back.git"; backend memegang semua data, bukan hanya auth; rumus skor ikut BE (probabilitas %); endpoint yang belum ada ditulis sebagai kontrak API; web parse CSV lalu kirim ringkas; sesi JWT + cookie httpOnly.
 
 ## 2. Ringkasan
-- **Masalah inti:** Pemilik tambak udang vaname yang memakai uji qPCR air mendapat angka Ct dari lab, tapi tidak punya cara mengubahnya jadi keputusan per kolam, lalu memastikan tindakannya benar-benar dikerjakan teknisi di lapangan. Web adalah antarmuka untuk backend Go tim yang menghitung skornya.
+- **Masalah inti:** Pemilik tambak udang vaname yang memakai uji air mendapat data eDNA air tambak dari lab, tapi tidak punya cara mengubahnya jadi keputusan per kolam, lalu memastikan tindakannya benar-benar dikerjakan teknisi di lapangan. Web adalah antarmuka untuk backend Go tim yang menjalankan arsitektur kecerdasan 3 lapis (Lapis A deterministik SDRI V1, Lapis B belajar anomali trajektori & kalibrasi ulang versi model, Lapis C bahasa ingesti dokumen multi-format .csv/.pdf/.docx/.xlsx & narasi WhatsApp tanpa chatbot bebas).
 - **Untuk siapa:** Pemilik tambak intensif (bisa punya beberapa lokasi) dan teknisi tambak yang bekerja untuknya. Tamu (calon pengguna, juri) melihat landing.
-- **Hasil yang diharapkan:** Web dengan landing publik dan aplikasi berlogin. Pemilik mengunggah hasil lab, melihat skor risiko SDRI per kolam, lalu memberi tugas ke teknisi. Teknisi mencatat kimia air dan melapor tugas dari HP.
+- **Hasil yang diharapkan:** Web dengan landing publik dan aplikasi berlogin. Pemilik mengunggah data eDNA dari sampel air (CSV/PDF/DOCX/XLSX), melihat skor risiko SDRI, potensi penyakit, dan mitigasi secepatnya per kolam, lalu memberi tugas ke teknisi. Teknisi mencatat kimia air dan melapor tugas dari HP.
 
 ## 3. Projek
 | Item | Isi |
@@ -46,17 +46,17 @@
 
 ## 5. Batasan & Asumsi
 - **Batasan:**
-  - Auth, semua data, dan skor ada di backend Go tim. Web tidak menghitung skor dan tidak memegang database sendiri.
-  - Skor mengikuti backend: model logit V1-GSI, "peluang wabah %", kelas 1-4 (Aman, Waspada ringan, Waspada tinggi, Bahaya). `docs/sdri-v1.md` diarsipkan ke `docs/arsip/` (keputusan user 24 Okt 2026; risikonya di 01-PRD §2).
-  - Skor bukan diagnosis resmi (wewenang Karantina/KKP).
-  - Data contoh wajib berlabel SIMULASI dan tidak boleh disamarkan sebagai data nyata (aturan lomba melarang bukti palsu).
+  - Auth, semua data, dan skor serta AI ada di backend Go tim. Seluruh kecerdasan 3 lapis (A deterministik, B belajar, C bahasa) dijalankan di backend. Web tidak menghitung skor, tidak memanggil LLM langsung, dan tidak ada chatbot tanya-jawab bebas.
+  - Skor mengikuti backend: model logit V1-GSI, "peluang wabah %", kelas 1-4 (Aman, Waspada ringan, Waspada tinggi, Bahaya). `docs/sdri-v1.md` diarsipkan ke `docs/arsip/` (keputusan user 24 Okt 2026; risikonya di 01-PRD §2). Kalibrasi Lapis B menghasilkan versi terverifikasi (mis. V2-Kandidat) yang diaudit dan tidak mengubah diri diam-diam.
+  - Skor bukan diagnosis resmi (wewenang Karantina/KKP); penjelasan adalah ringkasan dari mesin.
+  - Data contoh dan dataset pembelajaran awal wajib berlabel SIMULASI atau sintetik ("Data simulasi" / "Data sintetik") dan tidak boleh disamarkan sebagai data nyata (aturan lomba melarang bukti palsu).
   - Data antar pemilik terpisah total. Teknisi hanya melihat kolam yang ditugaskan kepadanya (ditegakkan backend).
   - UI berbahasa Indonesia.
 - **Asumsi:**
   - `[asumsi]` Teknisi bergabung lewat undangan email dari pemilik (dikirim backend), lalu membuat kata sandi sendiri.
   - `[asumsi]` Satu kolam dipegang satu teknisi. Alasan: cukup untuk alur tugas; bisa dilonggarkan nanti.
   - `[asumsi]` Peringatan WhatsApp berupa teks dari endpoint `reports/whatsapp` backend + tombol salin dan tautan `wa.me`, tanpa WhatsApp Business API.
-  - `[asumsi]` Parser CSV qPCR diadaptasi dari commit `2aad8c8` ke `src/lib/csv` (web membaca CSV, backend menerima ringkasan).
+  - `[asumsi]` Parser CSV diadaptasi dari commit `2aad8c8` ke `src/lib/csv` (CSV diparse di klien untuk pratinjau instan), sementara dokumen PDF/DOCX/XLSX dikirim ke endpoint ingesti backend (`/documents/ingest`).
   - `[asumsi]` Web dibangun dengan mock API sesuai 09-API-KONTRAK sampai endpoint backend siap.
   - `[asumsi]` Landing tanpa situs inspirasi dari user: arah visual dipilih AI (impeccable, mode Persuade). Gaya tombol: rekomendasi AI (pill tenang).
   - `[asumsi]` Akun demo pemilik dan teknisi berisi data SIMULASI supaya juri bisa langsung mencoba.

@@ -1,4 +1,16 @@
 import { z } from "zod";
+import {
+  featuresSchema,
+  wellSchema,
+  standardSchema,
+  insightsSchema,
+  documentIngestSchema,
+  modelVersionSchema,
+  modelVersionsSchema,
+} from "./schemas";
+export { insightsSchema, documentIngestSchema, modelVersionsSchema } from "./schemas";
+export type { DocumentIngest } from "./schemas";
+
 import { ApiError } from "./errors";
 import { mock } from "./mock";
 
@@ -62,6 +74,28 @@ const sdriResultSchema = z.object({
   s_chem: z.number(),
   model_version: z.string(),
   recommendation: z.string(),
+  // Temuan eDNA (backend `sdri.Assess`); kolom DB bisa null untuk sampel ditolak.
+  disease_name: z.string().nullish(),
+  predicted_disease: z.string().nullish(),
+  evidence: z
+    .array(
+      z.object({
+        feature: z.string(),
+        value: z.number(),
+        threshold: z.union([z.number(), z.string()]),
+        status: z.string(),
+      }),
+    )
+    .nullish(),
+  mitigation_actions: z
+    .array(
+      z.union([
+        z.string(),
+        z.object({ action: z.string(), source: z.string(), priority: z.enum(["tinggi", "sedang", "rendah"]) }),
+      ]),
+    )
+    .nullish(),
+  ai_explanation: z.string().nullish(),
 });
 
 const trendSchema = z.enum(["RAPID_INCREASE", "MODERATE_INCREASE", "STABLE", "DECREASING", "INSUFFICIENT_DATA"]);
@@ -115,14 +149,17 @@ const trajectorySchema = z.object({
   trend: trendSchema,
   trajectory_alert: z.boolean(),
   alert_message: z.string(),
-  history: z.array(
-    z.object({
-      sampling_date: z.string(),
-      cycle_day: z.number().int(),
-      probability_pct: z.number(),
-      risk_class: z.number().int(),
-    }),
-  ),
+  history: z
+    .array(
+      z.object({
+        sampling_date: z.string(),
+        cycle_day: z.number().int(),
+        probability_pct: z.number(),
+        risk_class: z.number().int(),
+      }),
+    )
+    .nullish()
+    .transform((h) => h ?? []),
 });
 
 const pondSampleSchema = z.object({
@@ -132,34 +169,6 @@ const pondSampleSchema = z.object({
   cycle_day: z.number().int(),
   sdri_result: sdriResultSchema,
 });
-
-const featuresSchema = z.object({
-  ct_ahpnd: num,
-  ct_wssv: num,
-  ct_ehp: num,
-  ct_amoa: num,
-  ct_16s: num,
-  ct_ppc: z.number(),
-  do_mg_l: num,
-  tom_mg_l: num,
-  ph: num,
-  salinity_ppt: num,
-  temp_c: num,
-  tan_mg_l: num,
-  no2_mg_l: num,
-  h2s_mg_l: num,
-  alkalinity: num,
-});
-
-const wellSchema = z.object({
-  position: z.string(),
-  target: z.string(),
-  ct: num,
-  tm: num,
-  excluded_reason: z.string().nullable(),
-});
-
-const standardSchema = z.object({ copies_rxn: z.number(), ct: z.number() });
 
 const sampleSchema = z.object({
   id: z.string(),
@@ -431,10 +440,10 @@ async function request<T>(
     cache: "no-store",
     signal: AbortSignal.timeout(10_000),
     headers: {
-      ...(body === undefined ? {} : { "Content-Type": "application/json" }),
+      ...(body === undefined || body instanceof FormData ? {} : { "Content-Type": "application/json" }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: body === undefined ? undefined : JSON.stringify(body),
+    body: body === undefined ? undefined : body instanceof FormData ? body : JSON.stringify(body),
   });
   return unwrap(await response.json(), schema);
 }
@@ -442,6 +451,123 @@ async function request<T>(
 const ok = z.unknown();
 /** Segmen path aman dari ID. */
 const seg = encodeURIComponent;
+
+const MAX_PAGE_TOTAL = 10_000;
+const PER_PAGE = 100;
+
+function withPage(path: string, page: number, perPage = PER_PAGE): string {
+  const [basePath, search] = path.split("?");
+  const params = new URLSearchParams(search);
+  params.set("page", String(page));
+  params.set("per_page", String(perPage));
+  return `${basePath}?${params.toString()}`;
+}
+
+const pagedList = <T extends z.ZodType>(item: T) =>
+  z.object({
+    items: z.array(item),
+    total: z.number().int().nonnegative(),
+  });
+
+function itemIdOf(item: unknown): string | null {
+  if (item && typeof item === "object") {
+    const rec = item as Record<string, unknown>;
+    if (typeof rec.id === "string") return rec.id;
+    if (typeof rec.sample_id === "string") return rec.sample_id;
+    return JSON.stringify(rec);
+  }
+  return null;
+}
+
+async function requestPaged<T>(path: string, itemSchema: z.ZodType<T>, token?: string): Promise<T[]> {
+  const schema = pagedList(itemSchema);
+  let page = 1;
+  const all: T[] = [];
+  let total: number | null = null;
+  const seenIds = new Set<string>();
+
+  while (true) {
+    const url = withPage(path, page, PER_PAGE);
+    const data = await request("GET", url, schema, { token });
+
+    if (total === null) {
+      total = data.total;
+      if (total > MAX_PAGE_TOTAL) {
+        throw new ApiError(
+          "DATA_TOO_LARGE",
+          `Data terlalu besar: total ${total} melebihi batas maksimum ${MAX_PAGE_TOTAL}.`,
+        );
+      }
+    } else if (data.total !== total) {
+      throw new ApiError(
+        "PAGINATION_ERROR",
+        `Paginasi gagal: total berubah dari ${total} menjadi ${data.total} pada halaman ${page}.`,
+      );
+    }
+
+    if (total === 0) {
+      if (data.items.length > 0) {
+        throw new ApiError("PAGINATION_ERROR", "Paginasi gagal: menerima item pada total 0.");
+      }
+      return [];
+    }
+
+    if (all.length + data.items.length > total) {
+      throw new ApiError(
+        "PAGINATION_ERROR",
+        `Paginasi gagal: jumlah rekaman (${all.length + data.items.length}) melebihi total (${total}).`,
+      );
+    }
+
+    if (data.items.length === 0) {
+      if (all.length < total) {
+        throw new ApiError(
+          "PAGINATION_ERROR",
+          `Paginasi gagal: menerima 0 rekaman pada halaman ${page}, diharapkan total ${total}.`,
+        );
+      }
+      break;
+    }
+
+    let added = 0;
+    for (const item of data.items) {
+      const id = itemIdOf(item);
+      if (id !== null) {
+        if (seenIds.has(id)) {
+          throw new ApiError(
+            "PAGINATION_ERROR",
+            `Paginasi gagal: duplikasi rekaman terdeteksi (id: ${id}) pada halaman ${page}.`,
+          );
+        }
+        seenIds.add(id);
+      }
+      all.push(item);
+      added++;
+    }
+
+    if (added === 0) {
+      throw new ApiError("PAGINATION_ERROR", `Paginasi tidak mengalami kemajuan pada halaman ${page}.`);
+    }
+
+    if (all.length >= total) {
+      break;
+    }
+
+    if (data.items.length < PER_PAGE) {
+      throw new ApiError(
+        "PAGINATION_ERROR",
+        `Paginasi berhenti sebelum selesai: menerima ${all.length} dari total ${total} rekaman.`,
+      );
+    }
+
+    page++;
+    if (page > Math.ceil(MAX_PAGE_TOTAL / PER_PAGE) + 1) {
+      throw new ApiError("PAGINATION_ERROR", `Paginasi melebihi batas maksimum halaman (${page}).`);
+    }
+  }
+
+  return all;
+}
 
 const live = {
   health: () => request("GET", "/health", healthSchema),
@@ -465,7 +591,21 @@ const live = {
       request("PATCH", `/farms/${seg(id)}`, farmSchema, { token, body }),
     archive: (token: string, id: string) => request("POST", `/farms/${seg(id)}/archive`, farmSchema, { token }),
   },
+  documents: {
+    ingest: (token: string, file: File) => {
+      const body = new FormData();
+      body.set("file", file);
+      return request("POST", "/documents/ingest", documentIngestSchema, { token, body });
+    },
+  },
+  models: {
+    list: (token: string) => request("GET", "/models", modelVersionsSchema, { token }).then((d) => d.items),
+    promote: (token: string, version: string, note: string) =>
+      request("POST", `/models/${seg(version)}/promote`, modelVersionSchema, { token, body: { note } }),
+  },
   ponds: {
+    insights: (token: string, pondId: string) =>
+      request("GET", `/ponds/${seg(pondId)}/insights`, insightsSchema, { token }),
     list: (token: string, farmId: string) =>
       request("GET", `/farms/${seg(farmId)}/ponds?status=ACTIVE`, list(pondSchema), { token }),
     get: (token: string, pondId: string) => request("GET", `/ponds/${seg(pondId)}`, pondDetailSchema, { token }),
@@ -476,10 +616,9 @@ const live = {
     archive: (token: string, pondId: string) => request("POST", `/ponds/${seg(pondId)}/archive`, pondSchema, { token }),
     trajectory: (token: string, pondId: string) =>
       request("GET", `/ponds/${seg(pondId)}/trajectory`, trajectorySchema, { token }),
-    samples: (token: string, pondId: string) =>
-      request("GET", `/ponds/${seg(pondId)}/samples`, list(pondSampleSchema), { token }),
+    samples: (token: string, pondId: string) => requestPaged(`/ponds/${seg(pondId)}/samples`, pondSampleSchema, token),
     waterLogs: (token: string, pondId: string) =>
-      request("GET", `/ponds/${seg(pondId)}/water-logs`, list(waterLogSchema), { token }),
+      requestPaged(`/ponds/${seg(pondId)}/water-logs`, waterLogSchema, token),
     cycles: (token: string, pondId: string) =>
       request("GET", `/ponds/${seg(pondId)}/cycles`, list(cycleSchema), { token }),
     /** Teknisi pemegang kolam atau pemilik; NH₃ bebas dihitung backend (09-API-KONTRAK §5). */
@@ -520,8 +659,24 @@ const live = {
     get: (token: string, batchId: string) => request("GET", `/batches/${seg(batchId)}`, batchSchema, { token }),
   },
   waterLogs: {
-    list: (token: string, farmId: string) =>
-      request("GET", `/farms/${seg(farmId)}/water-logs`, list(waterLogSchema), { token }),
+    create: (
+      token: string,
+      pondId: string,
+      body: {
+        measured_at: string;
+        temp_c: number;
+        ph: number;
+        do_mg_l: number;
+        tan_mg_l: number;
+        no2_mg_l?: number;
+        h2s_mg_l?: number;
+        tom_mg_l?: number;
+        alkalinity?: number;
+        salinity_ppt?: number;
+        transparency_cm?: number;
+      },
+    ) => request("POST", `/ponds/${seg(pondId)}/water-logs`, waterLogSchema, { token, body }),
+    list: (token: string, farmId: string) => requestPaged(`/farms/${seg(farmId)}/water-logs`, waterLogSchema, token),
   },
   alerts: {
     list: (token: string, farmId: string) =>
@@ -529,13 +684,13 @@ const live = {
     ack: (token: string, alertId: string) => request("POST", `/alerts/${seg(alertId)}/ack`, alertSchema, { token }),
   },
   tasks: {
-    list: (token: string, farmId: string) => request("GET", `/farms/${seg(farmId)}/tasks`, list(taskSchema), { token }),
+    /** Tugas teknisi yang sedang masuk (P36). */
+    mine: (token: string) => requestPaged("/me/tasks", taskSchema, token),
+    list: (token: string, farmId: string) => requestPaged(`/farms/${seg(farmId)}/tasks`, taskSchema, token),
     get: (token: string, taskId: string) => request("GET", `/tasks/${seg(taskId)}`, taskDetailSchema, { token }),
     create: (token: string, body: TaskInput) => request("POST", "/tasks", taskSchema, { token, body }),
     update: (token: string, taskId: string, body: TaskUpdate) =>
       request("PATCH", `/tasks/${seg(taskId)}`, taskSchema, { token, body }),
-    /** Tugas teknisi yang sedang masuk (P36). */
-    mine: (token: string) => request("GET", "/me/tasks", list(taskSchema), { token }),
     /** Teknisi mulai mengerjakan: status → dikerjakan. */
     start: (token: string, taskId: string) =>
       request("PATCH", `/tasks/${seg(taskId)}`, taskSchema, { token, body: { status: "dikerjakan" } }),
@@ -565,8 +720,7 @@ const live = {
       request("POST", "/me/notifications/read", ok, { token, body }).then(() => {}),
   },
   activity: {
-    list: (token: string, farmId: string) =>
-      request("GET", `/farms/${seg(farmId)}/activity`, list(activitySchema), { token }),
+    list: (token: string, farmId: string) => requestPaged(`/farms/${seg(farmId)}/activity`, activitySchema, token),
   },
   reports: {
     whatsapp: (token: string, body: WhatsAppInput) =>

@@ -1,0 +1,81 @@
+name: Verify and optionally trigger Dokploy
+
+on:
+  push:
+    branches: [push-deployment]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aquaseq-front-ci-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Frontend checks and image
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      API_MODE: mock
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm test
+      - run: npx --no-install knip
+      - run: npm run build
+      - run: docker build --tag aquaseq-front:ci .
+
+  deploy:
+    name: Trigger Dokploy (opt-in)
+    needs: verify
+    if: >-
+      vars.DOKPLOY_DEPLOY_ENABLED == 'true' &&
+      github.ref == 'refs/heads/push-deployment' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: dokploy-aquaseq-front
+      cancel-in-progress: false
+    steps:
+      # API works with Auto Deploy OFF; provider webhooks require it ON.
+      # Existing DOKPLOY_WEBHOOK_URL is retained, but not used by this workflow.
+      - name: Request deployment (not rollout verification)
+        env:
+          DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
+          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+          DOKPLOY_APPLICATION_ID: ${{ secrets.DOKPLOY_APPLICATION_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${DOKPLOY_URL:?DOKPLOY_URL secret is required when deployment is enabled}"
+          : "${DOKPLOY_API_KEY:?DOKPLOY_API_KEY secret is required when deployment is enabled}"
+          : "${DOKPLOY_APPLICATION_ID:?DOKPLOY_APPLICATION_ID secret is required when deployment is enabled}"
+          python3 - <<'PY' > "$RUNNER_TEMP/dokploy-payload.json"
+          import json, os
+          from urllib.parse import urlsplit
+          url = urlsplit(os.environ["DOKPLOY_URL"])
+          if url.scheme != "https" or not url.netloc or url.path not in ("", "/") or url.query or url.fragment or url.username or url.password:
+              raise SystemExit("DOKPLOY_URL must be an HTTPS origin without credentials, path, query, or fragment")
+          print(json.dumps({"applicationId": os.environ["DOKPLOY_APPLICATION_ID"]}))
+          PY
+          curl --fail --silent --show-error --connect-timeout 10 --max-time 60 \
+            --request POST "${DOKPLOY_URL%/}/api/application.deploy" \
+            --header "accept: application/json" \
+            --header "Content-Type: application/json" \
+            --header "x-api-key: $DOKPLOY_API_KEY" \
+            --data-binary "@$RUNNER_TEMP/dokploy-payload.json" --output /dev/null
+          echo "Dokploy accepted the request; rollout and deployed health remain unverified."

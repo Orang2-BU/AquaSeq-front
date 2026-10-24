@@ -12,6 +12,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   cacheComponents: true,
   // Laporan tugas teknisi membawa sampai 4 foto × 1 MB (sudah dikompres di HP).
   experimental: { serverActions: { bodySizeLimit: "5mb" } },

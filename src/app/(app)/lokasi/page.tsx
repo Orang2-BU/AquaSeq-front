@@ -91,7 +91,7 @@ async function LocationList() {
       </div>
       {archived.length > 0 && (
         <p className="small muted location-archived">
-          {archived.length} lokasi diarsipkan. Kolam, hasil lab, dan riwayatnya tetap tersimpan.
+          {archived.length} lokasi diarsipkan. Kolam, data eDNA, dan riwayatnya tetap tersimpan.
         </p>
       )}
     </section>

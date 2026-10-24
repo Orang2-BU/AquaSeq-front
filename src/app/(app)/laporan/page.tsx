@@ -43,7 +43,7 @@ async function Report({ searchParams }: Pick<PageProps<"/laporan">, "searchParam
         <div className="page-heading">
           <h1>Laporan</h1>
         </div>
-        <NoFarmState text="Laporan merangkum kolam, hasil lab, dan tugas satu lokasi." />
+        <NoFarmState text="Laporan merangkum kolam, data eDNA, dan tugas satu lokasi." />
       </>
     );
   }
@@ -163,7 +163,7 @@ async function Report({ searchParams }: Pick<PageProps<"/laporan">, "searchParam
           <h2 id="batches-title">Unggahan dalam periode</h2>
         </div>
         {periodBatches.length === 0 ? (
-          <p className="table-empty">Tidak ada unggahan hasil lab dalam {period.label} terakhir.</p>
+          <p className="table-empty">Tidak ada unggahan data eDNA dalam {period.label} terakhir.</p>
         ) : (
           <ul className="row-list">
             {periodBatches.map((b) => (

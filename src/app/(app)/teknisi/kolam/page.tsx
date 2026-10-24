@@ -11,6 +11,7 @@ import { EmptyState } from "@/components/app/empty-state";
 import { PageSkeleton } from "@/components/app/page-parts";
 import { RiskBadge } from "@/components/app/risk-badge";
 import { Trend } from "@/components/app/trend";
+import { DiseaseLine } from "@/components/app/edna-findings";
 import { Badge, Icon } from "@/components/ui";
 
 export const metadata: Metadata = { title: "Kolam saya" };
@@ -67,8 +68,9 @@ async function MyPonds() {
                     <Trend trend={pond.trend} />
                   </div>
                 ) : (
-                  <p className="small muted">Belum ada hasil lab.</p>
+                  <p className="small muted">Belum ada data eDNA.</p>
                 )}
+                {result && <DiseaseLine result={result} />}
                 {result && (
                   <p className="tech-pond-reason">
                     {result.status === "VALID" ? result.recommendation : `${rejectedReason(result.status)}.`}

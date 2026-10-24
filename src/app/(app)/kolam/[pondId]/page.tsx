@@ -9,6 +9,9 @@ import { formatDate, formatDateTime, formatNumber } from "@/lib/format";
 import { formatProbability, rejectedReason } from "@/lib/risk";
 import { TASK_KIND, TASK_STATUS } from "@/lib/tasks";
 import { CORE_WATER, outOfRange } from "@/lib/water";
+import { mitigationList } from "@/lib/edna";
+import { DiseaseLine } from "@/components/app/edna-findings";
+import { InsightsPanel } from "@/components/app/insights-panel";
 import { PageSkeleton } from "@/components/app/page-parts";
 import { RiskBadge } from "@/components/app/risk-badge";
 import { RiskChart } from "@/components/app/risk-chart";
@@ -39,13 +42,15 @@ async function PondDetail({ params, searchParams }: PageProps<"/kolam/[pondId]">
   const [{ pondId }, { tab: rawTab }] = await Promise.all([params, searchParams]);
   const tab = TABS.find((t) => t.value === rawTab)?.value ?? "sampel";
   const pond = await loadEntity((token) => api.ponds.get(token, pondId));
-  const [trajectory, samples, logs, tasks, options, { farms }] = await Promise.all([
+  const [trajectory, samples, logs, tasks, options, { farms }, insights] = await Promise.all([
     withSession((token) => api.ponds.trajectory(token, pond.id)),
     withSession((token) => api.ponds.samples(token, pond.id)),
     withSession((token) => api.ponds.waterLogs(token, pond.id)),
     withSession((token) => api.tasks.list(token, pond.farm_id)),
     taskOptions(pond.farm_id),
     getActiveFarms(),
+    // Insight lapis B opsional: kolam tetap tampil walau backend belum siap.
+    withSession((token) => api.ponds.insights(token, pond.id).catch(() => null)),
   ]);
   const farm = farms.find((f) => f.id === pond.farm_id);
   const result = pond.latest_result;
@@ -105,7 +110,7 @@ async function PondDetail({ params, searchParams }: PageProps<"/kolam/[pondId]">
       <div className="detail-grid">
         <section className="spotlight" aria-labelledby="reason-title">
           <div className="spotlight-head">
-            <h2 id="reason-title">{result ? "Rekomendasi analisis" : "Belum ada hasil lab"}</h2>
+            <h2 id="reason-title">{result ? "Rekomendasi eDNA" : "Belum ada data eDNA"}</h2>
             {farm?.provenance === "simulasi" && <Badge tone="warn">Data simulasi</Badge>}
           </div>
           {result ? (
@@ -113,7 +118,17 @@ async function PondDetail({ params, searchParams }: PageProps<"/kolam/[pondId]">
               {!valid && (
                 <p className="spotlight-reason">{rejectedReason(result.status)}. Sampel perlu diambil ulang.</p>
               )}
+              <DiseaseLine result={result} inverse />
               <p className="spotlight-reason">{result.recommendation}</p>
+              {valid && mitigationList(result).length > 0 && (
+                <ol className="spotlight-mitigation">
+                  {mitigationList(result)
+                    .slice(0, 3)
+                    .map((m) => (
+                      <li key={m.action}>{m.action}</li>
+                    ))}
+                </ol>
+              )}
               <ul className="spotlight-points">
                 <li>
                   <Trend trend={trajectory.trend} /> {trajectory.alert_message}
@@ -133,10 +148,10 @@ async function PondDetail({ params, searchParams }: PageProps<"/kolam/[pondId]">
           ) : (
             <>
               <p className="spotlight-reason">
-                Unggah CSV qPCR yang memuat sampel kolam ini untuk melihat peluang wabah.
+                Unggah data eDNA air tambak yang memuat sampel kolam ini untuk melihat peluang wabah.
               </p>
               <Link className="button inverse" href="/lab/unggah">
-                Unggah hasil lab
+                Unggah data eDNA
               </Link>
             </>
           )}
@@ -173,6 +188,8 @@ async function PondDetail({ params, searchParams }: PageProps<"/kolam/[pondId]">
           )}
         </section>
       </div>
+
+      {insights && <InsightsPanel insights={insights} />}
 
       <section className="panel" aria-label="Riwayat kolam">
         <nav className="tabs" aria-label="Bagian riwayat kolam">

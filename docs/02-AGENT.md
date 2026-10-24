@@ -29,6 +29,7 @@ src/content           teks landing
 - **Prinsip:** fungsi kecil satu tanggung jawab; solusi paling sederhana yang benar; fitur bawaan Next/React sebelum dependency baru.
 - **Panggilan backend hanya dari server**, lewat `src/lib/api`. Komponen klien tidak pernah `fetch` ke backend dan tidak pernah memegang token. Modul `src/lib/api` dan `src/lib/auth` diberi `import 'server-only'`.
 - **Respons backend selalu di-parse Zod** (`schema.parse`), tidak di-cast (`as`). Skema hanya ditulis sekali di `schemas.ts`, mengikuti 09-API-KONTRAK.
+- **Kecerdasan di backend:** A deterministik SDRI V1 beku, B belajar anomali/prakiraan/kalibrasi versi teraudit, C bahasa Jev (TypeSafe). Web hanya menampilkan hasil, tidak memanggil LLM, tanpa chatbot bebas. Data sintetik berlabel; pola tidak menimpa kelas SDRI.
 - **Web tidak menghitung skor.** Peluang, kelas, rekomendasi, NH₃, dan kopi/mL ditampilkan dari respons backend. Satu-satunya olahan angka di web: ringkasan Ct per sampel dari CSV (rata-rata replikat) sebelum dikirim.
 - **Kelas risiko** selalu lewat `src/lib/risk.ts` (label + token); tidak ada `if (risk_class === 3)` di komponen.
 - **Mock dan live** mengimplementasikan antarmuka yang sama; halaman tidak tahu mode mana yang aktif.

@@ -3,6 +3,13 @@
 > Turunan dari 01-PRD. Prioritas: alur inti jalan stabil. ID task = ID di 04-TODO.
 > Web adalah **frontend + BFF (backend-for-frontend) tipis** di atas backend Go tim. Semua data, auth, dan skor ada di backend; kontraknya di `docs/09-API-KONTRAK.md`.
 
+## 0. Kecerdasan backend
+- A: SDRI deterministik, gerbang kontrol kualitas, bobot V1 beku.
+- B: anomali pola per kolam, prakiraan, kasus mirip beserta hasil akhir, kalibrasi dari hasil siklus menjadi kandidat versi baru. Promosi pemilik wajib catatan + audit nama/waktu; tidak menimpa riwayat atau kelas SDRI.
+- C: Jev (TypeSafe) untuk ekstraksi CSV/PDF/DOCX/XLSX dan bahasa sederhana, bukan perhitungan risiko atau chatbot bebas. Seluruh AI di backend Go; web tidak punya kunci/provider LLM.
+- Data sintetik/simulasi diberi label, bukan bukti akurasi lapangan.
+- P17: CSV tetap parser klien; dokumen lain Server Action multipart ke `/documents/ingest`, pratinjau terstruktur lalu batch. P16 penyakit + bukti + mitigasi SOP. P15 pola/prakiraan berdampingan kelas SDRI. P34 versi model + promosi.
+
 ## 1. Stack
 | Lapisan | Pilihan | Alasan |
 |---|---|---|

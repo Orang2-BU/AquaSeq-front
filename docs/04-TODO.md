@@ -60,6 +60,15 @@
 | T49 | Tautan kolam di teks WA + P5, P35, P43 | Krisna | Could | ⬜ | Fitur kecil bernilai besar |
 | T50 | Deploy Vercel + cek alur inti di produksi | Krisna | Must | ⬜ | Butuh backend produksi |
 
+## Konsep AI backend (izin user)
+| ID | Task | Status | Bukti / catatan |
+|---|---|---|---|
+| T51 | Ingesti CSV/PDF/DOCX/XLSX + QC terstruktur | ⛔ | API multipart `api.documents.ingest` + validasi 4MB + tes kontrak; tampilan UI ditahan menunggu persetujuan desain (freeze) |
+| T52 | Potensi penyakit + bukti + mitigasi SOP | ✅ | 25 Okt (izin user): kartu "Temuan eDNA mikroba" di rincian skor (dugaan, bukti per kelompok mikroba/patogen/kimia/kontrol, mitigasi), dugaan + mitigasi di detail kolam, dasbor, Kolam saya, tugas teknisi. Label kode fitur di `src/lib/edna.ts`. Usulan K9 `engineered_features` ke backend |
+| T53 | Insight anomali + prakiraan + kasus mirip | ✅ | 25 Okt (izin user): panel "Pola & prakiraan" di detail kolam (prakiraan 7/14 hari, pola tidak biasa, penjelasan, kasus serupa); gagal diam bila backend belum siap |
+| T54 | Belajar/kalibrasi versi model teraudit | ⛔ | API `api.models.list` dan `promote` + mock V1 beku & V2 kandidat; UI promosi ditahan menunggu izin (freeze) |
+| T55 | Uji integrasi live opt-in | ⛔ | `vitest.live.config.ts` + `tests/live/core.live.test.ts` via `npm run test:live`; bukti RED jujur ECONNREFUSED saat backend mati |
+
 ## Alur Inti Check
 | Langkah | Status | Dicek |
 |---|---|---|

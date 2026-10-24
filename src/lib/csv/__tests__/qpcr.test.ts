@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { detectColumns, parseQpcr, pondCodeOf, splitCsv, standardCurve, summarize } from "../qpcr";
+import { detectColumns, parseQpcr, pondCodeOf, splitCsv, standardCurve, summarize, transportTargets } from "../qpcr";
 
 const CSV = `well,sample_code,target,ct,tm
 A1,B3-1030,pirA,31.10,81.2
@@ -74,6 +74,39 @@ describe("summarize", () => {
     expect(b3.issues).toEqual(
       expect.arrayContaining(["PPC tidak ada atau tidak teramplifikasi", "NTC pirA terdeteksi (kontaminasi run)"]),
     );
+  });
+});
+
+describe("transportTargets", () => {
+  it("mengirim negatif terukur sebagai 40 tanpa mengubah ringkasan tampilan", () => {
+    const { wells } = parseQpcr(CSV);
+    const before = summarize(wells);
+    expect(transportTargets(wells, "B3-1030")).toEqual({ ct_ahpnd: 31.2, ct_wssv: 40, ct_ehp: 35.1 });
+    expect(summarize(wells)).toEqual(before);
+    expect(before[0].ct.ct_wssv).toBeNull();
+    expect(wells[2].ct).toBeNull();
+  });
+
+  it("menghasilkan null jika target tidak diuji sama sekali", () => {
+    const noSwp1 = CSV.replace("D1,B3-1030,swp1,35.10,83.4\n", "");
+    const { wells } = parseQpcr(noSwp1);
+    const targets = transportTargets(wells, "B3-1030");
+    expect(targets.ct_ehp).toBeNull();
+    expect(targets.ct_ahpnd).toBe(31.2);
+    expect(targets.ct_wssv).toBe(40);
+  });
+
+  it("menghasilkan null jika semua well target dikecualikan", () => {
+    const { wells } = parseQpcr(CSV);
+    const targets = transportTargets(wells, "B3-1030", { C1: "gelembung udara" });
+    expect(targets.ct_wssv).toBeNull();
+  });
+
+  it("mempertahankan nilai positif jika ada replikat positif meski ada replikat undetermined", () => {
+    const mixedCsv = CSV.replace("D1,B3-1030,swp1,35.10,83.4", "C2,B3-1030,vp28,32.4,80.1\nD1,B3-1030,swp1,35.10,83.4");
+    const { wells } = parseQpcr(mixedCsv);
+    const targets = transportTargets(wells, "B3-1030");
+    expect(targets.ct_wssv).toBe(32.4);
   });
 });
 

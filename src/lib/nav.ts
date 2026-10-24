@@ -58,7 +58,7 @@ const PAGE_MAP = {
     group: "Publik",
     icon: House,
     parent: "/masuk",
-    description: "Meyakinkan pengunjung bahwa AquaSeq mengubah hasil lab jadi tindakan.",
+    description: "Meyakinkan pengunjung bahwa AquaSeq mengubah data eDNA jadi tindakan.",
   },
   "/metode": {
     id: "P2",
@@ -66,7 +66,7 @@ const PAGE_MAP = {
     group: "Publik",
     icon: BookOpen,
     parent: "/",
-    description: "Cara skor dihitung backend, gerbang PPC, dan batasannya.",
+    description: "Cara skor dihitung backend, gerbang kontrol kualitas, dan batasannya.",
   },
   "/kontak": {
     id: "P3",
@@ -205,10 +205,10 @@ const PAGE_MAP = {
   },
   "/lab/unggah": {
     id: "P17",
-    label: "Unggah hasil lab",
+    label: "Unggah data eDNA",
     group: "Lab",
     icon: Upload,
-    description: "Mengunggah CSV qPCR, memeriksa QC, lalu mengirim ke analisis.",
+    description: "Mengunggah data eDNA air tambak, memeriksa kontrol kualitas, lalu mengirim ke analisis.",
     core: true,
   },
   "/lab": {
@@ -216,7 +216,7 @@ const PAGE_MAP = {
     label: "Riwayat unggahan",
     group: "Lab",
     icon: History,
-    description: "Membuka batch hasil lab yang pernah diunggah.",
+    description: "Membuka batch data eDNA yang pernah diunggah.",
     core: true,
   },
   "/lab/unggahan/[batchId]": {
@@ -384,7 +384,7 @@ export function isActive(pathname: string, href: string): boolean {
 }
 
 /**
- * Menu yang aktif: kecocokan terpanjang, supaya `/lab/unggah` hanya mengaktifkan "Unggah hasil lab",
+ * Menu yang aktif: kecocokan terpanjang, supaya `/lab/unggah` hanya mengaktifkan "Unggah data eDNA",
  * bukan juga "Riwayat unggahan" (`/lab`).
  */
 export function activeRoute(pathname: string, hrefs: readonly string[]): string | undefined {
