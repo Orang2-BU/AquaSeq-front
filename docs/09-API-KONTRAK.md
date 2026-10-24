@@ -20,16 +20,16 @@ Mekanisme usulan: **JWT access token (15 menit) + refresh token (30 hari, rotasi
 
 | Method | Endpoint | Body | Data respons | Catatan |
 |---|---|---|---|---|
-| POST | `/auth/register` | `full_name, email, password, phone_wa?` | `user, access_token, refresh_token` | Membuat akun **pemilik** |
-| POST | `/auth/login` | `email, password` | `user, access_token, refresh_token` | Rate limit per IP + email |
-| POST | `/auth/refresh` | `refresh_token` | `access_token, refresh_token` | Refresh lama langsung tidak berlaku |
+| POST | `/auth/register` | `full_name, email, password, phone_wa?` | `user, access_token, refresh_token, expires_in` | Membuat akun **pemilik**; email sudah dipakai → `CONFLICT` dengan `fields.email` |
+| POST | `/auth/login` | `email, password` | `user, access_token, refresh_token, expires_in` | Rate limit per IP + email; gagal → `UNAUTHORIZED` dengan pesan generik (tidak membedakan email salah dan sandi salah) |
+| POST | `/auth/refresh` | `refresh_token` | `access_token, refresh_token, expires_in` | Refresh lama langsung tidak berlaku |
 | POST | `/auth/logout` | `refresh_token` | `{}` | Mencabut refresh token |
 | GET | `/auth/me` | — | `user` + `memberships: [{ farm_id, farm_name, role }]` | `role`: `pemilik` / `teknisi` |
 | POST | `/auth/password/forgot` | `email` | `{}` | Selalu 200 (tidak membocorkan email terdaftar); kirim email berisi tautan `{WEB_URL}/atur-sandi?token=...` |
 | POST | `/auth/password/reset` | `token, password` | `{}` | Token sekali pakai, 1 jam |
-| POST | `/auth/demo` | `role: pemilik/teknisi` | `user, access_token, refresh_token` | Masuk ke akun demo SIMULASI (bisa dimatikan lewat env backend) |
+| POST | `/auth/demo` | `role: pemilik/teknisi` | `user, access_token, refresh_token, expires_in` | Masuk ke akun demo SIMULASI (bisa dimatikan lewat env backend) |
 
-`user`: `{ id, full_name, email, phone_wa }`.
+`user`: `{ id, full_name, email, phone_wa }`. `expires_in` = umur access token dalam detik; web memakainya sebagai `maxAge` cookie access, jadi saat cookie hilang web tahu harus memanggil `/auth/refresh`. Pemilik baru tanpa lokasi mengembalikan `memberships: []` di `/auth/me`.
 
 ## 3. Lokasi, kolam, anggota
 | Method | Endpoint | Status | Body / query | Data respons | Siapa |

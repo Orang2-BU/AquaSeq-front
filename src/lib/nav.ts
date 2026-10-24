@@ -333,7 +333,12 @@ const PAGE_MAP = {
 export type PageRoute = keyof typeof PAGE_MAP;
 export const PAGES: Record<PageRoute, PageInfo> = PAGE_MAP;
 
-/** Menu sidebar pemilik (01-PRD §5b). Menu teknisi menyusul di T11. */
+/** Menu sidebar teknisi (01-PRD §5b). */
+export const TECHNICIAN_NAVIGATION: { group: string; routes: PageRoute[] }[] = [
+  { group: "Kerja", routes: ["/teknisi", "/teknisi/catat-air", "/teknisi/kolam"] },
+];
+
+/** Menu sidebar pemilik (01-PRD §5b). */
 export const NAVIGATION: { group: string; routes: PageRoute[] }[] = [
   { group: "Pantau", routes: ["/dasbor", "/peringatan", "/kolam"] },
   { group: "Lab", routes: ["/lab/unggah", "/lab"] },

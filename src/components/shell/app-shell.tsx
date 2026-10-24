@@ -10,34 +10,73 @@ import {
   ChevronsLeft,
   ChevronsRight,
   CircleHelp,
+  LogOut,
   MapPin,
   Menu,
   X,
 } from "lucide-react";
-import { NAVIGATION, PAGES, isActive, matchPage } from "@/lib/nav";
+import type { Role } from "@/lib/api";
+import { logout } from "@/lib/auth/actions";
+import { NAVIGATION, PAGES, TECHNICIAN_NAVIGATION, isActive, matchPage } from "@/lib/nav";
 import { Badge, Icon } from "@/components/ui";
 import { Modal } from "@/components/ui/modal";
 import { BrandLockup, BrandWordmark } from "./brand";
 
 // Port shell template Soft Op Dashboard (acuan: K-DASP/MilkGraph components/shell/app-shell.tsx).
 
-// Akun, lokasi, dan notifikasi demo; diganti sesi login (T5) dan data API (T8, T40).
-const DEMO_USER = { name: "Hendra Kusuma", role: "Pemilik", initials: "HK" };
-const LOCATION = { label: "Tambak Sumber Rejeki", area: "Puger, Jember · 12 kolam" };
-const NOTIFICATIONS = [
-  { title: "Kolam B3 Waspada tinggi (34,8%)", subtitle: "Sampel 23 Okt · pirAB dan TOM naik", href: "/peringatan" },
-  { title: "Rizky Pratama melaporkan tugas", subtitle: "Ganti air 20% kolam B3 · 2 foto", href: "/tugas" },
-  { title: "Sampel A4-1023 ditolak", subtitle: "PPC di luar rentang · ambil sampel ulang", href: "/lab" },
-];
+export interface ShellAccount {
+  name: string;
+  initials: string;
+  role: Role;
+  farms: string[];
+}
+
+// Notifikasi contoh sampai endpoint notifikasi tersambung (T40).
+const NOTIFICATIONS: Record<Role, { title: string; subtitle: string; href: string }[]> = {
+  pemilik: [
+    { title: "Kolam B3 Waspada tinggi (34,8%)", subtitle: "Sampel 23 Okt · pirAB dan TOM naik", href: "/peringatan" },
+    { title: "Rizky Pratama melaporkan tugas", subtitle: "Ganti air 20% kolam B3 · 2 foto", href: "/tugas" },
+    { title: "Sampel A4-1023 ditolak", subtitle: "PPC di luar rentang · ambil sampel ulang", href: "/lab" },
+  ],
+  teknisi: [
+    { title: "Tugas baru: ganti air 20% kolam B3", subtitle: "Dari Hendra Kusuma · batas 10.00", href: "/teknisi" },
+    { title: "Catat kimia air pagi belum diisi", subtitle: "Kolam B1 dan B2", href: "/teknisi/catat-air" },
+  ],
+};
+
+const GUIDE: Record<Role, { intro: string; steps: [string, string][] }> = {
+  pemilik: {
+    intro: "Alur dari hasil lab sampai tindakan di kolam.",
+    steps: [
+      ["Unggah hasil lab", "Pilih CSV qPCR, periksa QC plate, cocokkan sampel ke kolam, lalu kirim."],
+      ["Baca risiko", "Dasbor mengurutkan kolam dari peluang wabah tertinggi beserta rekomendasinya."],
+      ["Tugaskan teknisi", "Ubah peringatan jadi tugas untuk teknisi pemegang kolam."],
+      ["Tutup tugas", "Periksa laporan dan foto teknisi, lalu tutup atau minta ulang."],
+    ],
+  },
+  teknisi: {
+    intro: "Pekerjaan harian di kolam yang kamu pegang.",
+    steps: [
+      ["Cek tugas hari ini", "Tugas diurutkan dari batas waktu terdekat."],
+      ["Catat kimia air", "Isi suhu, pH, DO, dan TAN tiap kolam; NH₃ bebas dihitung otomatis."],
+      ["Laporkan tugas", "Tulis catatan dan lampirkan foto saat tugas selesai."],
+    ],
+  },
+};
 
 type Panel = "location" | "notifications" | "profile" | "help";
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({ account, children }: { account: ShellAccount; children: ReactNode }) {
   const [collapsed, setCollapsed] = useState<boolean | null>(null);
   const [drawer, setDrawer] = useState(false);
   const [panel, setPanel] = useState<Panel | null>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDialogElement>(null);
+  const home = account.role === "teknisi" ? "/teknisi" : "/dasbor";
+  const location = account.farms[0] ?? "Belum ada lokasi";
+  const roleLabel = account.role === "teknisi" ? "Teknisi" : "Pemilik";
+  const notifications = NOTIFICATIONS[account.role];
+  const guide = GUIDE[account.role];
 
   useEffect(() => {
     if (!drawer) return;
@@ -69,7 +108,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     return (
       <>
         <div className="brand-row">
-          <Link href="/dasbor" className="brand" aria-label="AquaSeq, ke Dasbor" onClick={closeDrawer}>
+          <Link href={home} className="brand" aria-label="AquaSeq, ke beranda" onClick={closeDrawer}>
             <BrandLockup />
           </Link>
           {mobile && (
@@ -78,8 +117,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             </button>
           )}
         </div>
-        <Suspense fallback={<NavLinks pathname="" onNavigate={closeDrawer} />}>
-          <CurrentNavLinks onNavigate={closeDrawer} />
+        <Suspense fallback={<NavLinks role={account.role} pathname="" onNavigate={closeDrawer} />}>
+          <CurrentNavLinks role={account.role} onNavigate={closeDrawer} />
         </Suspense>
         <div className="sidebar-bottom">
           <button className="nav-item" onClick={() => openPanel("help")} aria-label="Panduan">
@@ -88,11 +127,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             </span>
             <span className="nav-label">Panduan</span>
           </button>
-          <button className="account" onClick={() => openPanel("profile")} aria-label={`Lihat akun ${DEMO_USER.name}`}>
-            <span className="avatar">{DEMO_USER.initials}</span>
+          <button className="account" onClick={() => openPanel("profile")} aria-label={`Lihat akun ${account.name}`}>
+            <span className="avatar">{account.initials}</span>
             <span className="account-copy nav-label">
-              <strong>{DEMO_USER.name}</strong>
-              <span>{DEMO_USER.role}</span>
+              <strong>{account.name}</strong>
+              <span>{roleLabel}</span>
             </span>
             <Icon icon={ChevronDown} size={15} className="nav-label" />
           </button>
@@ -131,30 +170,30 @@ export function AppShell({ children }: { children: ReactNode }) {
             >
               <Icon icon={Menu} />
             </button>
-            <Link href="/dasbor" className="mobile-brand" aria-label="AquaSeq, ke Dasbor">
+            <Link href={home} className="mobile-brand" aria-label="AquaSeq, ke beranda">
               <BrandWordmark />
             </Link>
-            <Suspense fallback={<span className="breadcrumb">{LOCATION.label}</span>}>
-              <Breadcrumb />
+            <Suspense fallback={<span className="breadcrumb">{location}</span>}>
+              <Breadcrumb location={location} />
             </Suspense>
           </div>
           <div className="topbar-actions">
             <Badge tone="warn">Data simulasi</Badge>
             <button className="shift-button" onClick={() => setPanel("location")}>
               <Icon icon={MapPin} size={16} />
-              <span>{LOCATION.label}</span>
+              <span>{location}</span>
               <Icon icon={ChevronDown} size={14} />
             </button>
             <button
               className="icon-button notification"
-              aria-label={`Lihat ${NOTIFICATIONS.length} notifikasi`}
+              aria-label={`Lihat ${notifications.length} notifikasi`}
               onClick={() => setPanel("notifications")}
             >
               <Icon icon={Bell} />
-              <span>{NOTIFICATIONS.length}</span>
+              <span>{notifications.length}</span>
             </button>
             <button className="avatar top-avatar" aria-label="Lihat profil" onClick={() => setPanel("profile")}>
-              {DEMO_USER.initials}
+              {account.initials}
             </button>
           </div>
         </header>
@@ -196,23 +235,26 @@ export function AppShell({ children }: { children: ReactNode }) {
           {panel === "location" && (
             <>
               <p className="muted">Data di semua halaman mengikuti lokasi yang dipilih.</p>
-              <button className="period-choice" onClick={() => setPanel(null)}>
-                <strong>{LOCATION.label}</strong>
-                <span>{LOCATION.area}</span>
-                <Badge tone="ok">Dipilih</Badge>
-              </button>
-              <p className="small muted">
-                Kelola lokasi di{" "}
-                <Link className="text-link" href="/lokasi" onClick={() => setPanel(null)}>
-                  halaman Lokasi
-                </Link>
-                .
-              </p>
+              {account.farms.map((farm, i) => (
+                <button key={farm} className="period-choice" onClick={() => setPanel(null)}>
+                  <strong>{farm}</strong>
+                  {i === 0 && <Badge tone="ok">Dipilih</Badge>}
+                </button>
+              ))}
+              {account.role === "pemilik" && (
+                <p className="small muted">
+                  Kelola lokasi di{" "}
+                  <Link className="text-link" href="/lokasi" onClick={() => setPanel(null)}>
+                    halaman Lokasi
+                  </Link>
+                  .
+                </p>
+              )}
             </>
           )}
           {panel === "notifications" && (
             <div className="notification-list">
-              {NOTIFICATIONS.map((n) => (
+              {notifications.map((n) => (
                 <Link key={n.title} href={n.href} onClick={() => setPanel(null)}>
                   <span>
                     <strong>{n.title}</strong>
@@ -225,12 +267,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           )}
           {panel === "profile" && (
             <div className="profile-info">
-              <span className="avatar large">{DEMO_USER.initials}</span>
-              <h3>{DEMO_USER.name}</h3>
+              <span className="avatar large">{account.initials}</span>
+              <h3>{account.name}</h3>
               <p>
-                {DEMO_USER.role} · {LOCATION.label}
+                {roleLabel} · {location}
               </p>
-              <Badge tone="warn">Akun demo</Badge>
               <p className="muted">Skor membantu menentukan prioritas kolam. Keputusan tindakan tetap di tanganmu.</p>
               <div className="profile-links">
                 <Link className="button secondary" href="/pengaturan" onClick={() => setPanel(null)}>
@@ -239,39 +280,27 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <Link className="button secondary" href="/notifikasi" onClick={() => setPanel(null)}>
                   Semua notifikasi
                 </Link>
-                <Link className="button secondary" href="/masuk" onClick={() => setPanel(null)}>
-                  Keluar
-                </Link>
+                <form action={logout}>
+                  <button className="button secondary wide" type="submit">
+                    <Icon icon={LogOut} />
+                    Keluar
+                  </button>
+                </form>
               </div>
             </div>
           )}
           {panel === "help" && (
             <>
-              <p>Alur dari hasil lab sampai tindakan di kolam.</p>
+              <p>{guide.intro}</p>
               <ol className="guide-list">
-                <li>
-                  <strong>Unggah hasil lab</strong>
-                  <p>Pilih CSV qPCR, periksa QC plate, cocokkan sampel ke kolam, lalu kirim.</p>
-                </li>
-                <li>
-                  <strong>Baca risiko</strong>
-                  <p>Dasbor mengurutkan kolam dari peluang wabah tertinggi beserta rekomendasinya.</p>
-                </li>
-                <li>
-                  <strong>Tugaskan teknisi</strong>
-                  <p>Ubah peringatan jadi tugas untuk teknisi pemegang kolam.</p>
-                </li>
-                <li>
-                  <strong>Tutup tugas</strong>
-                  <p>Periksa laporan dan foto teknisi, lalu tutup atau minta ulang.</p>
-                </li>
+                {guide.steps.map(([title, text]) => (
+                  <li key={title}>
+                    <strong>{title}</strong>
+                    <p>{text}</p>
+                  </li>
+                ))}
               </ol>
               <Badge tone="warn">Semua data adalah simulasi</Badge>
-              <p className="small muted">
-                <Link className="text-link" href="/bantuan" onClick={() => setPanel(null)}>
-                  Buka halaman bantuan
-                </Link>
-              </p>
             </>
           )}
         </Modal>
@@ -281,19 +310,24 @@ export function AppShell({ children }: { children: ReactNode }) {
 }
 
 // usePathname butuh Suspense di rute ber-param dinamis (Next 16 cacheComponents).
-function CurrentNavLinks({ onNavigate }: { onNavigate: () => void }) {
-  return <NavLinks pathname={usePathname()} onNavigate={onNavigate} />;
+function CurrentNavLinks({ role, onNavigate }: { role: Role; onNavigate: () => void }) {
+  return <NavLinks role={role} pathname={usePathname()} onNavigate={onNavigate} />;
 }
 
-function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate: () => void }) {
+function NavLinks({ role, pathname, onNavigate }: { role: Role; pathname: string; onNavigate: () => void }) {
+  const navigation = role === "teknisi" ? TECHNICIAN_NAVIGATION : NAVIGATION;
   return (
     <nav aria-label="Navigasi utama">
-      {NAVIGATION.map(({ group, routes }) => (
+      {navigation.map(({ group, routes }) => (
         <div className="nav-group" key={group}>
           <p className="group-title nav-label">{group}</p>
           {routes.map((href) => {
             const item = PAGES[href];
-            const active = isActive(pathname, href);
+            // Beranda teknisi (/teknisi) jangan ikut aktif di sub-halamannya yang punya menu sendiri.
+            const active =
+              href === "/teknisi"
+                ? pathname === href || pathname.startsWith("/teknisi/tugas")
+                : isActive(pathname, href);
             return (
               <Link
                 key={href}
@@ -318,11 +352,11 @@ function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate: () =
   );
 }
 
-function Breadcrumb() {
+function Breadcrumb({ location }: { location: string }) {
   const page = matchPage(usePathname());
   return (
     <span className="breadcrumb">
-      {LOCATION.label}
+      {location}
       <span>/</span>
       <strong>{page?.label ?? "Halaman"}</strong>
     </span>
