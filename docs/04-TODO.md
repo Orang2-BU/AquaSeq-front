@@ -11,14 +11,14 @@
 |---|---|---|---|---|---|
 | T1 | Scaffold Next.js + tooling + `.env.example` | Krisna | Must | ✅ | 24 Okt: Next 16.4.3; typecheck, lint, format:check, test (10), knip, build (42 rute) hijau |
 | T2 | Token 08-DESIGN + starter Soft Op + nav PRD + placeholder halaman | Krisna | Must | ✅ | 24 Okt: 38 halaman placeholder + not-found + error; shell dibandingkan dengan preview starter di 1440/768 (Chrome headless) dan 375 (emulasi): drawer, Esc, fokus kembali, tanpa scroll horizontal, target ≥ 44px, console bersih. `Modal` dipisah ke `ui/modal.tsx` supaya `Icon` bisa dipakai Server Component |
-| T3 | `src/lib/api`: skema Zod, klien live, pemilih `API_MODE`, tes kontrak | Krisna | Must | 🟦 | Amplop, `ApiError`, health, auth, farms (list/create/update/archive), ponds.create, invitations.create; live + mock. Endpoint lain ditambah per task. `server-only` belum dipasang (perlu izin dependency) |
-| T4 | Mock API + data SIMULASI + akun demo | Krisna | Must | 🟦 | Akun demo (Hendra pemilik; Rizky, Agus, Dwi teknisi), 2 lokasi simulasi, 18 kolam dengan kelas risiko ringkas, undangan. Sampel/tugas ditambah saat halamannya dibangun |
+| T3 | `src/lib/api`: skema Zod, klien live, pemilih `API_MODE`, tes kontrak | Krisna | Must | 🟦 | Amplop, `ApiError`, health, auth, farms (list/create/update/archive), ponds (list/create/update/archive), members (list/update/assignPonds), invitations (create/revoke/byToken/accept), skema `SdriResult`; live + mock. Endpoint lain ditambah per task. `server-only` belum dipasang (perlu izin dependency) |
+| T4 | Mock API + data SIMULASI + akun demo | Krisna | Must | 🟦 | Akun demo (Hendra pemilik; Rizky, Agus, Dwi teknisi), 2 lokasi simulasi, 18 kolam dengan sampel terakhir (peluang, kelas, tren; A4 ditolak, C3 belum ada sampel), keanggotaan aktif/nonaktif, undangan ber-hash (demo `/undangan/undangan-demo-sumber-rejeki`, satu kedaluwarsa). Sampel/tugas ditambah saat halamannya dibangun |
 | T5 | Sesi cookie httpOnly + `proxy.ts` | Krisna | Must | ✅ | 24 Okt: cookie httpOnly/SameSite=Lax/Secure(prod), refresh otomatis di proxy, pelindung rute + peran, `next` anti open redirect; 6 tes proxy + 5 tes mock auth + 6 tes cookie; `document.cookie` kosong di browser |
 | T6 | Masuk, daftar, keluar, akun demo, redirect peran, akses ditolak | Krisna | Must | ✅ | 24 Okt: diuji di browser: validasi per field, sandi salah (pesan generik), demo pemilik → /dasbor, demo teknisi → /teknisi (menu teknisi), silang peran → /akses-ditolak, keluar → /masuk, daftar → /mulai. Header keamanan dasar aktif; CSP menyusul di T26 |
 | T7 | Onboarding `/mulai` | Krisna | Must | ✅ | 24 Okt: diuji di browser dengan akun baru: lokasi → 4 kolam (pratinjau jumlah, huruf besar otomatis) → undang teknisi dengan 2 kolam (form dikosongkan, bisa undang lagi) → dasbor. Lokasi baru langsung jadi lokasi aktif |
 | T8 | Lokasi P27 + pemilih lokasi | Krisna | Must | ✅ | 24 Okt: kartu lokasi (kolam, teknisi, berisiko), tambah/ubah (modal), arsipkan (konfirmasi + konsekuensi), menu ⋯ (fokus, Esc), ganti lokasi aktif dari kartu dan top bar (cookie `aq_farm`). Badge simulasi dan notifikasi contoh hanya untuk lokasi simulasi |
-| T9 | Daftar kolam P14 + modal | Krisna | Must | ⬜ | — |
-| T10 | Tim P25 + undangan P11 + bagi kolam | Krisna | Must | ⬜ | — |
+| T9 | Daftar kolam P14 + modal | Krisna | Must | ✅ | 24 Okt: tabel urut risiko tertinggi, filter kelas (`?kelas=`, dengan jumlah) + teknisi (`?teknisi=`), kartu di < 768px, tambah kolam (form onboarding dipakai ulang), ubah, arsipkan. `src/lib/risk.ts` + `RiskBadge` |
+| T10 | Tim P25 + undangan P11 + bagi kolam | Krisna | Must | ✅ | 24 Okt: tabel teknisi + undangan tertunda (badge Kedaluwarsa), undang (form onboarding dipakai ulang), bagi kolam (PUT atomik), nonaktifkan/aktifkan, batalkan undangan. P11: token tidak berlaku/kedaluwarsa/valid → akun teknisi → `/teknisi` |
 | T11 | Shell teknisi + Tugas saya P36 | Krisna | Must | 🟦 | Shell + menu teknisi sudah ada (T6); halaman Tugas saya belum |
 | T12 | Catat kimia air P38 | Krisna | Must | ⬜ | — |
 | T13 | `src/lib/csv`: parser + ringkas Ct + tes | Krisna | Must | ⬜ | — |
@@ -85,10 +85,10 @@
 | P8 | Verifikasi email | Should | ⬜ | — |
 | P9 | Lupa sandi | Should | ⬜ | — |
 | P10 | Atur sandi baru | Should | ⬜ | — |
-| P11 | Terima undangan | Must | ⬜ | — |
+| P11 | Terima undangan | Must | ✅ | — |
 | P12 | Mulai (onboarding) | Must | ✅ | — |
 | P13 | Dasbor | Must | ⬜ | — |
-| P14 | Daftar kolam | Must | ⬜ | — |
+| P14 | Daftar kolam | Must | ✅ | — |
 | P15 | Detail kolam | Must | ⬜ | — |
 | P16 | Rincian skor | Must | ⬜ | — |
 | P17 | Unggah hasil lab | Must | ⬜ | — |
@@ -99,7 +99,7 @@
 | P22 | Peringatan | Must | ⬜ | — |
 | P23 | Daftar tugas | Must | ⬜ | — |
 | P24 | Detail tugas | Must | ⬜ | — |
-| P25 | Tim | Must | ⬜ | — |
+| P25 | Tim | Must | ✅ | — |
 | P26 | Detail teknisi | Should | ⬜ | — |
 | P27 | Lokasi | Must | ✅ | — |
 | P28 | Riwayat kimia air | Should | ⬜ | — |
@@ -133,3 +133,4 @@
 | 24 Okt 2026 | Setup projek: T1 ✅, T2 ✅, T3 sebagian. Go belum terpasang di laptop (backend lokal belum bisa dijalankan) |
 | 24 Okt 2026 | Milestone Akun: T5 ✅, T6 ✅, T3/T4 lanjut. Catatan: jangan jalankan `npm run build` saat dev server hidup (berbagi `.next`, memicu reload berantai) |
 | 24 Okt 2026 | T7 ✅, T8 ✅. Diperbaiki: siklus redirect saat backend menolak token yang masih tersimpan (sekarang lewat `/api/sesi/berakhir`), notifikasi contoh tampil di akun nyata, peringatan validasi `Date.now()` di dev |
+| 24 Okt 2026 | T9 ✅, T10 ✅ (P11, P14, P25). Kontrak 09: `Pond.trend`, `PUT /farms/{id}/members/{user_id}/ponds`, kode `EXPIRED`, pertanyaan K7 (penomoran `risk_class` backend 0/1/2/4/9) |

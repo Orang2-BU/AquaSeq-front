@@ -1370,3 +1370,293 @@ main {
     padding: 24px 20px;
   }
 }
+
+/* Badge kelas risiko (src/lib/risk.ts) dan tren */
+.badge.risk-aman {
+  background: var(--color-risk-aman-soft);
+  color: var(--color-risk-aman);
+}
+.badge.risk-ringan {
+  background: var(--color-risk-ringan-soft);
+  color: var(--color-risk-ringan);
+}
+.badge.risk-tinggi {
+  background: var(--color-risk-tinggi-soft);
+  color: var(--color-risk-tinggi);
+}
+.badge.risk-bahaya {
+  background: var(--color-risk-bahaya-soft);
+  color: var(--color-risk-bahaya);
+}
+.badge.risk-ditolak {
+  background: var(--color-surface-muted);
+  color: var(--color-on-surface);
+}
+.trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.trend-up {
+  color: var(--color-risk-tinggi);
+}
+.trend-down {
+  color: var(--color-risk-aman);
+}
+
+/* Daftar (P14, P25): filter pill + tabel, jadi kartu di mobile (08-DESIGN "Tabel") */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.table-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.filter-pill {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  color: var(--color-on-surface-muted);
+}
+.filter-pill span {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-on-surface-muted);
+}
+.filter-pill:hover {
+  color: var(--color-on-surface);
+  background: var(--color-canvas);
+}
+.filter-pill:active {
+  transform: translateY(1px);
+}
+.filter-pill.selected {
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  font-weight: 500;
+}
+.filter-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.filter-select select {
+  height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  font-size: 12px;
+}
+.filter-select select:hover {
+  background: var(--color-canvas);
+}
+.table-heading {
+  margin-bottom: 12px;
+}
+.table-heading h2 {
+  font-size: 16px;
+}
+.table-card {
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  overflow-x: auto;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.data-table th {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-on-surface-muted);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 14px 16px;
+  border-top: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+.data-table .numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.table-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.table-sub {
+  font-size: 12px;
+  color: var(--color-on-surface-muted);
+}
+.table-link {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+.table-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.data-table .table-action {
+  width: 60px;
+  text-align: right;
+}
+.table-action .more-menu {
+  display: inline-block;
+}
+.table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 40px 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-on-surface-muted);
+  text-align: center;
+}
+.invite-email {
+  font-size: 14px;
+  color: var(--color-on-surface);
+}
+.assign-list {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.assign-row {
+  min-height: 44px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--color-canvas);
+  cursor: pointer;
+}
+.assign-row:hover {
+  background: var(--color-surface-muted);
+}
+.assign-row input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+}
+.assign-row .small {
+  flex-basis: 100%;
+  padding-left: 28px;
+}
+@media (max-width: 1199px) {
+  .filter-pill,
+  .filter-select select {
+    min-height: 44px;
+  }
+}
+@media (max-width: 767px) {
+  /* nowrap: dengan wrap, lebar baris flex kolom ikut isi terlebar (pill yang bergulir). */
+  .table-toolbar {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+  }
+  .filter-pills {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .filter-pill {
+    flex-shrink: 0;
+  }
+  .filter-select select {
+    flex: 1;
+    min-width: 0;
+    font-size: 16px;
+  }
+  .table-card {
+    background: transparent;
+  }
+  .data-table,
+  .data-table tbody,
+  .data-table tr,
+  .data-table td {
+    display: block;
+  }
+  .data-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .data-table tr {
+    position: relative;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+  .data-table tr + tr {
+    margin-top: 8px;
+  }
+  .data-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-top: 0;
+    font-size: 16px;
+  }
+  .data-table td::before {
+    content: attr(data-label);
+    font-size: 12px;
+    color: var(--color-on-surface-muted);
+  }
+  .data-table .numeric {
+    text-align: left;
+  }
+  .data-table .table-title {
+    flex-direction: column;
+    align-items: start;
+    padding: 0 52px 8px 0;
+  }
+  .data-table .table-title::before {
+    content: none;
+  }
+  .data-table .table-action {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: auto;
+    padding: 0;
+  }
+  .data-table .table-action::before {
+    content: none;
+  }
+}

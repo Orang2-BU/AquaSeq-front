@@ -167,6 +167,7 @@ const PAGE_MAP = {
     group: "Pantau",
     icon: Waves,
     description: "Mencari dan membandingkan kolam.",
+    core: true,
   },
   "/kolam/[pondId]": {
     id: "P15",
@@ -243,6 +244,7 @@ const PAGE_MAP = {
     group: "Tim",
     icon: Users,
     description: "Mengelola teknisi, undangan, dan pembagian kolam.",
+    core: true,
   },
   "/tim/[userId]": {
     id: "P26",
@@ -252,7 +254,14 @@ const PAGE_MAP = {
     parent: "/tim",
     description: "Melihat beban kerja dan riwayat satu teknisi.",
   },
-  "/lokasi": { id: "P27", label: "Lokasi", group: "Tambak", icon: MapPin, description: "Mengelola lokasi tambak." },
+  "/lokasi": {
+    id: "P27",
+    label: "Lokasi",
+    group: "Tambak",
+    icon: MapPin,
+    description: "Mengelola lokasi tambak.",
+    core: true,
+  },
   "/laporan": {
     id: "P29",
     label: "Laporan",
