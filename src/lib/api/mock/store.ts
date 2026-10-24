@@ -135,6 +135,17 @@ export interface Store {
   invitations: MockInvitation[];
   access: Map<string, { userId: string; expiresAt: number }>;
   refresh: Map<string, string>;
+  models: {
+    version: string;
+    status: "kandidat" | "aktif" | "arsip";
+    metrics: Record<string, number | string>;
+    n_labels: number;
+    synthetic: boolean;
+    trained_at?: string;
+    promoted_at?: string | null;
+    promoted_by?: string | null;
+    note?: string | null;
+  }[];
 }
 
 /** Teks backend per kelas (`internal/sdri/engine.go`: gerbang PPC dan classifyRisk). */
@@ -312,6 +323,30 @@ function seed(): Store {
     invitations: [],
     access: new Map(),
     refresh: new Map(),
+    models: [
+      {
+        version: "V1-GSI",
+        status: "aktif",
+        metrics: { dasar: "Bobot empiris awal, belum validasi lapangan" },
+        n_labels: 0,
+        synthetic: true,
+        trained_at: "2026-10-01T00:00:00+07:00",
+        promoted_at: "2026-10-01T00:00:00+07:00",
+        promoted_by: null,
+        note: "Bobot empiris awal GSI terkalibrasi 5 arketipe emas.",
+      },
+      {
+        version: "V2-Kandidat",
+        status: "kandidat",
+        metrics: { brier_score: 0.054, auc_roc: 0.97, lead_time_gain_steps: 2 },
+        n_labels: 48,
+        synthetic: true,
+        trained_at: "2026-10-23T18:00:00+07:00",
+        promoted_at: null,
+        promoted_by: null,
+        note: "Model hasil kalibrasi trajektori multivariat. Dilatih di data sintetik klaster Puger Jember; tervalidasi pada pipeline evaluasi.",
+      },
+    ],
   };
 
   // [kode, kelas sampel terakhir (0 = ditolak, null = belum ada sampel), peluang %, tren, teknisi]
@@ -719,5 +754,5 @@ function seedInvitations(store: Store) {
 
 // Proxy dan halaman bisa memuat modul ini sebagai bundel terpisah; globalThis membuat satu proses berbagi satu store.
 // Kunci berversi supaya store lama (bentuk data sebelumnya) tidak terpakai setelah HMR.
-const holder = globalThis as { __aquaseqMockV2?: Store };
-export const store = (holder.__aquaseqMockV2 ??= seed());
+const holder = globalThis as { __aquaseqMockV3?: Store };
+export const store = (holder.__aquaseqMockV3 ??= seed());

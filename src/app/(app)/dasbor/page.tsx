@@ -97,7 +97,7 @@ async function Dashboard() {
         <EmptyState
           icon={FlaskConical}
           title="Belum ada hasil lab"
-          text="Unggah CSV qPCR pertama untuk melihat peluang wabah dan kelas risiko tiap kolam."
+          text="Unggah data eDNA air tambak pertama untuk melihat peluang wabah dan kelas risiko tiap kolam."
         >
           <Link className="button primary" href="/lab/unggah">
             <Icon icon={Upload} />

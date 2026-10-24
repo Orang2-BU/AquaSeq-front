@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useMemo, useState } from "react";
+import { startTransition, useActionState, useMemo, useState } from "react";
 import { Check, CircleAlert, FileUp, Send } from "lucide-react";
 import {
   FIELDS,
@@ -19,7 +19,8 @@ import type { FormState } from "@/lib/forms";
 import { WATER_PARAMS } from "@/lib/water";
 import { Plate } from "@/components/app/plate";
 import { Icon } from "@/components/ui";
-import { submitBatch, type UploadPayload } from "./actions";
+import { ingestDocument, submitBatch, type UploadPayload } from "./actions";
+import { documentError } from "@/lib/documents";
 
 export type PondOption = {
   id: string;
@@ -106,7 +107,25 @@ export function UploadWizard({ ponds, today }: { ponds: PondOption[]; today: str
   async function onFile(file: File | undefined) {
     setFileError("");
     if (!file) return;
-    if (!/\.csv$/i.test(file.name)) return setFileError("Pilih berkas berakhiran .csv.");
+    const error = documentError(file);
+    if (error) return setFileError(error);
+    if (!/\.csv$/i.test(file.name)) {
+      setFileName(file.name);
+      setText("");
+      setFileError("Membaca dokumen di backend...");
+      const form = new FormData();
+      form.set("file", file);
+      try {
+        const result = await ingestDocument({}, form);
+        setFileError(
+          result.error ||
+            `${result.data?.samples.length ?? 0} sampel terbaca. ${result.data?.warnings.map((w) => w.message).join(" ") || "Tidak ada peringatan dokumen."} Pratinjau dan pengiriman dokumen menunggu persetujuan tampilan. Gunakan CSV untuk alur kirim yang tersedia.`,
+        );
+      } catch {
+        setFileError("Dokumen belum dapat dibaca. Muat ulang lalu coba lagi.");
+      }
+      return;
+    }
     if (file.size > MAX_CSV_BYTES) return setFileError("Ukuran berkas lebih dari 2 MB.");
     setFileName(file.name);
     setText(await file.text());
@@ -177,7 +196,7 @@ export function UploadWizard({ ponds, today }: { ponds: PondOption[]; today: str
               </div>
               <div className="form-field">
                 <label className="field-label" htmlFor="instrument">
-                  Alat qPCR
+                  Alat laboratorium
                 </label>
                 <input
                   id="instrument"
@@ -203,22 +222,29 @@ export function UploadWizard({ ponds, today }: { ponds: PondOption[]; today: str
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => {
                 e.preventDefault();
-                void onFile(e.dataTransfer.files[0]);
+                startTransition(() => {
+                  void onFile(e.dataTransfer.files[0]);
+                });
               }}
             >
               <input
                 type="file"
-                accept=".csv,text/csv"
+                accept=".csv,.pdf,.docx,.xlsx"
                 className="sr-only"
-                onChange={(e) => void onFile(e.target.files?.[0])}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  startTransition(() => {
+                    void onFile(file);
+                  });
+                }}
                 aria-describedby="file-help"
               />
               <Icon icon={FileUp} size={28} />
-              <strong>{fileName || "Pilih atau seret berkas CSV ke sini"}</strong>
+              <strong>{fileName || "Pilih atau seret CSV, PDF, DOCX, atau XLSX"}</strong>
               <span id="file-help" className="small muted">
                 {fileName && parsed
                   ? `${parsed.wells.length} well terbaca`
-                  : "Maksimal 2 MB, satu run plate per berkas"}
+                  : "CSV maksimal 2 MB; PDF/DOCX/XLSX maksimal 4 MB"}
               </span>
             </label>
             {fileError && (
@@ -327,7 +353,7 @@ export function UploadWizard({ ponds, today }: { ponds: PondOption[]; today: str
               />
               <QcNode
                 ok={qc.every((s) => s.ct.ct_ppc !== null)}
-                label="PPC"
+                label="Kontrol kualitas"
                 detail={`${qc.filter((s) => s.ct.ct_ppc !== null).length} dari ${qc.length} sampel`}
               />
               <QcNode
@@ -348,7 +374,8 @@ export function UploadWizard({ ponds, today }: { ponds: PondOption[]; today: str
               />
             </ol>
             <p className="small muted">
-              Pratinjau ini hanya memeriksa kontrol. Gerbang PPC dan skor diputuskan server analisis setelah dikirim.
+              Pratinjau ini hanya memeriksa kontrol. Gerbang kontrol kualitas dan skor diputuskan server analisis
+              setelah dikirim.
             </p>
             <div className="qc-grid">
               <div className="table-card">
@@ -360,7 +387,7 @@ export function UploadWizard({ ponds, today }: { ponds: PondOption[]; today: str
                         pirA
                       </th>
                       <th scope="col" className="numeric">
-                        PPC
+                        Kontrol kualitas
                       </th>
                       <th scope="col" className="numeric">
                         16S
@@ -384,7 +411,7 @@ export function UploadWizard({ ponds, today }: { ponds: PondOption[]; today: str
                         <td data-label="pirA" className="numeric">
                           {s.ct.ct_ahpnd === null ? "Und." : formatNumber(s.ct.ct_ahpnd)}
                         </td>
-                        <td data-label="PPC" className="numeric">
+                        <td data-label="Kontrol kualitas" className="numeric">
                           {s.ct.ct_ppc === null ? "-" : formatNumber(s.ct.ct_ppc)}
                         </td>
                         <td data-label="16S" className="numeric">

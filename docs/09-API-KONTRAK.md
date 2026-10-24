@@ -1,6 +1,7 @@
 # 09 — Kontrak API: Web ↔ Backend
 
 > Kebutuhan web AquaSeq terhadap backend Go (`https://github.com/Orang2-BU/AquaSeq-back`). Dibaca bersama teman backend.
+> Istilah baku: "data eDNA air tambak" (bukan data hasil qPCR), "data eDNA dari sampel air" (bukan dataset hasil qPCR dari lab), "kadar jejak patogen" (bukan angka Ct/copies), "kontrol kualitas" (bukan kontrol PPC di tampilan), "panel jejak penyakit" (bukan panel qPCR).
 > Status: ✅ ACC sisi web 24 Okt 2026, menunggu persetujuan tim backend · Dasar: commit backend `767f56c` (6 endpoint, tanpa auth).
 > ✅ = sudah ada di backend · ⬜ = perlu dibuat · 🔧 = ada, perlu diubah. Web membangun semua ⬜ dengan mock (`API_MODE=mock`) sampai backend siap.
 
@@ -100,7 +101,28 @@ Perubahan: tambah `sample_code`, `meta` (data well mentah dari CSV untuk rincian
 - `Well`: `{ position, target, ct | null, tm | null, excluded_reason | null }`. Web meringkas Ct (rata-rata replikat yang tidak dikeluarkan) dan memeriksa kontrol sebelum kirim; gerbang PPC dan skor tetap di backend.
 - `WaterLog`: `{ id, pond: { id, pond_code }, measured_at, temp_c, ph, do_mg_l, tan_mg_l, no2_mg_l, h2s_mg_l, tom_mg_l, alkalinity, salinity_ppt, transparency_cm, nh3_mg_l, recorded_by: { id, full_name } }`.
 - `GET /ponds/{id}/cycles` mengembalikan siklus terbaru dulu; `POST /cycles/outcome` (✅) dipakai apa adanya.
-- `SdriResult` (sudah ada): `{ status: "VALID"|"REJECTED_INHIBITOR"|"REJECTED_INVALID_QC", z_score, probability_pct, risk_class: 1-4 (0 bila ditolak), risk_level, s_qpcr, s_bio, s_chem, model_version, recommendation }`
+- `SdriResult` (sudah ada): `{ status: "VALID"|"REJECTED_INHIBITOR"|"REJECTED_INVALID_QC", z_score, probability_pct, risk_class: 1-4 (0 bila ditolak), risk_level, s_qpcr, s_bio, s_chem, model_version, recommendation, predicted_disease?: string, disease_name?: string, evidence?: [{ feature: string, value: number, threshold: number, status: string }], mitigation_actions?: [{ action: string, source: string, priority: "tinggi"|"sedang"|"rendah" }], ai_explanation?: string, confidence?: number, trajectory_anomaly?: boolean, forecast_7d?: number }`
+
+## 4b. Ingesti Dokumen Lab Multi-Format (AI Lapis C)
+| Method | Endpoint | Status | Body | Data respons | Siapa |
+|---|---|---|---|---|---|
+| POST | `/documents/ingest` | ⬜ | multipart file (`.csv`, `.pdf`, `.xlsx`, `.docx`) | `{ file_name, file_type, run: { lab_name, instrument, tested_at }, samples: RawSampleRecord[], warnings: [{ code, message, location? }] }` | pemilik |
+Web menerima hasil ekstraksi terstruktur (fitur mentah nullable, well, status QC, tanpa kewajiban mencocokkan kolam di hulu) sebelum tahap pemetaan kolam dan pengiriman batch.
+
+## 4c. Insight Pola & Prakiraan Kolam (AI Lapis B)
+| Method | Endpoint | Status | Body / query | Data respons | Siapa |
+|---|---|---|---|---|---|
+| GET | `/ponds/{id}/insights` | ⬜ | — | `Insights` | pemilik / teknisi pemegang |
+
+- `Insights`: `{ pond_id, status: "OK"|"INSUFFICIENT_DATA"|"QC_REJECTED", anomaly: { score, flagged, contributors: [{ feature, value, baseline, deviation }], earlier_than_class_steps?, synthetic }, forecast_7d: { horizon_days, predicted_probability_pct: number|null, method: "THEIL_SEN_LOGIT", data_points, status, synthetic, disclaimer }, forecast_14d?, similar_cases: [{ case: { id, pond_id, sdri_class, action, outcome, synthetic }, distance, similarity? }], explanation: { disease_potential, evidence_reason, actions: [{ action, source }], seven_day_outlook, full_narrative } | null }`.
+
+## 4d. Versi Model & Kalibrasi (AI Lapis B)
+| Method | Endpoint | Status | Body / query | Data respons | Siapa |
+|---|---|---|---|---|---|
+| GET | `/models` | ⬜ | — | `items: ModelVersion[]` | semua anggota |
+| POST | `/models/{version}/promote` | ⬜ | `note: string` | `ModelVersion` | pemilik saja |
+
+- `ModelVersion`: `{ version: string, status: "kandidat"|"aktif"|"arsip", metrics: Record<string, number|string>, n_labels: number, synthetic: boolean, trained_at?: string, promoted_at?: string|null, promoted_by?: string|null, note?: string|null }`. V1 beku (bobot empiris GSI), V2 kandidat hasil kalibrasi siklus. Promosi model mewajibkan catatan konsekuensi dan tercatat nama pemilik + waktu.
 
 ## 5. Kimia air (⬜)
 | Method | Endpoint | Body / query | Data respons | Siapa |

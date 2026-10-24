@@ -63,7 +63,7 @@ async function Batches({ searchParams }: Pick<PageProps<"/lab">, "searchParams">
         <EmptyState
           icon={FileSpreadsheet}
           title="Belum ada unggahan"
-          text="Unggah CSV qPCR pertama. Format dan template ada di halaman Format CSV."
+          text="Unggah data eDNA air tambak pertama. Format dan template ada di halaman Format CSV."
         >
           <Link className="button secondary" href="/lab/format">
             Lihat format CSV

@@ -3,10 +3,10 @@
 > Ditulis 24 Okt 2026 saat sesi dipindah ke akun lain. Baca ini setelah `CLAUDE.md`, lalu `docs/04-TODO.md` dan `docs/09-API-KONTRAK.md`.
 
 ## 1. Posisi sekarang
-- Branch kerja: `feat/web-setup`. **Commit/push hanya ke branch ini, jangan ke `main`** (permintaan user 24 Okt).
-- Selesai: semua halaman **pemilik** di mode mock (P12-P29, P31-P34, P42, 404 dalam shell). Detail per task di `docs/04-TODO.md`.
-- Belum: halaman **teknisi** (T11 Tugas saya, T12 Catat air, T22 Kerjakan tugas + foto, P39), publik (P2-P4, T37), landing (T26-T35), P30 banding dan P35 bantuan (Could), uji live (T36).
-- Semua cek terakhir hijau: 75 tes, typecheck, lint, format, knip, audit, build.
+- Branch kerja: `push-deployment`. Dilarang commit/push tanpa izin user.
+- Selesai: semua halaman **pemilik** di mode mock (P12-P29, P31-P34, P42, 404 dalam shell). Detail per task di `docs/04-TODO.md`. Integrasi kecerdasan backend 3 lapis (T51-T55): skema Zod + API klien + mock seed + tes kontrak selesai; desain visual UI di-freeze 100% mengikuti buatan teman user (tanpa kartu/chart/panel baru); teks antarmuka disesuaikan kamus istilah baru (eDNA air tambak, kadar jejak patogen, kontrol kualitas, panel jejak penyakit).
+- Belum: halaman **teknisi** (T11 Tugas saya, T12 Catat air, T22 Kerjakan tugas + foto, P39), publik (P2-P4, T37), landing (T26-T35), P30 banding dan P35 bantuan (Could), uji live dengan backend online di port 18080 (saat ini RED jujur: ECONNREFUSED).
+- Pemeriksaan terakhir frontend: 83 tes, typecheck, lint, format, knip hijau. Build 45 rute hijau sebelum penyelarasan terakhir skema. Live RED: ECONNREFUSED port 18080. UI fitur AI baru menunggu izin; hanya teks dan wiring input lama berubah.
 
 ## 2. Cara menjalankan
 ```bash
@@ -19,7 +19,7 @@ npm run build        # JANGAN saat dev server hidup (lihat §4)
 Akun demo: tombol "Masuk sebagai demo pemilik/teknisi" di `/masuk` (Hendra Kusuma pemilik 2 lokasi; Rizky Pratama teknisi). Undangan demo: `/undangan/undangan-demo-sumber-rejeki` (bayu@demo.aquaseq.id, kolam C3). Tautan undangan baru dicetak ke log dev server (`[mock] Undangan ...`). Data mock hilang saat server restart.
 
 ## 3. Peta kode halaman pemilik (rujukan)
-- Data: `src/lib/api/index.ts` (skema Zod + klien live), `src/lib/api/mock/store.ts` (seed) dan `mock/index.ts` (perilaku). Store mock memakai kunci `globalThis.__aquaseqMockV2`; ganti versi kunci bila bentuk seed berubah supaya dev server tidak memakai store lama.
+- Data: `src/lib/api/index.ts` (skema Zod + klien live), `src/lib/api/mock/store.ts` (seed) dan `mock/index.ts` (perilaku). Store mock memakai kunci `globalThis.__aquaseqMockV3`; ganti versi kunci bila bentuk seed berubah supaya dev server tidak memakai store lama.
 - Skor hanya dipetakan di `src/lib/risk.ts` (label, nada, format peluang, tren, alasan ditolak, pemicu utama WA). Badge `components/app/risk-badge.tsx`, tren `components/app/trend.tsx`.
 - Komponen bersama `components/app/`: `task-dialog` (buat/ubah tugas), `whatsapp-dialog` (hook `useWhatsAppPreview`, dimuat dari klik), `cycle-dialog`, `risk-chart` (SVG), `plate` (96-well), `select-filter`, `page-parts` (`PageSkeleton`, `Metric`), `empty-state` (`NoFarmState`).
 - Baca entitas dari URL lewat `loadEntity()` (`lib/auth/session.ts`): `NOT_FOUND` → 404 dalam shell, `FORBIDDEN` → `/akses-ditolak`.

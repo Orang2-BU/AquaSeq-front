@@ -1,36 +1,36 @@
 # 01 — PRD: AquaSeq Web
 
-> Apa yang dibangun, untuk siapa, dan kenapa. Turunan dari 00-BRIEF. Status: ✅ ACC 24 Okt 2026 · Versi 1.1
+> Apa yang dibangun, untuk siapa, dan kenapa. Turunan dari 00-BRIEF. Status: ✅ ACC 24 Okt 2026 · Versi 1.2
 > Saklar bisnis: Tidak. Bagian bisnis (§3, §3b) sengaja tidak ada.
-> Skor dihitung backend Go tim (model logit V1-GSI, peluang wabah %, kelas 1-4). Kontrak: `docs/09-API-KONTRAK.md`. Tanpa AI/LLM di web.
+> Arsitektur kecerdasan 3 lapis: Lapis A deterministik (SDRI V1 logit + gerbang kontrol kualitas), Lapis B belajar (anomali trajektori & kalibrasi versi model), Lapis C bahasa (ingesti dokumen multi-format & narasi tindakan WhatsApp). Seluruhnya berjalan di backend Go tim; web tidak menghitung skor, tidak memanggil LLM langsung, dan tidak ada chatbot bebas. Kontrak: `docs/09-API-KONTRAK.md`.
 
 ## 1. Pitch Satu Kalimat
-Untuk pemilik tambak udang vaname yang sudah menguji air dengan qPCR tapi kebingungan membaca angka Ct dan memastikan teknisinya bertindak, AquaSeq adalah web pemantau kolam yang mengubah hasil lab menjadi skor risiko SDRI dan tugas tindakan untuk teknisi, tidak seperti aplikasi pencatat tambak biasa karena skor bisa dirinci sampai well qPCR dan setiap tindakan tercatat sampai dilaporkan selesai.
+Untuk pemilik tambak udang vaname yang sudah menguji air tapi kebingungan membaca kadar jejak patogen dan memastikan teknisinya bertindak, AquaSeq adalah web pemantau kolam yang mengubah data eDNA air tambak menjadi skor risiko SDRI, potensi penyakit yang berpotensi muncul beserta tindakan secepatnya untuk teknisi, tidak seperti aplikasi pencatat tambak biasa karena skor deterministik transparan hingga well dan AI backend belajar dari riwayat siklus tambak.
 
 ## 2. Masalah, Pengguna, dan Nilai
 - **Pengguna utama & pekerjaannya:**
-  - **Pemilik tambak (bos).** Memiliki 1 atau lebih lokasi tambak intensif, masing-masing 6-20 kolam. Pekerjaannya: tahu kolam mana yang harus ditangani hari ini, menyuruh orang yang tepat, dan memastikan perintahnya dikerjakan. Kendala: hasil lab datang sebagai tabel Ct yang tidak dia pahami, perintah ke teknisi lewat telepon atau chat WA yang tenggelam, dan tidak ada catatan apakah tindakan berhasil.
+  - **Pemilik tambak (bos).** Memiliki 1 atau lebih lokasi tambak intensif, masing-masing 6-20 kolam. Pekerjaannya: tahu kolam mana yang harus ditangani hari ini, menyuruh orang yang tepat, dan memastikan perintahnya dikerjakan. Kendala: data eDNA dari sampel air datang sebagai format lab yang rumit, perintah ke teknisi lewat telepon atau chat WA yang tenggelam, dan tidak ada catatan apakah tindakan berhasil.
   - **Teknisi tambak (karyawan).** Memegang beberapa kolam. Pekerjaannya: mengukur kimia air harian, mengambil sampel air untuk lab, dan menjalankan tindakan (ganti air, aerasi, kurangi pakan, siphon). Kendala: instruksi lisan mudah lupa, catatan di kertas, tidak tahu kenapa harus melakukan sesuatu.
 - **Stakeholder lain:**
   - **Tamu landing:** calon pemilik tambak, dan juri GENOHACK yang mencari metode serta bukti.
-  - **Lab mitra (GSI):** mengirim file hasil qPCR ke pemilik. Tidak login di versi ini.
+  - **Lab mitra (GSI):** mengirim file data eDNA air tambak ke pemilik. Tidak login di versi ini.
   - **Tim backend:** menyediakan API sesuai `docs/09-API-KONTRAK.md`.
 - **Value proposition:**
-  - **Sebelum:** Pemilik menerima tabel Ct dari lab, membaca sendiri atau mengabaikannya. Perintah ke teknisi lewat telepon, tanpa jejak.
-  - **Bagaimana:** Pemilik mengunggah CSV hasil lab. Web menampilkan pratinjau QC, backend menolak sampel yang gagal kontrol PPC dan menghitung peluang wabah per kolam. Kolam Waspada tinggi/Bahaya jadi peringatan, lalu pemilik mengubahnya jadi tugas untuk teknisi. Teknisi melapor dengan foto dan angka ukur.
-  - **Sesudah:** Dalam satu layar pemilik melihat kolam yang berisiko beserta alasannya, siapa yang menangani, dan apakah sudah selesai. Waktu dari hasil lab masuk sampai tugas diberikan ditargetkan < 30 menit `[asumsi]`.
+  - **Sebelum:** Pemilik menerima laporan dari lab, membaca sendiri atau mengabaikannya. Perintah ke teknisi lewat telepon, tanpa jejak.
+  - **Bagaimana:** Pemilik mengunggah data eDNA air tambak (CSV/PDF/DOCX/XLSX). Web menampilkan pratinjau QC, backend menolak sampel yang gagal kontrol kualitas dan menghitung peluang wabah per kolam serta potensi penyakit + mitigasi. Kolam Waspada tinggi/Bahaya jadi peringatan, lalu pemilik mengubahnya jadi tugas untuk teknisi. Teknisi melapor dengan foto dan angka ukur.
+  - **Sesudah:** Dalam satu layar pemilik melihat kolam yang berisiko beserta alasannya, siapa yang menangani, dan apakah sudah selesai. Waktu dari data lab masuk sampai tugas diberikan ditargetkan < 30 menit `[asumsi]`.
 - **Alternatif saat ini & kelemahannya:**
-  - Membaca Ct mentah atau laporan PDF lab: angka tanpa interpretasi.
-  - JALA, FarmMOJO (manajemen tambak): mencatat parameter fisik-kimia dan budidaya, tidak mengolah qPCR patogen.
+  - Membaca kadar mentah atau laporan PDF lab: angka tanpa interpretasi.
+  - JALA, FarmMOJO (manajemen tambak): mencatat parameter fisik-kimia dan budidaya, tidak mengolah jejak patogen molekuler.
   - Forte Biotech RAPID, Kytos: hasil uji per kolam atau indikator mikrobioma, tanpa alur tugas ke teknisi.
   - Grup WhatsApp tambak: perintah tenggelam, tidak ada status selesai.
 - **Ukuran keberhasilan (non-uang):**
   - Alur inti berjalan end-to-end dengan akun demo tanpa bantuan (diuji 3 orang di luar tim) `[asumsi]`.
   - 100% skor yang tampil bisa dirinci: peluang → Z → subskor (S_qPCR, S_Bio, S_Chem) → fitur → well.
   - 100% sampel `REJECTED_*` dari backend tampil sebagai "Ditolak" dengan alasan, tanpa angka peluang.
-  - Galat parsing CSV ditunjukkan per baris; tidak ada sampel yang dikirim tanpa dicocokkan ke kolam.
+  - Galat parsing CSV ditunjukkan per baris; file dokumen lain diperiksa oleh endpoint ingesti dokumen multi-format.
   - Tidak ada data pemilik lain yang bisa dibuka lewat web (backend mengembalikan 403, web menampilkan "Akses ditolak").
-- **Catatan risiko (keputusan user, 24 Okt 2026):** web menampilkan skor versi backend, yaitu "peluang wabah %" dari model logit dengan koefisien awal GSI (V1-GSI), sementara model itu belum dilatih pada data kolam yang hasil akhirnya diketahui. Juri bisa menanyakan dasar persennya. Mitigasi: versi model selalu tampil, rincian skor menjelaskan "koefisien awal, dikalibrasi ulang dari data hasil siklus" (endpoint `cycles/outcome`), dan landing tidak mengklaim akurasi. Dokumen tim sebelumnya (`docs/arsip/sdri-v1.md`, `docs/arsip/sdri-audit-gsi.md`) mencatat keberatan atas pendekatan ini.
+- **Catatan risiko & tata kelola model:** web menampilkan skor versi backend (Lapis A: SDRI V1 deterministik dengan koefisien awal GSI). Lapis B belajar menghasilkan versi model baru terverifikasi (kandidat V2) yang diaudit, bukan model yang mengubah diri diam-diam. Data simulasi/sintetik selalu diberi label "Data simulasi" atau "Data sintetik". Landing tidak mengklaim akurasi lapangan sebelum tervalidasi pada data hasil siklus.
 
 ## 4. Alur Inti
 > Perjalanan dari awal sampai nilai utama tercapai. Hanya fitur di jalur ini yang Must.
@@ -109,7 +109,7 @@ Section landing P1 (urutan, satu file per section, detail visual di 08-DESIGN Ar
 | P31 | Log aktivitas | `/aktivitas` | pemilik | Siapa melakukan apa | Daftar kejadian | Filter pelaku/jenis | — | — | kosong | Should |
 | P32 | Notifikasi | `/notifikasi` | pemilik, teknisi | Melihat semua notifikasi | Daftar: tugas baru, laporan masuk, peringatan baru | Tandai dibaca | Buka item | Tandai semua dibaca | kosong | Should |
 | P33 | Pengaturan akun | `/pengaturan` | pemilik, teknisi | Profil dan sandi | Nama, email, nomor WA | — | Simpan | Ganti sandi | — | Should |
-| P34 | Pengaturan tambak | `/pengaturan/tambak` | pemilik | Nomor WA tujuan per kolam | Form per lokasi | — | Simpan | — | — | Should |
+| P34 | Pengaturan tambak | `/pengaturan/tambak` | pemilik | Nomor WA dan versi model | Form per lokasi; V1 beku, kandidat V2, metrik, jumlah label, status | Audit nama/waktu | Simpan | Promosi kandidat dengan dialog konsekuensi + catatan wajib | kosong/loading/error | Should |
 | P35 | Bantuan | `/bantuan` | pemilik, teknisi | Panduan alur dan arti kelas | Langkah alur inti, tabel kelas | Tautan metode | — | — | — | Could |
 
 **Teknisi (area aplikasi, responsif HP)**
@@ -198,7 +198,7 @@ Section landing P1 (urutan, satu file per section, detail visual di 08-DESIGN Ar
 - Akun lab mitra; peran analis lab terpisah.
 - Profil Nanopore, meter keyakinan hasil negatif, sinyal EWMA (tidak didukung backend).
 - WhatsApp Business API / pengiriman otomatis.
-- LLM.
+- LLM langsung di web dan chatbot bebas. AI hanya berjalan di backend.
 - IoT sensor kimia air.
 - Multi-bahasa (hanya Bahasa Indonesia).
 

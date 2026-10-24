@@ -22,7 +22,7 @@ const TARGETS: { key: keyof SampleFeatures; target: string; label: string; copie
   { key: "ct_ehp", target: "swp1", label: "EHP (swp1)", copies: "ehp" },
   { key: "ct_amoa", target: "amoA", label: "Bakteri nitrifikasi (amoA)" },
   { key: "ct_16s", target: "16S", label: "Total bakteri (16S)" },
-  { key: "ct_ppc", target: "PPC", label: "Kontrol proses (PPC)" },
+  { key: "ct_ppc", target: "PPC", label: "Kontrol kualitas" },
 ];
 
 export default function Page({ params }: PageProps<"/sampel/[sampleId]">) {
@@ -96,8 +96,8 @@ async function Breakdown({ params }: Pick<PageProps<"/sampel/[sampleId]">, "para
         <section className="reject-box" role="status">
           <h2>Sampel ditolak: {rejectedReason(r.status)}</h2>
           <p>
-            Ct PPC {formatNumber(sample.features.ct_ppc)} berada di luar rentang yang diterima backend, jadi hasil
-            patogen tidak bisa dipercaya dan tidak diberi angka peluang. {r.recommendation}
+            Kontrol kualitas {formatNumber(sample.features.ct_ppc)} berada di luar rentang yang diterima backend, jadi
+            hasil patogen tidak bisa dipercaya dan tidak diberi angka peluang. {r.recommendation}
           </p>
         </section>
       )}
@@ -115,7 +115,7 @@ async function Breakdown({ params }: Pick<PageProps<"/sampel/[sampleId]">, "para
                 {riskOf(r).label}. Backend mengubah nilai Z menjadi peluang 0-100% dengan fungsi logistik.
               </p>
             ) : (
-              <p>Tidak dihitung karena gerbang PPC menolak sampel.</p>
+              <p>Tidak dihitung karena gerbang kontrol kualitas menolak sampel.</p>
             )}
             <p className="muted">{r.recommendation}</p>
           </div>
@@ -164,10 +164,10 @@ async function Breakdown({ params }: Pick<PageProps<"/sampel/[sampleId]">, "para
                   <tr>
                     <th scope="col">Target</th>
                     <th scope="col" className="numeric">
-                      Ct rata-rata
+                      Kadar jejak patogen
                     </th>
                     <th scope="col" className="numeric">
-                      Kopi/mL
+                      Kadar (kopi/mL)
                     </th>
                   </tr>
                 </thead>
@@ -179,10 +179,10 @@ async function Breakdown({ params }: Pick<PageProps<"/sampel/[sampleId]">, "para
                         <td data-label="Target" className="table-title">
                           {t.label}
                         </td>
-                        <td data-label="Ct rata-rata" className="numeric">
+                        <td data-label="Kadar jejak patogen" className="numeric">
                           {ct === null ? <span className="muted">Undetermined</span> : formatNumber(ct)}
                         </td>
-                        <td data-label="Kopi/mL" className="numeric">
+                        <td data-label="Kadar (kopi/mL)" className="numeric">
                           {t.copies ? formatNumber(sample.copies_per_ml[t.copies], 0) : "-"}
                         </td>
                       </tr>
@@ -223,7 +223,7 @@ async function Breakdown({ params }: Pick<PageProps<"/sampel/[sampleId]">, "para
                         <th scope="col">Well</th>
                         <th scope="col">Target</th>
                         <th scope="col" className="numeric">
-                          Ct
+                          Kadar
                         </th>
                         <th scope="col" className="numeric">
                           Tm
@@ -238,7 +238,7 @@ async function Breakdown({ params }: Pick<PageProps<"/sampel/[sampleId]">, "para
                             {w.position}
                           </td>
                           <td data-label="Target">{w.target}</td>
-                          <td data-label="Ct" className="numeric">
+                          <td data-label="Kadar" className="numeric">
                             {w.ct === null ? <span className="muted">Undetermined</span> : formatNumber(w.ct)}
                           </td>
                           <td data-label="Tm" className="numeric">

@@ -60,6 +60,15 @@
 | T49 | Tautan kolam di teks WA + P5, P35, P43 | Krisna | Could | ⬜ | Fitur kecil bernilai besar |
 | T50 | Deploy Vercel + cek alur inti di produksi | Krisna | Must | ⬜ | Butuh backend produksi |
 
+## Konsep AI backend (izin user)
+| ID | Task | Status | Bukti / catatan |
+|---|---|---|---|
+| T51 | Ingesti CSV/PDF/DOCX/XLSX + QC terstruktur | ⛔ | API multipart `api.documents.ingest` + validasi 4MB + tes kontrak; tampilan UI ditahan menunggu persetujuan desain (freeze) |
+| T52 | Potensi penyakit + bukti + mitigasi SOP | ⛔ | API/skema/tes siap; UI baru tidak ditampilkan, menunggu izin desain |
+| T53 | Insight anomali + prakiraan + kasus mirip | ⛔ | API `api.ponds.insights` + skema Zod + mock Lapis B + tes; chart visual ditahan menunggu izin (freeze) |
+| T54 | Belajar/kalibrasi versi model teraudit | ⛔ | API `api.models.list` dan `promote` + mock V1 beku & V2 kandidat; UI promosi ditahan menunggu izin (freeze) |
+| T55 | Uji integrasi live opt-in | ⛔ | `vitest.live.config.ts` + `tests/live/core.live.test.ts` via `npm run test:live`; bukti RED jujur ECONNREFUSED saat backend mati |
+
 ## Alur Inti Check
 | Langkah | Status | Dicek |
 |---|---|---|

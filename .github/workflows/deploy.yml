@@ -1,70 +1,81 @@
-name: CI/CD & Deploy to Dokploy
+name: Verify and optionally trigger Dokploy
 
 on:
   push:
-    branches:
-      - main
-      - master
-      - push-deployment
+    branches: [push-deployment]
   pull_request:
-    branches:
-      - main
-      - master
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aquaseq-front-ci-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   verify:
-    name: Verify (Lint, Typecheck, Test, Dead Code, Build)
+    name: Frontend checks and image
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      API_MODE: mock
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run linter
-        run: npm run lint
-
-      - name: Check code formatting
-        run: npm run format:check
-
-      - name: Run typecheck
-        run: npm run typecheck
-
-      - name: Run tests
-        run: npm test
-
-      - name: Check dead code
-        run: npx knip
-
-      - name: Build Next.js application
-        run: npm run build
-        env:
-          NEXT_TELEMETRY_DISABLED: 1
-          API_MODE: mock
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm test
+      - run: npx --no-install knip
+      - run: npm run build
+      - run: docker build --tag aquaseq-front:ci .
 
   deploy:
-    name: Deploy to Dokploy
+    name: Trigger Dokploy (opt-in)
     needs: verify
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    if: >-
+      vars.DOKPLOY_DEPLOY_ENABLED == 'true' &&
+      github.ref == 'refs/heads/push-deployment' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: dokploy-aquaseq-front
+      cancel-in-progress: false
     steps:
-      - name: Trigger Dokploy Deployment Webhook
+      # API works with Auto Deploy OFF; provider webhooks require it ON.
+      # Existing DOKPLOY_WEBHOOK_URL is retained, but not used by this workflow.
+      - name: Request deployment (not rollout verification)
         env:
-          DOKPLOY_WEBHOOK_URL: ${{ secrets.DOKPLOY_WEBHOOK_URL }}
+          DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
+          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+          DOKPLOY_APPLICATION_ID: ${{ secrets.DOKPLOY_APPLICATION_ID }}
+        shell: bash
         run: |
-          if [ -z "$DOKPLOY_WEBHOOK_URL" ]; then
-            echo "DOKPLOY_WEBHOOK_URL secret belum diset di GitHub Secrets."
-            echo "Setup: Dokploy -> Application -> Deployments -> Webhook URL -> masukkan ke GitHub Secrets sebagai DOKPLOY_WEBHOOK_URL."
-            exit 0
-          fi
-          echo "Triggering Dokploy deployment webhook..."
-          curl -f -s -S -X POST "$DOKPLOY_WEBHOOK_URL"
-          echo "Deployment berhasil ditrigger ke Dokploy."
+          set -euo pipefail
+          : "${DOKPLOY_URL:?DOKPLOY_URL secret is required when deployment is enabled}"
+          : "${DOKPLOY_API_KEY:?DOKPLOY_API_KEY secret is required when deployment is enabled}"
+          : "${DOKPLOY_APPLICATION_ID:?DOKPLOY_APPLICATION_ID secret is required when deployment is enabled}"
+          python3 - <<'PY' > "$RUNNER_TEMP/dokploy-payload.json"
+          import json, os
+          from urllib.parse import urlsplit
+          url = urlsplit(os.environ["DOKPLOY_URL"])
+          if url.scheme != "https" or not url.netloc or url.path not in ("", "/") or url.query or url.fragment or url.username or url.password:
+              raise SystemExit("DOKPLOY_URL must be an HTTPS origin without credentials, path, query, or fragment")
+          print(json.dumps({"applicationId": os.environ["DOKPLOY_APPLICATION_ID"]}))
+          PY
+          curl --fail --silent --show-error --connect-timeout 10 --max-time 60 \
+            --request POST "${DOKPLOY_URL%/}/api/application.deploy" \
+            --header "accept: application/json" \
+            --header "Content-Type: application/json" \
+            --header "x-api-key: $DOKPLOY_API_KEY" \
+            --data-binary "@$RUNNER_TEMP/dokploy-payload.json" --output /dev/null
+          echo "Dokploy accepted the request; rollout and deployed health remain unverified."

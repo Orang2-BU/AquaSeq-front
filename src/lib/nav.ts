@@ -66,7 +66,7 @@ const PAGE_MAP = {
     group: "Publik",
     icon: BookOpen,
     parent: "/",
-    description: "Cara skor dihitung backend, gerbang PPC, dan batasannya.",
+    description: "Cara skor dihitung backend, gerbang kontrol kualitas, dan batasannya.",
   },
   "/kontak": {
     id: "P3",
@@ -208,7 +208,7 @@ const PAGE_MAP = {
     label: "Unggah hasil lab",
     group: "Lab",
     icon: Upload,
-    description: "Mengunggah CSV qPCR, memeriksa QC, lalu mengirim ke analisis.",
+    description: "Mengunggah data eDNA air tambak, memeriksa kontrol kualitas, lalu mengirim ke analisis.",
     core: true,
   },
   "/lab": {

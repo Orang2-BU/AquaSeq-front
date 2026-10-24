@@ -133,7 +133,7 @@ async function PondDetail({ params, searchParams }: PageProps<"/kolam/[pondId]">
           ) : (
             <>
               <p className="spotlight-reason">
-                Unggah CSV qPCR yang memuat sampel kolam ini untuk melihat peluang wabah.
+                Unggah data eDNA air tambak yang memuat sampel kolam ini untuk melihat peluang wabah.
               </p>
               <Link className="button inverse" href="/lab/unggah">
                 Unggah hasil lab

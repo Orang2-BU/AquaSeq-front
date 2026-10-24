@@ -51,7 +51,7 @@ export function Plate({ wells, highlight }: { wells: PlateWell[]; highlight?: st
                 }
                 const heat = well.ct === null ? 0 : Math.min(1, Math.max(0, (CT_MAX - well.ct) / (CT_MAX - CT_MIN)));
                 const dim = highlight && well.sample_code !== highlight;
-                const label = `${position}, ${well.sample_code}, ${well.target}, Ct ${
+                const label = `${position}, ${well.sample_code}, ${well.target}, ${
                   well.ct === null ? "Undetermined" : formatNumber(well.ct)
                 }${well.excluded_reason ? `, dikeluarkan: ${well.excluded_reason}` : ""}`;
                 return (
@@ -70,7 +70,7 @@ export function Plate({ wells, highlight }: { wells: PlateWell[]; highlight?: st
         </tbody>
       </table>
       <p className="plate-legend small muted">
-        Warna makin pekat = Ct makin kecil (target makin banyak). Arsir = Undetermined (tidak teramplifikasi).
+        Warna makin pekat = kadar jejak patogen makin tinggi. Arsir = Undetermined (tidak teramplifikasi).
       </p>
     </div>
   );

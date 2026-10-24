@@ -28,7 +28,9 @@ async function Upload() {
     <div className="page-heading">
       <div>
         <h1>Unggah hasil lab</h1>
-        <p>{current ? `${current.name} · CSV qPCR satu run plate` : "CSV qPCR satu run plate"}</p>
+        <p>
+          {current ? `${current.name} · Data eDNA air tambak satu run plate` : "Data eDNA air tambak satu run plate"}
+        </p>
       </div>
       <div className="page-actions">
         <Link className="button secondary" href="/lab/format">

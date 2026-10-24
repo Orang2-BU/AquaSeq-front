@@ -233,5 +233,15 @@ export function toMetaWells(wells: ParsedWell[], code: string, excluded: Exclusi
     }));
 }
 
+/** Transport saja: 40 untuk well penyakit negatif terukur; target tanpa well tetap null. */
+export function transportTargets(wells: ParsedWell[], code: string, excluded: Exclusions = {}) {
+  const avg = (target: Target) => {
+    const values = cts(wells, code, target, excluded);
+    if (values.length) return round(mean(values));
+    return wells.some((w) => w.sample_code === code && w.target === target && !excluded[w.position]) ? 40 : null;
+  };
+  return { ct_ahpnd: avg("pirA"), ct_wssv: avg("vp28"), ct_ehp: avg("swp1") };
+}
+
 /** Kode kolam dari kode sampel ("B3-1023" → "B3"). */
 export const pondCodeOf = (sampleCode: string) => sampleCode.split(/[-_\s]/)[0].toUpperCase();

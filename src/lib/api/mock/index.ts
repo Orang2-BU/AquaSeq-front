@@ -14,6 +14,7 @@ import type {
   WaterLog,
 } from "..";
 import { ApiError } from "../errors";
+import { documentIngestSchema, insightsSchema, modelVersionSchema, modelVersionsSchema } from "../schemas";
 import {
   ARCHETYPES,
   BACKEND_TEXT,
@@ -175,6 +176,34 @@ function resultOf({ status, probability_pct, risk_class }: MockSample): SdriResu
     s_bio,
     s_chem,
     model_version: "V1-GSI",
+    disease_name: [
+      "Belum dapat dinilai",
+      "Tidak ada indikasi penyakit dominan",
+      "Risiko dini AHPND",
+      "AHPND dan EHP",
+      "AHPND dan toksisitas air",
+    ][risk_class],
+    predicted_disease: ["INVALID", "NORMAL", "EARLY_WARNING_AHPND", "AHPND_EHP", "AHPND_TOXICITY"][risk_class],
+    evidence:
+      status === "VALID"
+        ? [
+            {
+              feature: "Kadar jejak patogen AHPND",
+              value: ARCHETYPES[risk_class].copies.ahpnd ?? 0,
+              threshold: 1000,
+              status: ["tidak_valid", "aman", "pantau", "melampaui", "melampaui"][risk_class],
+            },
+          ]
+        : [],
+    mitigation_actions: [
+      {
+        action: BACKEND_TEXT[risk_class].recommendation,
+        source: "SOP tindakan AquaSeq, contoh simulasi",
+        priority: "tinggi",
+      },
+    ],
+    ai_explanation:
+      "Ringkasan hasil mesin deterministik dari tabel simulasi. Bukan diagnosis resmi. Konfirmasi dengan petugas kesehatan ikan.",
   };
 }
 
@@ -483,7 +512,167 @@ export const mock: Api = {
       return summary(farm);
     },
   },
+  documents: {
+    ingest: async (token, file) => {
+      const user = userOf(token);
+      const farm = store.farms.find((f) => f.owner_id === user.id && !f.archived_at);
+      if (!farm) throw forbidden();
+      const file_type = file.name.split(".").at(-1)?.toLowerCase();
+      if (!["csv", "pdf", "docx", "xlsx"].includes(file_type ?? "") || file.size === 0 || file.size > 4 * 1024 * 1024)
+        throw new ApiError("VALIDATION_ERROR", "Pilih CSV/PDF/DOCX/XLSX berisi data, maksimal 4 MB.");
+      const samples = activePonds(farm.id)
+        .slice(0, 3)
+        .flatMap((pond) => {
+          const s = latestSample(pond.id);
+          return s
+            ? [
+                {
+                  sample_code: s.sample_code,
+                  features: s.features,
+                  wells: s.wells.map((w) => ({
+                    well: w.position,
+                    target: w.target,
+                    ct: w.ct ?? 0,
+                    tm: w.tm ?? undefined,
+                    status: w.excluded_reason ? "EXCLUDED" : "PASS",
+                  })),
+                  confidence: 0.95,
+                  qc_status: s.status === "VALID" ? "PASS" : "REJECT",
+                  block_prediction: s.status !== "VALID",
+                },
+              ]
+            : [];
+        });
+      return documentIngestSchema.parse({
+        file_name: file.name,
+        file_type,
+        run: { lab_name: "Lab Mikrobiologi Polije (simulasi)", instrument: "Bio-Rad CFX96", tested_at: "2026-10-23" },
+        samples,
+        warnings: [
+          {
+            code: "DEMO_DATA",
+            message: "Data simulasi: mode mock memakai tabel contoh, bukan isi dokumen yang diunggah.",
+            location: file.name,
+          },
+          {
+            code: "PPC_SHIFT",
+            message: "Contoh pergeseran kontrol kualitas. Konfirmasi kelayakan sampel dengan lab.",
+            location: "Kontrol kualitas",
+          },
+          {
+            code: "SAMPLE_ID_MISMATCH",
+            message: "Contoh ID tidak cocok. Periksa pemetaan kolam sebelum mengirim.",
+            location: "Identitas sampel",
+          },
+          { code: "REPLICATE_OUTLIER", message: "Contoh replikat menyimpang. Periksa catatan lab.", location: "E6" },
+        ],
+      });
+    },
+  },
+  models: {
+    list: async (token) => {
+      userOf(token);
+      return modelVersionsSchema.parse({ items: store.models }).items;
+    },
+    promote: async (token, version, note) => {
+      const user = userOf(token);
+      if (!store.farms.some((f) => f.owner_id === user.id)) throw forbidden();
+      if (note.trim().length < 5 || note.length > 1000)
+        throw new ApiError("VALIDATION_ERROR", "Isi catatan keputusan 5-1000 karakter.");
+      const model = store.models.find((m) => m.version === version);
+      if (!model) throw notFound("Versi model");
+      if (model.status !== "kandidat") throw new ApiError("CONFLICT", "Hanya kandidat yang dapat dipromosikan.");
+      for (const m of store.models) if (m.status === "aktif") m.status = "arsip";
+      Object.assign(model, {
+        status: "aktif",
+        promoted_at: new Date().toISOString(),
+        promoted_by: user.full_name,
+        note: note.trim(),
+      });
+      return modelVersionSchema.parse(model);
+    },
+  },
   ponds: {
+    insights: async (token, pondId) => {
+      const pond = readablePond(token, pondId);
+      const enough = samplesOf(pond.id).length >= 3;
+      return insightsSchema.parse({
+        pond_id: pond.id,
+        status: enough ? "OK" : "INSUFFICIENT_DATA",
+        anomaly: {
+          pond_id: pond.id,
+          dataset_name: `kolam_${pond.id}`,
+          score: enough ? 0.82 : 0,
+          flagged: enough,
+          contributors: enough
+            ? [
+                { feature: "do_mg_l", value: 3.2, baseline: 5.8, deviation: -2.6 },
+                { feature: "tom_mg_l", value: 110.0, baseline: 52.0, deviation: 58.0 },
+                { feature: "ct_ahpnd", value: 24.2, baseline: 36.0, deviation: -11.8 },
+              ]
+            : [],
+          earlier_than_class_steps: enough ? 2 : null,
+          first_anomaly_step: enough ? 4 : null,
+          class_four_step: enough ? 6 : null,
+          synthetic: true,
+        },
+        forecast_7d: {
+          horizon_days: 7,
+          predicted_probability_pct: enough ? 68.4 : null,
+          predicted_logit_z: enough ? 0.772 : null,
+          lower: enough ? 43.2 : null,
+          upper: enough ? 84.7 : null,
+          method: "THEIL_SEN_LOGIT",
+          data_points: samplesOf(pond.id).length,
+          status: enough ? "OK" : "INSUFFICIENT_DATA",
+          synthetic: true,
+          disclaimer: "Prakiraan statistik deret waktu. Bukan jaminan biologis.",
+        },
+        forecast_14d: {
+          horizon_days: 14,
+          predicted_probability_pct: enough ? 79.1 : null,
+          predicted_logit_z: enough ? 1.331 : null,
+          lower: enough ? 51.0 : null,
+          upper: enough ? 92.4 : null,
+          method: "THEIL_SEN_LOGIT",
+          data_points: samplesOf(pond.id).length,
+          status: enough ? "OK" : "INSUFFICIENT_DATA",
+          synthetic: true,
+        },
+        similar_cases: enough
+          ? [
+              {
+                case: {
+                  id: `case-${pond.id}`,
+                  pond_id: pond.id,
+                  sdri_class: 3,
+                  action: "Tingkatkan aerasi dan kurangi pakan 20%",
+                  outcome: "Panen darurat DOC 41",
+                  synthetic: true,
+                },
+                distance: 0.174,
+                similarity: 0.826,
+                synthetic: true,
+              },
+            ]
+          : [],
+        explanation: enough
+          ? {
+              disease_potential: "Risiko penyakit terindikasi adalah AHPND.",
+              evidence_reason: "Probabilitas risiko terukur sebesar 68,4%.",
+              actions: [
+                {
+                  action: "Nyalakan kincir tambahan dan pantau DO malam hari.",
+                  source: "SOP KKP / GSI Lab",
+                },
+              ],
+              seven_day_outlook: "Tren menunjukkan peningkatan risiko dalam 7 hari.",
+              full_narrative:
+                "Hasil analisis mendeteksi deviasi trajektori multivariat. Lakukan mitigasi dini sesuai SOP.",
+            }
+          : null,
+      });
+    },
     list: async (token, farmId) => {
       const user = userOf(token);
       const farm = farmOf(farmId);
@@ -841,6 +1030,25 @@ export const mock: Api = {
     },
   },
   waterLogs: {
+    create: async (token, pondId, body) => {
+      const user = userOf(token);
+      const pond = readablePond(token, pondId);
+      const w: MockWaterLog = {
+        ...body,
+        id: newId("w"),
+        pond_id: pond.id,
+        no2_mg_l: body.no2_mg_l ?? null,
+        h2s_mg_l: body.h2s_mg_l ?? null,
+        tom_mg_l: body.tom_mg_l ?? null,
+        alkalinity: body.alkalinity ?? null,
+        salinity_ppt: body.salinity_ppt ?? null,
+        transparency_cm: body.transparency_cm ?? null,
+        nh3_mg_l: 0.024,
+        recorded_by: user.id,
+      };
+      store.waterLogs.push(w);
+      return waterLogView(w);
+    },
     list: async (token, farmId) => {
       ownedFarm(token, farmId);
       const ids = new Set(activePonds(farmId).map((p) => p.id));
@@ -877,6 +1085,10 @@ export const mock: Api = {
     },
   },
   tasks: {
+    mine: async (token) => {
+      const user = userOf(token);
+      return store.tasks.filter((t) => t.assignee_id === user.id).map(taskView);
+    },
     list: async (token, farmId) => {
       ownedFarm(token, farmId);
       return store.tasks

@@ -43,7 +43,10 @@ const GUIDE: Record<Role, { intro: string; steps: [string, string][] }> = {
   pemilik: {
     intro: "Alur dari hasil lab sampai tindakan di kolam.",
     steps: [
-      ["Unggah hasil lab", "Pilih CSV qPCR, periksa QC plate, cocokkan sampel ke kolam, lalu kirim."],
+      [
+        "Unggah hasil lab",
+        "Pilih data eDNA dari sampel air, periksa kontrol kualitas plate, cocokkan sampel ke kolam, lalu kirim.",
+      ],
       ["Baca risiko", "Dasbor mengurutkan kolam dari peluang wabah tertinggi beserta rekomendasinya."],
       ["Tugaskan teknisi", "Ubah peringatan jadi tugas untuk teknisi pemegang kolam."],
       ["Tutup tugas", "Periksa laporan dan foto teknisi, lalu tutup atau minta ulang."],

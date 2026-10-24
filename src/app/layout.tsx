@@ -7,7 +7,7 @@ const mono = JetBrains_Mono({ subsets: ["latin"], display: "swap", variable: "--
 
 export const metadata: Metadata = {
   title: { default: "AquaSeq | Pemantau risiko kolam udang", template: "%s · AquaSeq" },
-  description: "Hasil qPCR air tambak jadi skor risiko per kolam dan tugas untuk teknisi.",
+  description: "Data eDNA air tambak jadi skor risiko per kolam dan tugas untuk teknisi.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
