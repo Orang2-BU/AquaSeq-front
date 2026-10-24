@@ -19,7 +19,7 @@ import type { Role } from "@/lib/api";
 import { logout } from "@/lib/auth/actions";
 import { openNotification } from "@/app/(app)/notifikasi/actions";
 import { selectFarm } from "@/app/(app)/actions";
-import { NAVIGATION, PAGES, TECHNICIAN_NAVIGATION, isActive, matchPage } from "@/lib/nav";
+import { NAVIGATION, PAGES, TECHNICIAN_NAVIGATION, activeRoute, matchPage } from "@/lib/nav";
 import { Badge, Icon } from "@/components/ui";
 import { Modal } from "@/components/ui/modal";
 import { BrandLockup, BrandWordmark } from "./brand";
@@ -344,6 +344,10 @@ function CurrentNavLinks({ role, onNavigate }: { role: Role; onNavigate: () => v
 
 function NavLinks({ role, pathname, onNavigate }: { role: Role; pathname: string; onNavigate: () => void }) {
   const navigation = role === "teknisi" ? TECHNICIAN_NAVIGATION : NAVIGATION;
+  const current = activeRoute(
+    pathname,
+    navigation.flatMap((g) => g.routes),
+  );
   return (
     <nav aria-label="Navigasi utama">
       {navigation.map(({ group, routes }) => (
@@ -351,11 +355,7 @@ function NavLinks({ role, pathname, onNavigate }: { role: Role; pathname: string
           <p className="group-title nav-label">{group}</p>
           {routes.map((href) => {
             const item = PAGES[href];
-            // Beranda teknisi (/teknisi) jangan ikut aktif di sub-halamannya yang punya menu sendiri.
-            const active =
-              href === "/teknisi"
-                ? pathname === href || pathname.startsWith("/teknisi/tugas")
-                : isActive(pathname, href);
+            const active = href === current;
             return (
               <Link
                 key={href}

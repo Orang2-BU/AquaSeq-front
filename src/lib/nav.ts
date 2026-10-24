@@ -383,6 +383,14 @@ export function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+/**
+ * Menu yang aktif: kecocokan terpanjang, supaya `/lab/unggah` hanya mengaktifkan "Unggah hasil lab",
+ * bukan juga "Riwayat unggahan" (`/lab`).
+ */
+export function activeRoute(pathname: string, hrefs: readonly string[]): string | undefined {
+  return hrefs.filter((href) => isActive(pathname, href)).toSorted((a, b) => b.length - a.length)[0];
+}
+
 /** Cocokkan URL nyata (mis. /kolam/9b1d.../siklus) ke rute di PAGES. */
 export function matchPage(pathname: string): PageInfo | undefined {
   const parts = pathname.split("/").filter(Boolean);
