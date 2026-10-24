@@ -12,6 +12,10 @@
   font-size: 16px;
   line-height: 1.6;
 }
+/* GradualBlur (components/motion/gradual-blur.tsx): lapisan blur tidak menangkap klik. */
+.gradual-blur {
+  pointer-events: none;
+}
 .landing ::selection {
   background: var(--color-landing-accent-soft);
   color: var(--color-landing-ink);
