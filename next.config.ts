@@ -13,6 +13,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  // Laporan tugas teknisi membawa sampai 4 foto × 1 MB (sudah dikompres di HP).
+  experimental: { serverActions: { bodySizeLimit: "5mb" } },
   poweredByHeader: false,
   headers: async () => [{ source: "/:path*", headers: securityHeaders }],
   partialPrefetching: true,

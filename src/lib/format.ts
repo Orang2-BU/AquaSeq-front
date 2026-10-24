@@ -43,3 +43,33 @@ export function fromLocalInput(value: string): string {
 export function todayWib(): string {
   return new Date(Date.now() + 7 * 3_600_000).toISOString().slice(0, 10);
 }
+
+const WEEKDAY = new Intl.DateTimeFormat("id-ID", { weekday: "long", day: "numeric", month: "long", timeZone: ZONE });
+const DAY_KEY = new Intl.DateTimeFormat("en-CA", { timeZone: ZONE });
+
+/** "14.20" (WIB). */
+export function formatTime(value: string): string {
+  return TIME.format(new Date(value));
+}
+
+/** "Sabtu, 24 Oktober" (WIB). */
+export function formatWeekday(value: string): string {
+  return WEEKDAY.format(new Date(value));
+}
+
+/** Selisih hari kalender WIB dari hari ini: 0 = hari ini, 1 = besok, -1 = kemarin. */
+export function dayOffset(value: string): number {
+  const day = (d: Date) => Date.parse(DAY_KEY.format(d));
+  return Math.round((day(new Date(value)) - day(new Date())) / 86_400_000);
+}
+
+/** Salam sesuai jam WIB. */
+export function greeting(): string {
+  const hour = (new Date().getUTCHours() + 7) % 24;
+  return hour < 11 ? "Selamat pagi" : hour < 15 ? "Selamat siang" : hour < 18 ? "Selamat sore" : "Selamat malam";
+}
+
+/** Waktu sekarang (WIB) sebagai nilai `datetime-local`. */
+export function nowLocalInput(): string {
+  return new Date(Date.now() + 7 * 3_600_000).toISOString().slice(0, 16);
+}

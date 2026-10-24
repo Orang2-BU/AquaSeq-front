@@ -238,17 +238,17 @@ const taskSchema = z.object({
   created_at: z.string(),
 });
 
+const taskReportSchema = z.object({
+  id: z.string(),
+  note: z.string(),
+  measured: z.record(z.string(), z.number()).nullable(),
+  photos: z.array(z.object({ id: z.string(), url: z.string() })),
+  reported_by: ref,
+  reported_at: z.string(),
+});
+
 const taskDetailSchema = taskSchema.extend({
-  reports: z.array(
-    z.object({
-      id: z.string(),
-      note: z.string(),
-      measured: z.record(z.string(), z.number()).nullable(),
-      photos: z.array(z.object({ id: z.string(), url: z.string() })),
-      reported_by: ref,
-      reported_at: z.string(),
-    }),
-  ),
+  reports: z.array(taskReportSchema),
   history: z.array(z.object({ status: taskStatusSchema, by: ref, note: z.string().nullable(), at: z.string() })),
 });
 
@@ -369,6 +369,20 @@ type TaskUpdate = Partial<Pick<TaskInput, "title" | "instruction" | "due_at" | "
   status?: "selesai" | "diminta_ulang" | "batal";
   owner_note?: string;
 };
+type WaterLogInput = {
+  measured_at: string;
+  temp_c: number;
+  ph: number;
+  do_mg_l: number;
+  tan_mg_l: number;
+  no2_mg_l?: number;
+  h2s_mg_l?: number;
+  tom_mg_l?: number;
+  alkalinity?: number;
+  salinity_ppt?: number;
+  transparency_cm?: number;
+};
+type TaskReportInput = { note: string; measured: Record<string, number> | null; photos: File[] };
 type CycleInput = {
   pond_id: string;
   cycle_number: number;
@@ -468,6 +482,9 @@ const live = {
       request("GET", `/ponds/${seg(pondId)}/water-logs`, list(waterLogSchema), { token }),
     cycles: (token: string, pondId: string) =>
       request("GET", `/ponds/${seg(pondId)}/cycles`, list(cycleSchema), { token }),
+    /** Teknisi pemegang kolam atau pemilik; NH₃ bebas dihitung backend (09-API-KONTRAK §5). */
+    logWater: (token: string, pondId: string, body: WaterLogInput) =>
+      request("POST", `/ponds/${seg(pondId)}/water-logs`, waterLogSchema, { token, body }),
   },
   members: {
     list: (token: string, farmId: string) => request("GET", `/farms/${seg(farmId)}/members`, membersSchema, { token }),
@@ -517,6 +534,26 @@ const live = {
     create: (token: string, body: TaskInput) => request("POST", "/tasks", taskSchema, { token, body }),
     update: (token: string, taskId: string, body: TaskUpdate) =>
       request("PATCH", `/tasks/${seg(taskId)}`, taskSchema, { token, body }),
+    /** Tugas teknisi yang sedang masuk (P36). */
+    mine: (token: string) => request("GET", "/me/tasks", list(taskSchema), { token }),
+    /** Teknisi mulai mengerjakan: status → dikerjakan. */
+    start: (token: string, taskId: string) =>
+      request("PATCH", `/tasks/${seg(taskId)}`, taskSchema, { token, body: { status: "dikerjakan" } }),
+    /** Laporan teknisi (multipart, maks 4 foto); status → dilaporkan. */
+    report: async (token: string, taskId: string, { note, measured, photos }: TaskReportInput) => {
+      const form = new FormData();
+      form.set("note", note);
+      if (measured) form.set("measured", JSON.stringify(measured));
+      for (const photo of photos) form.append("photos[]", photo);
+      const response = await fetch(`${base()}/tasks/${seg(taskId)}/reports`, {
+        method: "POST",
+        cache: "no-store",
+        signal: AbortSignal.timeout(30_000),
+        headers: { Authorization: `Bearer ${token}` },
+        body: form,
+      });
+      return unwrap(await response.json(), taskReportSchema);
+    },
   },
   cycles: {
     record: (token: string, body: CycleInput) =>

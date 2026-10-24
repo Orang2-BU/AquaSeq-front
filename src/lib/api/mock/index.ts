@@ -564,6 +564,52 @@ export const mock: Api = {
         .toSorted((a, b) => b.measured_at.localeCompare(a.measured_at))
         .map(waterLogView);
     },
+    logWater: async (token, pondId, body) => {
+      const user = userOf(token);
+      const pond = readablePond(token, pondId);
+      // Rentang sama dengan validasi backend (09-API-KONTRAK §5).
+      const limits: Record<string, [number, number, string]> = {
+        temp_c: [15, 40, "Suhu 15-40 °C."],
+        ph: [5, 10, "pH 5-10."],
+        do_mg_l: [0, 20, "DO 0-20 mg/L."],
+        tan_mg_l: [0, 20, "TAN 0-20 mg/L."],
+        no2_mg_l: [0, 20, "NO₂ 0-20 mg/L."],
+        h2s_mg_l: [0, 2, "H₂S 0-2 mg/L."],
+        tom_mg_l: [0, 500, "TOM 0-500 mg/L."],
+        alkalinity: [0, 400, "Alkalinitas 0-400 mg/L."],
+        salinity_ppt: [0, 60, "Salinitas 0-60 ppt."],
+        transparency_cm: [0, 200, "Kecerahan 0-200 cm."],
+      };
+      const fields: Record<string, string> = {};
+      for (const [key, [min, max, message]] of Object.entries(limits)) {
+        const value = body[key as keyof typeof body];
+        if (typeof value === "number" && (value < min || value > max)) fields[key] = `Di luar rentang. ${message}`;
+      }
+      if (Date.parse(body.measured_at) > Date.now() + 10 * 60_000)
+        fields.measured_at = "Waktu ukur tidak boleh di masa depan.";
+      if (Object.keys(fields).length) throw new ApiError("VALIDATION_ERROR", "Ada nilai yang di luar rentang.", fields);
+      const entry: MockWaterLog = {
+        id: newId("w"),
+        pond_id: pond.id,
+        measured_at: body.measured_at,
+        temp_c: body.temp_c,
+        ph: body.ph,
+        do_mg_l: body.do_mg_l,
+        tan_mg_l: body.tan_mg_l,
+        no2_mg_l: body.no2_mg_l ?? null,
+        h2s_mg_l: body.h2s_mg_l ?? null,
+        tom_mg_l: body.tom_mg_l ?? null,
+        alkalinity: body.alkalinity ?? null,
+        salinity_ppt: body.salinity_ppt ?? null,
+        transparency_cm: body.transparency_cm ?? null,
+        // NH₃ bebas simulasi (naik dengan pH); backend memakai Emerson.
+        nh3_mg_l: round(body.tan_mg_l * Math.max(0.01, 0.045 + (body.ph - 7.8) * 0.04), 3),
+        recorded_by: user.id,
+      };
+      store.waterLogs.push(entry);
+      log(pond.farm_id, user.id, "kolam.catat_air", "pond", pond.id, `Mencatat kimia air kolam ${pond.pond_code}`);
+      return waterLogView(entry);
+    },
     cycles: async (token, pondId) => {
       const pond = ownedPond(token, pondId);
       return store.cycles
@@ -959,6 +1005,59 @@ export const mock: Api = {
       }
       return taskView(task);
     },
+    mine: async (token) => {
+      const user = userOf(token);
+      const farms = new Set(store.memberships.filter((m) => m.user_id === user.id && m.active).map((m) => m.farm_id));
+      return store.tasks
+        .filter((t) => t.assignee_id === user.id && farms.has(t.farm_id))
+        .toSorted((a, b) => a.due_at.localeCompare(b.due_at))
+        .map(taskView);
+    },
+    start: async (token, taskId) => {
+      const { task, user } = ownedTask(token, taskId);
+      if (task.assignee_id !== user.id) throw forbidden();
+      if (!["baru", "diminta_ulang"].includes(task.status)) {
+        throw new ApiError("CONFLICT", "Tugas ini sudah dikerjakan atau ditutup.");
+      }
+      task.status = "dikerjakan";
+      task.history.push({ status: "dikerjakan", by: user.id, note: null, at: new Date().toISOString() });
+      return taskView(task);
+    },
+    report: async (token, taskId, { note, measured, photos }) => {
+      const { task, user } = ownedTask(token, taskId);
+      if (task.assignee_id !== user.id) throw forbidden();
+      if (!["baru", "dikerjakan", "diminta_ulang"].includes(task.status)) {
+        throw new ApiError("CONFLICT", "Tugas ini sudah dilaporkan atau ditutup.");
+      }
+      if (photos.length > 4) throw new ApiError("VALIDATION_ERROR", "Maksimal 4 foto.", { photos: "Maksimal 4 foto." });
+      if (photos.some((p) => p.size > 1_000_000 || !p.type.startsWith("image/"))) {
+        throw new ApiError("VALIDATION_ERROR", "Foto harus gambar dan maksimal 1 MB.", {
+          photos: "Foto maksimal 1 MB.",
+        });
+      }
+      const photo_ids: string[] = [];
+      for (const photo of photos) {
+        const id = newId("f");
+        store.files.set(id, { body: await photo.arrayBuffer(), type: photo.type });
+        photo_ids.push(id);
+      }
+      const now = new Date().toISOString();
+      const report = { id: newId("r"), note, measured, photo_ids, reported_by: user.id, reported_at: now };
+      task.reports.push(report);
+      task.status = "dilaporkan";
+      task.history.push({ status: "dilaporkan", by: user.id, note: null, at: now });
+      const pondCode = pondOf(task.pond_id).pond_code;
+      notify(task.created_by, "laporan_masuk", `${user.full_name} melaporkan tugas kolam ${pondCode}`, "task", task.id);
+      log(
+        task.farm_id,
+        user.id,
+        "tugas.lapor",
+        "task",
+        task.id,
+        `Melaporkan tugas kolam ${pondCode}${photo_ids.length ? ` dengan ${photo_ids.length} foto` : ""}`,
+      );
+      return { ...report, photos: photo_ids.map((id) => ({ id, url: `/files/${id}` })), reported_by: refOf(user.id) };
+    },
   },
   cycles: {
     record: async (token, body) => {
@@ -1059,6 +1158,8 @@ export const mock: Api = {
   files: {
     get: async (token, fileId) => {
       userOf(token);
+      const uploaded = store.files.get(fileId);
+      if (uploaded) return { body: uploaded.body, contentType: uploaded.type };
       const known = store.tasks.some((t) => t.reports.some((r) => r.photo_ids.includes(fileId)));
       if (!known) throw notFound("Foto");
       return {

@@ -3,6 +3,8 @@
 @import "../styles/theme.css";
 /* Komponen halaman pemilik (dasbor, detail, lab, tugas). */
 @import "../styles/app-pages.css";
+/* Area teknisi (HP): tugas saya, kerjakan, catat air, kolam saya. */
+@import "../styles/tech-pages.css";
 
 /* Shell & komponen: port dari implementasi acuan template Soft Op Dashboard (K-DASP / MilkGraph). */
 

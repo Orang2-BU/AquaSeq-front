@@ -38,3 +38,26 @@ export function outOfRange(param: (typeof WATER_PARAMS)[number], value: number |
   if (value === null) return false;
   return (param.min !== undefined && value < param.min) || (param.max !== undefined && value > param.max);
 }
+
+/**
+ * Zona NH₃ bebas dari nilai backend (penanda tampilan, acuan SNI ≤ 0,1 mg/L), bukan skor risiko.
+ */
+export function nh3Zone(nh3: number): { label: string; tone: "ok" | "warn" | "crit" } {
+  if (nh3 <= 0.05) return { label: "Aman", tone: "ok" };
+  if (nh3 <= 0.1) return { label: "Perlu dipantau", tone: "warn" };
+  return { label: "Di atas acuan", tone: "crit" };
+}
+
+/** Isian form catat air (P38) sesuai urutan di layar. */
+export const WATER_FIELDS = [
+  "temp_c",
+  "ph",
+  "do_mg_l",
+  "tan_mg_l",
+  "no2_mg_l",
+  "h2s_mg_l",
+  "tom_mg_l",
+  "alkalinity",
+  "salinity_ppt",
+  "transparency_cm",
+] as const;
