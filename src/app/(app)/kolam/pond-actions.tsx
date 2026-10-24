@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useActionState, useState } from "react";
 import { Plus } from "lucide-react";
 import type { Pond } from "@/lib/api";
@@ -36,46 +35,7 @@ export function AddPondButton({ farmId, farmName }: { farmId: string; farmName: 
   );
 }
 
-/** Filter teknisi: pilihan langsung mengganti `?teknisi=` dan mempertahankan filter kelas. */
-export function TechnicianFilter({
-  value,
-  kelas,
-  options,
-}: {
-  value: string;
-  kelas: string | undefined;
-  options: { id: string; name: string }[];
-}) {
-  const router = useRouter();
-  return (
-    <div className="filter-select">
-      <label className="field-label" htmlFor="filter-teknisi">
-        Teknisi
-      </label>
-      <select
-        id="filter-teknisi"
-        value={value}
-        onChange={(e) => {
-          const params = new URLSearchParams();
-          if (kelas) params.set("kelas", kelas);
-          if (e.target.value) params.set("teknisi", e.target.value);
-          const query = params.toString();
-          router.replace(query ? `/kolam?${query}` : "/kolam", { scroll: false });
-        }}
-      >
-        <option value="">Semua teknisi</option>
-        {options.map((o) => (
-          <option key={o.id} value={o.id}>
-            {o.name}
-          </option>
-        ))}
-        <option value="tanpa">Belum ada teknisi</option>
-      </select>
-    </div>
-  );
-}
-
-type PondFields = Pick<Pond, "id" | "pond_code" | "system" | "area_sqm">;
+export type PondFields = Pick<Pond, "id" | "pond_code" | "system" | "area_sqm">;
 
 export function PondRowActions({ pond }: { pond: PondFields }) {
   const [dialog, setDialog] = useState<"edit" | "archive" | null>(null);
@@ -95,7 +55,7 @@ export function PondRowActions({ pond }: { pond: PondFields }) {
   );
 }
 
-function EditPondDialog({ pond, onClose }: { pond: PondFields; onClose: () => void }) {
+export function EditPondDialog({ pond, onClose }: { pond: PondFields; onClose: () => void }) {
   const [state, action, pending] = useActionState(updatePond, {} as FormState);
   useCloseOnSuccess(state, onClose);
   const values = state.values ?? {
@@ -149,7 +109,16 @@ function EditPondDialog({ pond, onClose }: { pond: PondFields; onClose: () => vo
   );
 }
 
-function ArchivePondDialog({ pond, onClose }: { pond: PondFields; onClose: () => void }) {
+export function ArchivePondDialog({
+  pond,
+  onClose,
+  backToList = false,
+}: {
+  pond: PondFields;
+  onClose: () => void;
+  /** Dari halaman detail: kembali ke daftar kolam setelah diarsipkan. */
+  backToList?: boolean;
+}) {
   const [state, action, pending] = useActionState(archivePond, {} as FormState);
   useCloseOnSuccess(state, onClose);
   return (
@@ -164,6 +133,7 @@ function ArchivePondDialog({ pond, onClose }: { pond: PondFields; onClose: () =>
       )}
       <form action={action} className="dialog-actions">
         <input type="hidden" name="id" value={pond.id} />
+        {backToList && <input type="hidden" name="back" value="1" />}
         <button type="button" className="button secondary" onClick={onClose}>
           Batal
         </button>

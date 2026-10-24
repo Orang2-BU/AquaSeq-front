@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import { AppShell } from "@/components/shell/app-shell";
-import { getActiveFarms, getCurrentUser } from "@/lib/auth/session";
+import { api } from "@/lib/api";
+import { getActiveFarms, getCurrentUser, withSession } from "@/lib/auth/session";
+import { shellNotification } from "@/lib/notifications";
 import { roleOf } from "@/lib/auth/cookies";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -13,7 +15,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 }
 
 async function SessionShell({ children }: { children: React.ReactNode }) {
-  const [me, { farms, current }] = await Promise.all([getCurrentUser(), getActiveFarms()]);
+  const [me, { farms, current }, { items, unread }] = await Promise.all([
+    getCurrentUser(),
+    getActiveFarms(),
+    withSession((token) => api.notifications.list(token)),
+  ]);
+  const role = roleOf(me);
   const initials = me.full_name
     .split(/\s+/)
     .slice(0, 2)
@@ -22,10 +29,12 @@ async function SessionShell({ children }: { children: React.ReactNode }) {
   const account = {
     name: me.full_name,
     initials,
-    role: roleOf(me),
+    role,
     farms: farms.map(({ id, name, regency, pond_count }) => ({ id, name, regency, pond_count })),
     currentFarmId: current?.id,
     simulated: current?.provenance === "simulasi",
+    notifications: items.slice(0, 5).map(shellNotification),
+    unread,
   };
   return <AppShell account={account}>{children}</AppShell>;
 }

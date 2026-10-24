@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { api } from "@/lib/api";
 import { withSession } from "@/lib/auth/session";
@@ -41,8 +42,52 @@ export async function archivePond(_: FormState, formData: FormData): Promise<For
   try {
     await withSession((token) => api.ponds.archive(token, id.data));
     revalidatePath("/", "layout");
-    return { ok: true };
   } catch (error) {
     return messageOf(error);
+  }
+  if (formData.get("back") === "1") redirect("/kolam");
+  return { ok: true };
+}
+
+const cycleSchema = z
+  .object({
+    pond_id: z.string().min(1).max(100),
+    cycle_number: z.coerce.number("Isi nomor siklus.").int("Nomor siklus bilangan bulat.").min(1).max(99),
+    outcome: z.enum(["HARVEST_SUCCESS", "OUTBREAK", "EMERGENCY_HARVEST"], "Pilih hasil siklus."),
+    actual_harvest_kg: z.coerce
+      .number("Panen harus angka.")
+      .min(0, "Panen tidak boleh negatif.")
+      .max(200_000)
+      .optional(),
+    outbreak_date: z.iso.date("Isi tanggal wabah.").optional(),
+    primary_suspect_pathogen: z.enum(["AHPND", "WSSV", "EHP", "Lainnya"]).optional(),
+    notes: z.string().trim().max(500, "Catatan maksimal 500 huruf.").optional(),
+  })
+  .refine((d) => d.outcome === "HARVEST_SUCCESS" || d.outbreak_date, {
+    path: ["outbreak_date"],
+    message: "Isi tanggal wabah mulai terlihat.",
+  });
+
+/** Catat akhir siklus (panen/wabah) untuk kalibrasi model backend (F19). */
+export async function recordCycle(_: FormState, formData: FormData): Promise<FormState> {
+  const names = ["cycle_number", "outcome", "actual_harvest_kg", "outbreak_date", "primary_suspect_pathogen", "notes"];
+  const values = valuesOf(formData, names);
+  const blankToUndefined = Object.fromEntries(Object.entries(values).map(([k, v]) => [k, v || undefined]));
+  const parsed = cycleSchema.safeParse({ ...blankToUndefined, pond_id: formData.get("pond_id") });
+  if (!parsed.success) return { fieldErrors: fieldErrorsOf(parsed.error), values };
+  const { outbreak_date, primary_suspect_pathogen, ...body } = parsed.data;
+  const outbreak = body.outcome !== "HARVEST_SUCCESS";
+  try {
+    await withSession((token) =>
+      api.cycles.record(token, {
+        ...body,
+        outbreak_date: outbreak ? outbreak_date : undefined,
+        primary_suspect_pathogen: outbreak ? primary_suspect_pathogen : undefined,
+      }),
+    );
+    revalidatePath("/", "layout");
+    return { ok: true };
+  } catch (error) {
+    return { ...messageOf(error), values };
   }
 }

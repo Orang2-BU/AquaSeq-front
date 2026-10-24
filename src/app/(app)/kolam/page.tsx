@@ -1,24 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Minus, Rocket, TrendingDown, TrendingUp, Waves, type LucideIcon } from "lucide-react";
+import { Download, Waves } from "lucide-react";
 import { api, type Pond } from "@/lib/api";
 import { getActiveFarms, withSession } from "@/lib/auth/session";
 import { formatDate } from "@/lib/format";
-import { RISK_FILTERS, TREND_LABEL, formatProbability, riskOf, riskRank, type RiskTone } from "@/lib/risk";
-import { EmptyState } from "@/components/app/empty-state";
+import { RISK_FILTERS, formatProbability, riskOf, riskRank, type RiskTone } from "@/lib/risk";
+import { EmptyState, NoFarmState } from "@/components/app/empty-state";
 import { RiskBadge } from "@/components/app/risk-badge";
+import { Trend } from "@/components/app/trend";
 import { Icon } from "@/components/ui";
-import { AddPondButton, PondRowActions, TechnicianFilter } from "./pond-actions";
+import { SelectFilter } from "@/components/app/select-filter";
+import { AddPondButton, PondRowActions } from "./pond-actions";
 
 export const metadata: Metadata = { title: "Kolam" };
-
-const TREND_ICON: Record<Pond["trend"], { icon: LucideIcon; className?: string }> = {
-  RAPID_INCREASE: { icon: TrendingUp, className: "trend-up" },
-  STABLE: { icon: Minus },
-  DECREASING: { icon: TrendingDown, className: "trend-down" },
-  INSUFFICIENT_DATA: { icon: Minus, className: "muted" },
-};
 
 export default function Page({ searchParams }: PageProps<"/kolam">) {
   return (
@@ -53,16 +48,7 @@ async function PondList({ searchParams }: Pick<PageProps<"/kolam">, "searchParam
         <div className="page-heading">
           <h1>Kolam</h1>
         </div>
-        <EmptyState
-          icon={Waves}
-          title="Belum ada lokasi aktif"
-          text="Buat lokasi tambak dulu, lalu tambahkan kolamnya."
-        >
-          <Link className="button primary" href="/mulai">
-            <Icon icon={Rocket} />
-            Siapkan tambak
-          </Link>
-        </EmptyState>
+        <NoFarmState text="Buat lokasi tambak dulu, lalu tambahkan kolamnya." />
       </>
     );
   }
@@ -96,6 +82,12 @@ async function PondList({ searchParams }: Pick<PageProps<"/kolam">, "searchParam
           </p>
         </div>
         <div className="page-actions">
+          {ponds.length > 0 && (
+            <a className="button secondary" href="/kolam/ekspor" download>
+              <Icon icon={Download} />
+              Ekspor CSV
+            </a>
+          )}
           <AddPondButton farmId={current.id} farmName={current.name} />
         </div>
       </div>
@@ -131,7 +123,18 @@ async function PondList({ searchParams }: Pick<PageProps<"/kolam">, "searchParam
                 );
               })}
             </nav>
-            <TechnicianFilter value={teknisi} kelas={kelas} options={technicians} />
+            <SelectFilter
+              label="Teknisi"
+              param="teknisi"
+              value={teknisi}
+              basePath="/kolam"
+              keep={{ kelas }}
+              options={[
+                { value: "", label: "Semua teknisi" },
+                ...technicians.map((t) => ({ value: t.id, label: t.name })),
+                { value: "tanpa", label: "Belum ada teknisi" },
+              ]}
+            />
           </div>
 
           {shown.length === 0 ? (
@@ -175,7 +178,6 @@ async function PondList({ searchParams }: Pick<PageProps<"/kolam">, "searchParam
 
 function PondRow({ pond }: { pond: Pond }) {
   const result = pond.latest_result;
-  const trend = TREND_ICON[pond.trend];
   return (
     <tr>
       <td data-label="Kolam" className="table-title">
@@ -193,10 +195,7 @@ function PondRow({ pond }: { pond: Pond }) {
         {result ? <RiskBadge result={result} /> : <span className="muted small">Belum ada sampel</span>}
       </td>
       <td data-label="Tren">
-        <span className={`trend ${trend.className ?? ""}`}>
-          <Icon icon={trend.icon} size={16} />
-          {TREND_LABEL[pond.trend]}
-        </span>
+        <Trend trend={pond.trend} />
       </td>
       <td data-label="Teknisi">{pond.assignee?.full_name ?? <span className="muted">Belum ada</span>}</td>
       <td data-label="Sampling terakhir">

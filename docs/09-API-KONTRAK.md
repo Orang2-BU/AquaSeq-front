@@ -28,6 +28,8 @@ Mekanisme usulan: **JWT access token (15 menit) + refresh token (30 hari, rotasi
 | POST | `/auth/password/forgot` | `email` | `{}` | Selalu 200 (tidak membocorkan email terdaftar); kirim email berisi tautan `{WEB_URL}/atur-sandi?token=...` |
 | POST | `/auth/password/reset` | `token, password` | `{}` | Token sekali pakai, 1 jam |
 | POST | `/auth/demo` | `role: pemilik/teknisi` | `user, access_token, refresh_token, expires_in` | Masuk ke akun demo SIMULASI (bisa dimatikan lewat env backend) |
+| PATCH | `/auth/me` | `full_name, phone_wa` (`null` = hapus) | `user` | **Usulan baru (P33)**. `phone_wa` format `62…` |
+| POST | `/auth/password` | `current_password, new_password` | `{}` | **Usulan baru (P33)**. Sandi lama salah → `VALIDATION_ERROR` dengan `fields.current_password` |
 
 `user`: `{ id, full_name, email, phone_wa }`. `expires_in` = umur access token dalam detik; web memakainya sebagai `maxAge` cookie access, jadi saat cookie hilang web tahu harus memanggil `/auth/refresh`. Pemilik baru tanpa lokasi mengembalikan `memberships: []` di `/auth/me`.
 
@@ -53,7 +55,7 @@ Mekanisme usulan: **JWT access token (15 menit) + refresh token (30 hari, rotasi
 
 - `Farm`: `{ id, name, regency, address, owner_id, provenance: "simulasi"|"nyata", archived_at, created_at, pond_count, technician_count, at_risk_count }`. Tiga angka terakhir untuk kartu lokasi (P27): jumlah kolam, teknisi aktif, dan kolam dengan sampel terakhir kelas 3-4.
 - `/auth/me` hanya memuat lokasi yang **belum** diarsipkan di `memberships`.
-- `Pond`: `{ id, farm_id, pond_code, name, system: "intensif"|"bioflok", area_sqm, current_cycle, stocked_at, assignee: { id, full_name } | null, wa_target, status, latest_result: SdriResult | null, latest_sampling_date, trend }`. `trend` = `RAPID_INCREASE`|`STABLE`|`DECREASING`|`INSUFFICIENT_DATA`, sama dengan `trajectory.trend`; ikut di daftar supaya P14 tidak memanggil trajectory per kolam.
+- `Pond`: `{ id, farm_id, pond_code, name, system: "intensif"|"bioflok", area_sqm, current_cycle, stocked_at, assignee: { id, full_name } | null, wa_target, status, latest_result: SdriResult | null, latest_sampling_date, trend }`. `trend` = `RAPID_INCREASE`|`MODERATE_INCREASE`|`STABLE`|`DECREASING`|`INSUFFICIENT_DATA` (sama dengan `internal/trajectory`); ikut di daftar supaya P14 tidak memanggil trajectory per kolam.
 - `Member`: `{ user_id, full_name, email, role, active, pond_codes[], open_tasks }` (`pond_codes` hanya kolam aktif)
 - `PendingInvitation`: `{ id, email, pond_codes[], expires_at }`. Token undangan hanya disimpan sebagai hash di backend dan tidak pernah dikirim ke web; satu-satunya jalan ke teknisi adalah email.
 
@@ -65,7 +67,7 @@ Mekanisme usulan: **JWT access token (15 menit) + refresh token (30 hari, rotasi
 | POST | `/samples` | 🔧 | lihat bawah | `sample_id, sdri_result` | pemilik |
 | POST | `/samples/batch` | ⬜ | `run: { lab_name, instrument, tested_at, file_name }`, `samples: [ ...sama dengan /samples ]` | `batch_id, results: [{ sample_code, sample_id, sdri_result }]` | pemilik; satu CSV = satu batch, atomik |
 | GET | `/batches?farm_id=` | ⬜ | — | `items: [{ batch_id, lab_name, tested_at, sample_count, rejected_count }]` | pemilik |
-| GET | `/batches/{id}` | ⬜ | — | batch + sampel + `meta.wells` | pemilik |
+| GET | `/batches/{id}` | ⬜ | — | `BatchSummary` + `samples: [{ sample_id, sample_code, pond: { id, pond_code }, sdri_result }]` + `meta: { wells: [Well + sample_code], standards }` (termasuk well NTC) | pemilik |
 | GET | `/ponds/{id}/samples` | ⬜ | `?page=` | `items: [{ sample_id, sampling_date, cycle_day, sdri_result }]` | pemilik / teknisi pemegang (tanpa `meta`) |
 | GET | `/samples/{id}` | ⬜ | — | `Sample` lengkap: `features`, `meta`, `sdri_result` (dengan `s_qpcr`, `s_bio`, `s_chem`, `z_score`), `copies_per_ml`, `nh3_mg_l` | pemilik |
 | GET | `/ponds/{id}/trajectory` | ✅ | — | `data_points, slope, trend, trajectory_alert, alert_message, history[]` | pemilik / teknisi pemegang |
@@ -94,6 +96,10 @@ Body `/samples` (🔧 perubahan yang diminta):
 ```
 Perubahan: tambah `sample_code`, `meta` (data well mentah dari CSV untuk rincian skor), kolom `no2_mg_l`, `h2s_mg_l`, `alkalinity` di tabel `sample_features` (sudah ada di `domain.SampleFeatures` dan dipakai rumus `S_Chem`, tapi belum ada di `sql/schema.sql`). Ct `null` = tidak teramplifikasi.
 
+- `BatchSummary` (`GET /batches`): `{ batch_id, lab_name, instrument, tested_at, file_name, sample_count, rejected_count, created_at }`.
+- `Well`: `{ position, target, ct | null, tm | null, excluded_reason | null }`. Web meringkas Ct (rata-rata replikat yang tidak dikeluarkan) dan memeriksa kontrol sebelum kirim; gerbang PPC dan skor tetap di backend.
+- `WaterLog`: `{ id, pond: { id, pond_code }, measured_at, temp_c, ph, do_mg_l, tan_mg_l, no2_mg_l, h2s_mg_l, tom_mg_l, alkalinity, salinity_ppt, transparency_cm, nh3_mg_l, recorded_by: { id, full_name } }`.
+- `GET /ponds/{id}/cycles` mengembalikan siklus terbaru dulu; `POST /cycles/outcome` (✅) dipakai apa adanya.
 - `SdriResult` (sudah ada): `{ status: "VALID"|"REJECTED_INHIBITOR"|"REJECTED_INVALID_QC", z_score, probability_pct, risk_class: 1-4 (0 bila ditolak), risk_level, s_qpcr, s_bio, s_chem, model_version, recommendation }`
 
 ## 5. Kimia air (⬜)
@@ -125,13 +131,14 @@ Aturan munculnya peringatan (diusulkan): sampel terakhir kolam kelas 3 atau 4, s
 | POST | `/tasks/{id}/reports` | multipart: `note`, `measured` (JSON), `photos[]` (maks 4) | `TaskReport` | teknisi yang ditugaskan; status → `dilaporkan` |
 | GET | `/files/{id}` | — | file (foto) dengan header cache privat | anggota lokasi terkait |
 
+- `GET /tasks/{id}`: `reports: [{ id, note, measured: { do_mg_l, … } | null, photos: [{ id, url }], reported_by: { id, full_name }, reported_at }]`, `history: [{ status, by: { id, full_name }, note, at }]`.
 - `Task`: `{ id, farm_id, pond: { id, pond_code }, assignee: { id, full_name }, created_by: { id, full_name }, kind: "tindakan"|"ambil_sampel"|"catat_air", title, instruction, due_at, status: "baru"|"dikerjakan"|"dilaporkan"|"selesai"|"diminta_ulang"|"batal", owner_note, source_sample_id, overdue, created_at }`
 - `TaskReport`: `{ id, note, measured, photos: [{ id, url }], reported_by, reported_at }`
 
 ## 8. Notifikasi, aktivitas, WhatsApp
 | Method | Endpoint | Status | Data respons | Siapa |
 |---|---|---|---|---|
-| GET | `/me/notifications` | ⬜ | `items: [{ id, kind, title, entity, entity_id, read_at, created_at }], unread` | semua |
+| GET | `/me/notifications` | ⬜ | `items: [{ id, kind, title, entity, entity_id, read_at, created_at }], unread`. `kind`: `tugas_baru`, `laporan_masuk`, `peringatan_baru`, `tugas_selesai`, `tugas_terlambat`; `entity`: `task`, `pond`, `sample`, `batch` | semua |
 | POST | `/me/notifications/read` | ⬜ | body `ids[]` atau `all: true` | semua |
 | GET | `/farms/{id}/activity` | ⬜ | `items: [{ actor, action, entity, entity_id, detail, at }]` | pemilik |
 | POST | `/reports/whatsapp` | ✅ | `whatsapp_message` | pemilik (perlu auth) |
@@ -152,3 +159,4 @@ Aturan munculnya peringatan (diusulkan): sampel terakhir kolam kelas 3 atau 4, s
 | K5 | Penyimpanan foto (disk/S3/MinIO)? | Bebas, asal `GET /files/{id}` memeriksa hak akses |
 | K6 | Email (undangan, reset sandi) lewat apa? | SMTP via env; di dev cukup dicetak ke log (mock web juga mencetak tautan undangan ke log server) |
 | K7 | `domain.RiskClass` di backend bernilai 0/1/2/4 dan 9 (ditolak), sedangkan kontrak memakai 1-4 dan 0 (ditolak) | Ikuti kontrak: Aman 1, Waspada ringan 2, Waspada tinggi 3, Bahaya 4, ditolak 0. Web memetakan kelas hanya di `src/lib/risk.ts` |
+| K8 | Pesan WA backend memakai `primary_driver` teks bebas | Web mengisi subskor terbesar, mis. "Beban patogen (S_qPCR 3,3)". Backend boleh menggantinya bila punya pemicu yang lebih tepat |

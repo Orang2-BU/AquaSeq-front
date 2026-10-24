@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 import { api, ApiError, type Farm, type Me } from "@/lib/api";
 import { ACCESS_COOKIE, FARM_COOKIE, pickFarm } from "./cookies";
@@ -38,4 +38,15 @@ export async function getActiveFarms(): Promise<{ farms: Farm[]; archived: Farm[
   ]);
   const farms = all.filter((f) => !f.archived_at);
   return { farms, archived: all.filter((f) => f.archived_at), current: pickFarm(farms, preferred) };
+}
+
+/** Baca satu entitas lewat ID dari URL: tidak ada → halaman 404, bukan miliknya → akses ditolak (F6). */
+export async function loadEntity<T>(call: (token: string) => Promise<T>): Promise<T> {
+  try {
+    return await withSession(call);
+  } catch (error) {
+    if (error instanceof ApiError && error.code === "NOT_FOUND") notFound();
+    if (error instanceof ApiError && error.code === "FORBIDDEN") redirect("/akses-ditolak");
+    throw error;
+  }
 }

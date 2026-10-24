@@ -1,4 +1,5 @@
-import type { LucideIcon } from "lucide-react";
+import Link from "next/link";
+import { MapPin, Rocket, type LucideIcon } from "lucide-react";
 import { Icon } from "@/components/ui";
 
 /** Empty state halaman: placeholder starter + kalimat langkah berikutnya (08-DESIGN "Empty state"). */
@@ -24,5 +25,17 @@ export function EmptyState({
         {children}
       </div>
     </section>
+  );
+}
+
+/** Halaman yang butuh lokasi aktif, saat pemilik belum punya lokasi. */
+export function NoFarmState({ text }: { text: string }) {
+  return (
+    <EmptyState icon={MapPin} title="Belum ada lokasi aktif" text={text}>
+      <Link className="button primary" href="/mulai">
+        <Icon icon={Rocket} />
+        Siapkan tambak
+      </Link>
+    </EmptyState>
   );
 }
