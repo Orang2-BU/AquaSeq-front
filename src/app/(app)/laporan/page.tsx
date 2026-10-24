@@ -5,11 +5,12 @@ import { ClipboardCheck, FlaskConical, ShieldAlert, TimerOff } from "lucide-reac
 import { api } from "@/lib/api";
 import { getActiveFarms, withSession } from "@/lib/auth/session";
 import { formatDate, isPast, todayWib } from "@/lib/format";
-import { RISK_FILTERS, formatProbability, riskOf, riskRank } from "@/lib/risk";
+import { formatProbability, riskOf, riskRank } from "@/lib/risk";
 import { NoFarmState } from "@/components/app/empty-state";
 import { Metric, PageSkeleton } from "@/components/app/page-parts";
 import { PrintButton } from "@/components/app/print-button";
 import { RiskBadge } from "@/components/app/risk-badge";
+import { RiskDistribution } from "@/components/app/risk-distribution";
 import { Trend } from "@/components/app/trend";
 import { Badge } from "@/components/ui";
 
@@ -57,9 +58,6 @@ async function Report({ searchParams }: Pick<PageProps<"/laporan">, "searchParam
   const periodTasks = tasks.filter((t) => inPeriod(t.created_at));
   const done = periodTasks.filter((t) => t.status === "selesai").length;
   const late = periodTasks.filter((t) => t.overdue).length;
-  const tone = (p: (typeof ponds)[number]) => (p.latest_result ? riskOf(p.latest_result).tone : null);
-  const distribution = RISK_FILTERS.map((f) => ({ ...f, count: ponds.filter((p) => tone(p) === f.tone).length }));
-  const noSample = ponds.filter((p) => !p.latest_result).length;
   const risky = ponds
     .filter((p) => p.latest_result && riskOf(p.latest_result).tone !== "aman")
     .toSorted((a, b) => riskRank(b.latest_result) - riskRank(a.latest_result));
@@ -116,32 +114,7 @@ async function Report({ searchParams }: Pick<PageProps<"/laporan">, "searchParam
               <p>Sampel terakhir tiap kolam ({ponds.length} kolam)</p>
             </div>
           </div>
-          <div
-            className="stacked-bar"
-            role="img"
-            aria-label={distribution.map((d) => `${d.label} ${d.count}`).join(", ")}
-          >
-            {distribution
-              .filter((d) => d.count > 0)
-              .map((d) => (
-                <span key={d.tone} className={`stacked-seg risk-${d.tone}`} style={{ flexGrow: d.count }} />
-              ))}
-            {noSample > 0 && <span className="stacked-seg none" style={{ flexGrow: noSample }} />}
-          </div>
-          <ul className="dist-list">
-            {distribution.map((d) => (
-              <li key={d.tone}>
-                <span className={`dist-dot risk-${d.tone}`} aria-hidden="true" />
-                {d.label}
-                <strong>{d.count}</strong>
-              </li>
-            ))}
-            <li>
-              <span className="dist-dot none" aria-hidden="true" />
-              Belum ada sampel
-              <strong>{noSample}</strong>
-            </li>
-          </ul>
+          <RiskDistribution ponds={ponds} />
         </section>
 
         <section className="panel" aria-labelledby="risky-title">

@@ -5,12 +5,13 @@ import { ArrowRight, CalendarCheck, ClipboardList, FlaskConical, ShieldAlert, Up
 import { api, type Pond } from "@/lib/api";
 import { getActiveFarms, withSession } from "@/lib/auth/session";
 import { taskOptions } from "@/lib/farm-data";
-import { formatDate, formatDateTime } from "@/lib/format";
+import { formatDate, formatDateTime, formatShortDate } from "@/lib/format";
 import { formatProbability, riskOf, riskRank } from "@/lib/risk";
-import { isOpen } from "@/lib/tasks";
+import { TASK_STATUS, isOpen } from "@/lib/tasks";
 import { EmptyState, NoFarmState } from "@/components/app/empty-state";
 import { Metric, PageSkeleton } from "@/components/app/page-parts";
 import { RiskBadge } from "@/components/app/risk-badge";
+import { RiskDistribution } from "@/components/app/risk-distribution";
 import { CreateTaskButton } from "@/components/app/task-dialog";
 import { Trend } from "@/components/app/trend";
 import { Badge, Icon } from "@/components/ui";
@@ -117,9 +118,10 @@ async function Dashboard() {
   const open = tasks.filter((t) => isOpen(t.status));
   const overdue = open.filter((t) => t.overdue).length;
   const toReview = open.filter((t) => t.status === "dilaporkan").length;
-  const watch = ranked.filter((p) => tone(p) !== "aman").slice(0, 6);
+  const watch = ranked.filter((p) => tone(p) !== "aman").slice(0, 5);
   const due = open.toSorted((a, b) => a.due_at.localeCompare(b.due_at)).slice(0, 5);
   const topTask = open.find((t) => t.pond.id === top.id);
+  const next = ranked.slice(1).find((p) => tone(p) !== "aman" && tone(p) !== "ditolak");
   const scale = Math.max(10, ...averages.flatMap((a) => [a.now ?? 0, a.before ?? 0])) * 1.15;
 
   return (
@@ -149,10 +151,7 @@ async function Dashboard() {
                 <h2 id="spotlight-title">
                   Kolam <span className="mono-large">{top.pond_code}</span> paling berisiko
                 </h2>
-                <p>
-                  Sampel {top.latest_sampling_date ? formatDate(top.latest_sampling_date) : "-"}
-                  {top.assignee ? ` · dipegang ${top.assignee.full_name}` : " · belum ada teknisi"}
-                </p>
+                <p>Sampel {top.latest_sampling_date ? formatDate(top.latest_sampling_date) : "-"}</p>
               </div>
               {current.provenance === "simulasi" && <Badge tone="warn">Data simulasi</Badge>}
             </div>
@@ -166,6 +165,28 @@ async function Dashboard() {
               <Trend trend={top.trend} />
             </div>
             <p className="spotlight-reason">{topResult.recommendation}</p>
+            <dl className="spotlight-facts">
+              <div>
+                <dt>Teknisi</dt>
+                <dd>{top.assignee?.full_name ?? "Belum ada"}</dd>
+              </div>
+              <div>
+                <dt>Tugas</dt>
+                <dd>
+                  {topTask
+                    ? `${topTask.overdue ? "Terlambat" : TASK_STATUS[topTask.status].label} · ${formatShortDate(topTask.due_at)}`
+                    : "Belum ada tugas"}
+                </dd>
+              </div>
+              {next?.latest_result && (
+                <div>
+                  <dt>Berikutnya</dt>
+                  <dd>
+                    {next.pond_code} · {formatProbability(next.latest_result.probability_pct)}
+                  </dd>
+                </div>
+              )}
+            </dl>
             <div className="spotlight-actions">
               {topTask ? (
                 <Link className="button inverse" href={`/tugas/${topTask.id}`}>
@@ -202,12 +223,10 @@ async function Dashboard() {
             <ul className="row-list">
               {watch.map((pond) => (
                 <li key={pond.id}>
-                  <Link className="row-link" href={`/kolam/${pond.id}`}>
+                  <Link className="row-link risk-row" href={`/kolam/${pond.id}`}>
                     <span className="mono row-code">{pond.pond_code}</span>
-                    <span className="row-main">
-                      {pond.latest_result && <RiskBadge result={pond.latest_result} />}
-                      <Trend trend={pond.trend} />
-                    </span>
+                    <span>{pond.latest_result && <RiskBadge result={pond.latest_result} />}</span>
+                    <Trend trend={pond.trend} />
                     <span className="row-value">
                       {pond.latest_result?.status === "VALID"
                         ? formatProbability(pond.latest_result.probability_pct)
@@ -235,7 +254,7 @@ async function Dashboard() {
             <ul className="row-list">
               {due.map((task) => (
                 <li key={task.id}>
-                  <Link className="row-link" href={`/tugas/${task.id}`}>
+                  <Link className="row-link task-row" href={`/tugas/${task.id}`}>
                     <span className="mono row-code">{task.pond.pond_code}</span>
                     <span className="row-main">
                       <span className="row-title">{task.title}</span>
@@ -255,10 +274,12 @@ async function Dashboard() {
         <section className="panel" aria-labelledby="avg-title">
           <div className="section-heading table-heading">
             <div>
-              <h2 id="avg-title">Rata-rata peluang per lokasi</h2>
-              <p>Sampling terakhir dibanding sebelumnya</p>
+              <h2 id="avg-title">Gambaran risiko</h2>
+              <p>Kelas sampel terakhir di {current.name}</p>
             </div>
           </div>
+          <RiskDistribution ponds={ponds} />
+          <h3 className="subheading">Rata-rata peluang per lokasi</h3>
           <ul className="bar-list">
             {averages.map(({ farm, now, before }) => (
               <li key={farm.id}>

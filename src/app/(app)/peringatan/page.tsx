@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { BellOff } from "lucide-react";
+import { BellOff, FlaskConical, ShieldAlert, TrendingUp, type LucideIcon } from "lucide-react";
 import { api, type Alert } from "@/lib/api";
 import { getActiveFarms, withSession } from "@/lib/auth/session";
 import { taskOptions } from "@/lib/farm-data";
@@ -11,6 +11,7 @@ import { EmptyState, NoFarmState } from "@/components/app/empty-state";
 import { PageSkeleton } from "@/components/app/page-parts";
 import { RiskBadge } from "@/components/app/risk-badge";
 import { CreateTaskButton } from "@/components/app/task-dialog";
+import { Icon } from "@/components/ui";
 import { AlertActions } from "./alert-actions";
 
 export const metadata: Metadata = { title: "Peringatan" };
@@ -20,6 +21,12 @@ const KINDS: { value: string; kind: Alert["kind"]; label: string }[] = [
   { value: "ditolak", kind: "REJECTED", label: "Sampel ditolak" },
   { value: "tren", kind: "TRAJECTORY", label: "Tren naik" },
 ];
+
+const KIND_ICON: Record<Alert["kind"], LucideIcon> = {
+  RISK_CLASS: ShieldAlert,
+  REJECTED: FlaskConical,
+  TRAJECTORY: TrendingUp,
+};
 
 export default function Page({ searchParams }: PageProps<"/peringatan">) {
   return (
@@ -112,22 +119,27 @@ async function Alerts({ searchParams }: Pick<PageProps<"/peringatan">, "searchPa
                 };
                 return (
                   <li key={alert.id} className={`alert-card kind-${alert.kind.toLowerCase()}`}>
-                    <div className="alert-main">
-                      <div className="alert-head">
-                        <Link className="mono table-link" href={`/kolam/${alert.pond_id}`}>
-                          {alert.pond_code}
-                        </Link>
-                        <span className="alert-kind">{KINDS.find((k) => k.kind === alert.kind)?.label}</span>
-                        <RiskBadge result={result} />
-                        {alert.kind !== "REJECTED" && (
-                          <strong className="alert-score">{formatProbability(alert.probability_pct)}</strong>
-                        )}
+                    <div className="alert-body">
+                      <span className="alert-icon">
+                        <Icon icon={KIND_ICON[alert.kind]} size={18} />
+                      </span>
+                      <div className="alert-main">
+                        <div className="alert-head">
+                          <Link className="mono table-link" href={`/kolam/${alert.pond_id}`}>
+                            {alert.pond_code}
+                          </Link>
+                          <span className="alert-kind">{KINDS.find((k) => k.kind === alert.kind)?.label}</span>
+                          <RiskBadge result={result} />
+                          {alert.kind !== "REJECTED" && (
+                            <strong className="alert-score">{formatProbability(alert.probability_pct)}</strong>
+                          )}
+                        </div>
+                        <p className="alert-message">{alert.message}</p>
+                        <p className="small muted">
+                          Sejak {formatDate(alert.since)} ·{" "}
+                          {assignee ? `dipegang ${assignee.full_name}` : "belum ada teknisi"}
+                        </p>
                       </div>
-                      <p className="alert-message">{alert.message}</p>
-                      <p className="small muted">
-                        Sejak {formatDate(alert.since)} ·{" "}
-                        {assignee ? `dipegang ${assignee.full_name}` : "belum ada teknisi"}
-                      </p>
                     </div>
                     <div className="alert-actions">
                       {alert.open_task_id ? (
