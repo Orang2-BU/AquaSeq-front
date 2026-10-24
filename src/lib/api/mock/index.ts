@@ -2,7 +2,10 @@ import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import type {
   Alert,
   Api,
+  EngineeredFeature,
   Farm,
+  MicrobiomeMetrics,
+  SampleExplanation,
   Me,
   Member,
   Pond,
@@ -164,53 +167,290 @@ function summary(farm: MockFarm): Farm {
 
 const NO_FINDINGS = { disease_name: null, predicted_disease: null, evidence: [], mitigation_actions: [] };
 
-/** Temuan eDNA simulasi per kelas risiko (kode penyakit dan fitur sama dengan backend). */
-const EDNA_FINDINGS: Record<
+/** Kode, nama, dan teks ambang X1-X12 persis seperti backend (`internal/sdri/features.go`). */
+const FEATURES = [
+  ["X1", "kontrol_kualitas", "18 sampai 22"],
+  ["X2", "fold_regulation_amoa", "aman >= 1; kritis < -2"],
+  ["X3", "jejak_ahpnd", "peringatan >= 10; kritis > 1000"],
+  ["X4", "jejak_wssv", "peringatan > 0; kritis > 100"],
+  ["X5", "jejak_ehp", "peringatan >= 1; kritis > 100"],
+  ["X6", "indeks_disbiosis", "aman < -2; kritis > 0; rasio nol tidak terdefinisi"],
+  ["X7", "nh3_mg_l", "aman <= 0,05; kritis > 0,1 mg/L"],
+  ["X8", "no2_mg_l", "aman <= 0,5; kritis > 1 mg/L"],
+  ["X9", "h2s_mg_l", "aman <= 0,005; kritis > 0,01 mg/L"],
+  ["X10", "do_mg_l", "aman >= 5; kritis < 4 mg/L"],
+  ["X11", "tom_mg_l", "aman <= 70; kritis > 90 mg/L"],
+  ["X12", "alkalinity", "aman 120 sampai 180; kritis < 100 mg/L"],
+] as const;
+
+/**
+ * Nilai dan status X1-X12 simulasi per kelas risiko (urutan sama dengan FEATURES). Status ditulis tetap, bukan
+ * dihitung di web; jejak patogen memakai kopi/mL arketipe. `null` = belum bisa dihitung (rasio nol).
+ */
+const FEATURE_TABLE: Record<number, (c: MockSample["copies"]) => [number | null, string][]> = {
+  1: (c) => [
+    [19.6, "aman"],
+    [2.4, "aman"],
+    [c.ahpnd ?? 0, "aman"],
+    [c.wssv ?? 0, "aman"],
+    [c.ehp ?? 0, "aman"],
+    [null, "belum_cukup"],
+    [0.021, "aman"],
+    [0.18, "aman"],
+    [0.002, "aman"],
+    [5.8, "aman"],
+    [52, "aman"],
+    [142, "aman"],
+  ],
+  2: (c) => [
+    [20.1, "aman"],
+    [1.3, "aman"],
+    [c.ahpnd ?? 0, "peringatan"],
+    [c.wssv ?? 0, "aman"],
+    [c.ehp ?? 0, "aman"],
+    [-2.6, "aman"],
+    [0.034, "aman"],
+    [0.27, "aman"],
+    [0.003, "aman"],
+    [5.4, "aman"],
+    [61, "aman"],
+    [136, "aman"],
+  ],
+  3: (c) => [
+    [19.9, "aman"],
+    [-1.4, "peringatan"],
+    [c.ahpnd ?? 0, "kritis"],
+    [c.wssv ?? 0, "aman"],
+    [c.ehp ?? 0, "kritis"],
+    [-0.8, "peringatan"],
+    [0.061, "peringatan"],
+    [0.44, "aman"],
+    [0.004, "aman"],
+    [4.6, "peringatan"],
+    [66, "aman"],
+    [128, "aman"],
+  ],
+  4: (c) => [
+    [20.4, "aman"],
+    [-3.1, "kritis"],
+    [c.ahpnd ?? 0, "kritis"],
+    [c.wssv ?? 0, "kritis"],
+    [c.ehp ?? 0, "kritis"],
+    [0.6, "kritis"],
+    [0.118, "kritis"],
+    [0.71, "peringatan"],
+    [0.006, "peringatan"],
+    [3.8, "kritis"],
+    [78, "peringatan"],
+    [112, "peringatan"],
+  ],
+};
+
+function featuresOf(riskClass: number, copies: MockSample["copies"]): EngineeredFeature[] {
+  const table = FEATURE_TABLE[riskClass];
+  if (!table) return [];
+  return table(copies).map(([value, status], i) => {
+    const [code, name, threshold] = FEATURES[i];
+    return { code, name, value, status, threshold };
+  });
+}
+
+/** Sama seperti backend: `evidence` = fitur yang tidak aman dan punya nilai. */
+const evidenceOf = (features: EngineeredFeature[]) =>
+  features.flatMap(({ name, value, threshold, status }) =>
+    value !== null && status !== "aman" ? [{ feature: name, value, threshold, status }] : [],
+  );
+
+/**
+ * Metrik komunitas mikroba simulasi per kelas risiko (bentuk sama dengan backend `internal/microbiome`).
+ * Angka dan status ditulis tetap, bukan dihitung di web. Tanpa baseline, kolom pergeseran bernilai null.
+ */
+const MICROBIOME_TABLE: Record<
   number,
-  (ahpnd: number) => Pick<SdriResult, "disease_name" | "predicted_disease" | "evidence" | "mitigation_actions">
+  { shannon: number; chao1: number; even: number; vibrio: number; bc: number; drop: number; status: string }
 > = {
-  1: () => ({
-    disease_name: "Belum ada target patogen di atas ambang",
+  1: { shannon: 3.42, chao1: 184.5, even: 0.71, vibrio: 4.2, bc: 0.12, drop: 2.3, status: "aman" },
+  2: { shannon: 3.05, chao1: 161.0, even: 0.66, vibrio: 9.6, bc: 0.28, drop: 11.8, status: "aman" },
+  3: { shannon: 2.51, chao1: 132.5, even: 0.58, vibrio: 18.4, bc: 0.47, drop: 26.5, status: "peringatan" },
+  4: { shannon: 1.93, chao1: 101.0, even: 0.47, vibrio: 34.7, bc: 0.66, drop: 44.1, status: "kritis" },
+};
+
+/** Takson simulasi dan porsinya dari sisa setelah Vibrio. */
+const TOP_TAXA: [string, string, number][] = [
+  ["Rhodobacter sphaeroides", "Rhodobacter", 0.34],
+  ["Bacillus subtilis", "Bacillus", 0.27],
+  ["Nitrosomonas europaea", "Nitrosomonas", 0.18],
+  ["Pseudoalteromonas sp.", "Pseudoalteromonas", 0.09],
+];
+
+function microbiomeOf(sample: MockSample, baselineId: string | null): MicrobiomeMetrics | null {
+  const row = MICROBIOME_TABLE[sample.risk_class];
+  if (sample.status !== "VALID" || !row) return null;
+  const hasBase = baselineId !== null && baselineId !== sample.id;
+  const pending = { value: null, status: "belum_cukup", threshold: "butuh sampel baseline kolam" };
+  return {
+    version: "MB-V0-heuristik",
+    status: "VALID",
+    total_reads: 18_420 + sample.cycle_day * 37,
+    observed_taxa: Math.round(row.chao1 * 0.86),
+    shannon: row.shannon,
+    chao1: row.chao1,
+    evenness: row.even,
+    vibrio_pct: row.vibrio,
+    bray_curtis: hasBase ? row.bc : null,
+    ...(hasBase && baselineId ? { baseline_sample_id: baselineId } : {}),
+    shannon_drop_pct: hasBase ? row.drop : null,
+    signals: [
+      { code: "porsi_vibrio", value: row.vibrio, status: row.status, threshold: "aman <= 10%; kritis > 30%" },
+      hasBase
+        ? {
+            code: "penurunan_keragaman",
+            value: row.drop,
+            status: row.status,
+            threshold: "aman <= 20%; kritis > 40% dari baseline",
+          }
+        : { code: "penurunan_keragaman", ...pending },
+      hasBase
+        ? {
+            code: "pergeseran_komunitas",
+            value: row.bc,
+            status: row.status,
+            threshold: "aman <= 0,4; kritis > 0,6 (Bray-Curtis)",
+          }
+        : { code: "pergeseran_komunitas", ...pending },
+    ],
+    top_taxa: [
+      { taxon: "Vibrio harveyi", genus: "Vibrio", pct: row.vibrio },
+      ...TOP_TAXA.map(([taxon, genus, part]) => ({ taxon, genus, pct: round((100 - row.vibrio) * part, 2) })),
+    ].toSorted((a, b) => b.pct - a.pct),
+  };
+}
+
+/** Sampel VALID pertama kolam = baseline simulasi. Sampel berkode akhiran 0 atau yang diunggah punya kelimpahan. */
+const microbiomeUploads = new Map<string, { source: string; uploaded_at: string }>();
+const baselineOf = (pondId: string) => samplesOf(pondId).find((s) => s.status === "VALID")?.id ?? null;
+const hasMicrobiome = (sample: MockSample) =>
+  microbiomeUploads.has(sample.id) || sample.id === baselineOf(sample.pond_id) || /[02468]$/.test(sample.sample_code);
+
+const BASE_MARKERS = [
+  { target: "16S", reason: "Total bakteri untuk menormalkan porsi dari sekuensing ke jumlah mutlak" },
+  { target: "amoA", reason: "Bakteri nitrifikasi (indikator bakteri baik dan siklus nitrogen)" },
+];
+const PIRA_WATCH = { target: "pirA", reason: "Penyakit bakteri paling merugikan di tambak vaname; tetap dipantau" };
+const PIRA_FOUND = { target: "pirA", reason: "Jejak AHPND terdeteksi di qPCR terakhir" };
+const VP28 = { target: "vp28", reason: "Jejak WSSV terdeteksi di qPCR terakhir (virus tidak terlihat oleh 16S)" };
+const SWP1 = { target: "swp1", reason: "Jejak EHP terdeteksi di qPCR terakhir" };
+
+/** Panel penanda simulasi per kelas risiko terakhir kolam (backend memilihnya dari kelimpahan + qPCR). */
+const MARKERS: Record<number, { target: string; reason: string }[]> = {
+  1: [...BASE_MARKERS, PIRA_WATCH],
+  2: [...BASE_MARKERS, PIRA_FOUND],
+  3: [...BASE_MARKERS, PIRA_FOUND, SWP1],
+  4: [...BASE_MARKERS, PIRA_FOUND, VP28, SWP1],
+};
+
+/** Penjelasan ilmiah simulasi: disusun dari data mock (bentuk sama dengan template backend), tanpa LLM. */
+const explanations = new Map<string, NonNullable<SampleExplanation["explanation"]>>();
+const MOCK_AI = { writer: "template", picker: "" };
+const MOCK_SOURCES = {
+  WANG2022: {
+    id: "WANG2022",
+    title: "Gen racun pirAB pada plasmid pVA1 bisa berpindah antar bakteri",
+    source: "Wang dkk., Microbiology Spectrum, 2022",
+    doi: "10.1128/spectrum.01702-22",
+    text: "Memantau gen pirAB lebih tepat daripada hanya menghitung nama bakteri.",
+    limits: "Kehadiran gen belum berarti racun sedang diproduksi.",
+  },
+  "AQS-AMBANG": {
+    id: "AQS-AMBANG",
+    title: "Ambang fitur X1-X12 mesin AquaSeq V1",
+    source: "AquaSeq internal/sdri/features.go (V1-GSI, dibekukan)",
+    doi: "",
+    text: "Ambang awal model V1.",
+    limits: "Belum dikalibrasi dengan data hasil siklus.",
+  },
+};
+
+function mockExplanation(sample: MockSample): NonNullable<SampleExplanation["explanation"]> {
+  const r = resultOf(sample);
+  const pond = pondOf(sample.pond_id);
+  if (r.status !== "VALID") {
+    return {
+      summary: `Sampel ${sample.sample_code} kolam ${pond.pond_code} ditolak mesin karena kontrol kualitas atau data belum lengkap, jadi peluang wabah tidak dihitung.`,
+      reasons: [
+        { text: "Kontrol PPC harus berada di rentang sah supaya hasil negatif tidak palsu.", sources: ["AQS-AMBANG"] },
+      ],
+      actions: [{ text: "Ulangi pengambilan sampel dan pastikan semua parameter diuji lab.", source: "AQS-AMBANG" }],
+      limitations: ["Sampel ditolak tidak memberi gambaran risiko kolam."],
+      writer: "template",
+      fallback_reason: "penulis AI belum dikonfigurasi",
+      priority_action: null,
+      sources: [MOCK_SOURCES["AQS-AMBANG"]],
+      generated_at: new Date().toISOString(),
+    };
+  }
+  const unsafe = featuresOf(sample.risk_class, ARCHETYPES[sample.risk_class].copies).filter(
+    (f) => f.value !== null && f.status !== "aman",
+  );
+  return {
+    summary:
+      `Kolam ${pond.pond_code} pada umur kultur ${sample.cycle_day} hari masuk kelas risiko ${r.risk_class} (${r.risk_level}) dengan peluang wabah ${String(r.probability_pct).replace(".", ",")}% menurut model ${r.model_version}. ${r.disease_name ?? ""}`.trim(),
+    reasons: unsafe.length
+      ? unsafe.slice(0, 4).map((f) => ({
+          text: `${f.name.replaceAll("_", " ")} ${String(f.value).replace(".", ",")}, status ${f.status} (ambang: ${f.threshold}).`,
+          sources: ["FAKTA", f.name === "jejak_ahpnd" ? "WANG2022" : "AQS-AMBANG"],
+        }))
+      : [{ text: "Semua parameter yang diuji masih dalam ambang aman mesin.", sources: ["FAKTA", "AQS-AMBANG"] }],
+    actions: mitigationTexts(r).map((text) => ({ text, source: "FAKTA" })),
+    limitations: [
+      "Model peluang wabah memakai koefisien awal dan belum divalidasi pada data hasil siklus; ini alat bantu keputusan, bukan diagnosis.",
+    ],
+    writer: "template",
+    fallback_reason: "penulis AI belum dikonfigurasi",
+    priority_action: null,
+    sources: unsafe.some((f) => f.name === "jejak_ahpnd")
+      ? [MOCK_SOURCES["AQS-AMBANG"], MOCK_SOURCES.WANG2022]
+      : [MOCK_SOURCES["AQS-AMBANG"]],
+    generated_at: new Date().toISOString(),
+  };
+}
+
+const mitigationTexts = (r: SdriResult) =>
+  (r.mitigation_actions ?? []).map((m) => (typeof m === "string" ? m : m.action)).slice(0, 4);
+
+/** Dugaan dan mitigasi simulasi per kelas risiko (kode penyakit sama dengan backend). */
+const DISEASE: Record<number, Pick<SdriResult, "disease_name" | "predicted_disease" | "mitigation_actions">> = {
+  1: {
+    disease_name: "Belum ada indikasi target di atas ambang; bukan bukti bebas penyakit",
     predicted_disease: "NO_TARGET_WARNING",
-    evidence: [],
     mitigation_actions: ["Lanjutkan sampling eDNA mingguan dan catat kimia air harian."],
-  }),
-  2: (ahpnd) => ({
-    disease_name: "Risiko AHPND",
+  },
+  2: {
+    disease_name: "Indikasi risiko jejak AHPND",
     predicted_disease: "AHPND_RISK",
-    evidence: [{ feature: "jejak_ahpnd", value: ahpnd, threshold: "peringatan ≥ 1000", status: "peringatan" }],
     mitigation_actions: [
       "Ulangi sampling eDNA dalam 3 hari untuk memastikan tren jejak AHPND.",
       "Kurangi pakan 20% dan pantau sisa pakan di anco.",
     ],
-  }),
-  3: (ahpnd) => ({
-    disease_name: "Risiko AHPND",
+  },
+  3: {
+    disease_name: "Indikasi risiko jejak AHPND",
     predicted_disease: "AHPND_RISK",
-    evidence: [
-      { feature: "jejak_ahpnd", value: ahpnd, threshold: "peringatan ≥ 1000; kritis ≥ 10000", status: "kritis" },
-      { feature: "fold_regulation_amoa", value: 0.42, threshold: "peringatan < 0,5", status: "peringatan" },
-    ],
     mitigation_actions: [
       "Kurangi pakan 30% dan sifon dasar kolam.",
       "Tambahkan probiotik Bacillus untuk menekan Vibrio.",
       "Ulangi sampling eDNA dalam 2 hari.",
     ],
-  }),
-  4: (ahpnd) => ({
-    disease_name: "Risiko AHPND diperparah amonia",
+  },
+  4: {
+    disease_name: "Risiko jejak AHPND disertai amonia tinggi",
     predicted_disease: "AHPND_NH3_RISK",
-    evidence: [
-      { feature: "jejak_ahpnd", value: ahpnd, threshold: "peringatan ≥ 1000; kritis ≥ 10000", status: "kritis" },
-      { feature: "nh3_mg_l", value: 0.118, threshold: "peringatan ≥ 0,05; kritis ≥ 0,1", status: "kritis" },
-      { feature: "indeks_disbiosis", value: 1.84, threshold: "peringatan ≥ 1", status: "peringatan" },
-    ],
     mitigation_actions: [
       "Ganti air 20-30% dan nyalakan kincir tambahan.",
       "Hentikan pakan 1 hari, lalu beri setengah porsi.",
       "Konsultasikan panen dini dengan petugas kesehatan ikan.",
     ],
-  }),
+  },
 };
 
 function resultOf({ status, probability_pct, risk_class }: MockSample): SdriResult {
@@ -228,7 +468,9 @@ function resultOf({ status, probability_pct, risk_class }: MockSample): SdriResu
     s_chem,
     model_version: "V1-GSI",
     // Bentuk temuan eDNA mengikuti backend `sdri.Assess`: kode fitur, ambang teks, status aman/peringatan/kritis.
-    ...(status === "VALID" ? EDNA_FINDINGS[risk_class](ARCHETYPES[risk_class].copies.ahpnd ?? 0) : NO_FINDINGS),
+    ...(status === "VALID"
+      ? { ...DISEASE[risk_class], evidence: evidenceOf(featuresOf(risk_class, ARCHETYPES[risk_class].copies)) }
+      : NO_FINDINGS),
     ai_explanation:
       "Ringkasan hasil mesin deterministik dari tabel simulasi. Bukan diagnosis resmi. Konfirmasi dengan petugas kesehatan ikan.",
   };
@@ -620,6 +862,39 @@ export const mock: Api = {
     },
   },
   ponds: {
+    microbiome: async (token, pondId) => {
+      const pond = readablePond(token, pondId);
+      const base = baselineOf(pond.id);
+      const rows = samplesOf(pond.id).filter((s) => s.status === "VALID" && hasMicrobiome(s));
+      const series = rows.flatMap((s) => {
+        const m = microbiomeOf(s, base);
+        const upload = microbiomeUploads.get(s.id);
+        if (!m) return [];
+        return [
+          {
+            sample_id: s.id,
+            sample_code: s.sample_code,
+            sampling_date: s.sampling_date,
+            cycle_day: s.cycle_day,
+            source: upload?.source ?? "Lab mitra (16S, simulasi)",
+            uploaded_at: upload?.uploaded_at ?? `${s.sampling_date}T09:00:00.000Z`,
+            status: m.status,
+            shannon: m.shannon,
+            chao1: m.chao1,
+            vibrio_pct: m.vibrio_pct,
+            bray_curtis: m.bray_curtis,
+          },
+        ];
+      });
+      const last = rows.at(-1);
+      return {
+        pond: { id: pond.id, pond_code: pond.pond_code },
+        version: "MB-V0-heuristik",
+        series,
+        latest: last ? microbiomeOf(last, base) : null,
+        markers: MARKERS[latestSample(pond.id)?.risk_class ?? 1] ?? MARKERS[1],
+      };
+    },
     insights: async (token, pondId) => {
       const pond = readablePond(token, pondId);
       const enough = samplesOf(pond.id).length >= 3;
@@ -992,7 +1267,53 @@ export const mock: Api = {
         sdri_result: resultOf(sample),
         copies_per_ml: sample.copies,
         nh3_mg_l: sample.nh3_mg_l,
+        engineered_features:
+          sample.status === "VALID" ? featuresOf(sample.risk_class, ARCHETYPES[sample.risk_class].copies) : [],
+        microbiome: hasMicrobiome(sample) ? microbiomeOf(sample, baselineOf(pond.id)) : null,
       };
+    },
+    uploadMicrobiome: async (token, sampleId, { csv, source }) => {
+      const sample = store.samples.find((s) => s.id === sampleId);
+      if (!sample) throw notFound("Sampel");
+      ownedPond(token, sample.pond_id);
+      // Mock hanya memeriksa bentuk tabel; metrik tetap simulasi per kelas risiko (backend yang menghitung).
+      const lines = csv.trim().split(/\r?\n/);
+      const header = (lines[0] ?? "")
+        .replace(/^\uFEFF/, "")
+        .toLowerCase()
+        .split(/[,;]/)
+        .map((h) => h.trim());
+      const columns = header.includes("taxon") && header.includes("reads");
+      if (!columns || lines.length < 2) {
+        throw new ApiError("VALIDATION_ERROR", "Periksa isian yang ditandai.", {
+          csv: columns ? "tabel kelimpahan kosong" : "kolom wajib: taxon dan reads",
+        });
+      }
+      const metrics = microbiomeOf(sample, baselineOf(sample.pond_id));
+      if (!metrics) {
+        throw new ApiError("VALIDATION_ERROR", "Periksa isian yang ditandai.", {
+          csv: "Sampel ditolak tidak diberi kelimpahan",
+        });
+      }
+      microbiomeUploads.set(sample.id, {
+        source: source?.trim() || "Lab mitra (16S)",
+        uploaded_at: new Date().toISOString(),
+      });
+      return { sample_id: sample.id, microbiome: metrics };
+    },
+    explanation: async (token, sampleId) => {
+      const sample = store.samples.find((s) => s.id === sampleId);
+      if (!sample) throw notFound("Sampel");
+      readablePond(token, sample.pond_id);
+      return { sample_id: sample.id, explanation: explanations.get(sample.id) ?? null, ai: MOCK_AI };
+    },
+    explain: async (token, sampleId) => {
+      const sample = store.samples.find((s) => s.id === sampleId);
+      if (!sample) throw notFound("Sampel");
+      ownedPond(token, sample.pond_id);
+      const explanation = mockExplanation(sample);
+      explanations.set(sample.id, explanation);
+      return { sample_id: sample.id, explanation, ai: MOCK_AI };
     },
     createBatch: async (token, { run, samples }) => {
       const owner = userOf(token);

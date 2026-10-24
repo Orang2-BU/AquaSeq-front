@@ -70,8 +70,12 @@ Mekanisme usulan: **JWT access token (15 menit) + refresh token (30 hari, rotasi
 | GET | `/batches?farm_id=` | ⬜ | — | `items: [{ batch_id, lab_name, tested_at, sample_count, rejected_count }]` | pemilik |
 | GET | `/batches/{id}` | ⬜ | — | `BatchSummary` + `samples: [{ sample_id, sample_code, pond: { id, pond_code }, sdri_result }]` + `meta: { wells: [Well + sample_code], standards }` (termasuk well NTC) | pemilik |
 | GET | `/ponds/{id}/samples` | ⬜ | `?page=` | `items: [{ sample_id, sampling_date, cycle_day, sdri_result }]` | pemilik / teknisi pemegang (tanpa `meta`) |
-| GET | `/samples/{id}` | ⬜ | — | `Sample` lengkap: `features`, `meta`, `sdri_result` (dengan `s_qpcr`, `s_bio`, `s_chem`, `z_score`), `copies_per_ml`, `nh3_mg_l` | pemilik |
+| GET | `/samples/{id}` | ⬜ | — | `Sample` lengkap: `features`, `meta`, `sdri_result` (dengan `s_qpcr`, `s_bio`, `s_chem`, `z_score`), `copies_per_ml`, `nh3_mg_l`, `engineered_features` (K9), `microbiome` (`Metrics` atau null) | pemilik |
 | GET | `/ponds/{id}/trajectory` | ✅ | — | `data_points, slope, trend, trajectory_alert, alert_message, history[]` | pemilik / teknisi pemegang |
+| POST | `/samples/{id}/microbiome` | 🔧 | `csv` (kolom `taxon`, `genus` opsional, `reads` bulat >= 0; pemisah `,`/`;`), `source?` | `sample_id, microbiome: Metrics` | pemilik. CSV salah: `VALIDATION_ERROR` dengan `fields.csv` |
+| GET | `/ponds/{id}/microbiome` | 🔧 | — | `pond, version, series: [{ sample_id, sample_code, sampling_date, cycle_day, source, uploaded_at, status, shannon, chao1, vibrio_pct, bray_curtis }], latest: Metrics \| null, markers: [{ target, reason }]` | pemilik / teknisi pemegang; siklus berjalan saja |
+| GET | `/samples/{id}/explanation` | 🔧 | — | `sample_id, explanation: Explanation \| null, ai: { writer: "claude" \| "openai" \| "template", writer_model?, picker: "jev" \| "" }` | pemilik / teknisi pemegang |
+| POST | `/samples/{id}/explanation` | 🔧 | — | sama dengan GET (menulis ulang lalu menyimpan) | pemilik; bisa sampai sekitar 22 detik (batas penulis) |
 | POST | `/cycles/outcome` | ✅ | `pond_id, cycle_number, outcome, actual_harvest_kg?, outbreak_date?, primary_suspect_pathogen?` | `status, message` | pemilik (perlu auth) |
 | GET | `/ponds/{id}/cycles` | ⬜ | — | `items: [{ cycle_number, outcome, actual_harvest_kg, outbreak_date, primary_suspect_pathogen, notes }]` | pemilik |
 
@@ -123,6 +127,13 @@ Web menerima hasil ekstraksi terstruktur (fitur mentah nullable, well, status QC
 | POST | `/models/{version}/promote` | ⬜ | `note: string` | `ModelVersion` | pemilik saja |
 
 - `ModelVersion`: `{ version: string, status: "kandidat"|"aktif"|"arsip", metrics: Record<string, number|string>, n_labels: number, synthetic: boolean, trained_at?: string, promoted_at?: string|null, promoted_by?: string|null, note?: string|null }`. V1 beku (bobot empiris GSI), V2 kandidat hasil kalibrasi siklus. Promosi model mewajibkan catatan konsekuensi dan tercatat nama pemilik + waktu.
+
+
+`Metrics` kelimpahan mikroba (backend `internal/microbiome`, versi `MB-V0-heuristik`, ambang heuristik belum divalidasi; branch backend `feat/edna-kelimpahan`):
+`{ version, status: "VALID" | "BELUM_CUKUP" (bacaan < 5000), total_reads, observed_taxa, shannon, chao1, evenness, vibrio_pct, bray_curtis | null, baseline_sample_id?, shannon_drop_pct | null, signals: [{ code: "porsi_vibrio" | "penurunan_keragaman" | "pergeseran_komunitas" | "kedalaman_baca", value | null, status, threshold }], top_taxa: [{ taxon, genus, pct }] }`. Baseline = sampel kelimpahan VALID paling awal di siklus yang sama. Penanda selalu `16S`, `amoA`, `pirA`; `vp28`/`swp1` ditambah bila qPCR terakhir menunjukkan jejak WSSV/EHP.
+
+
+`Explanation` (backend `internal/science`, branch `feat/edna-kelimpahan`): `{ summary, reasons: [{ text, sources[] }], actions: [{ text, source }], limitations[], writer, writer_model?, fallback_reason?, priority_action: { action, confidence, needs_review, picker } | null, sources: [{ id, title, source, doi, text, limits }], generated_at }`. Penulis LLM (Claude Opus via `ANTHROPIC_API_KEY`, atau gateway kompatibel OpenAI) hanya menulis; backend menolak angka yang tidak ada di fakta mesin/paket pengetahuan, sumber yang tidak dikenal (`FAKTA` atau id paket), dan kata mutlak, lalu memakai template. `priority_action` dipilih Jev hanya dari `mitigation_actions` mesin; `needs_review` bila keyakinan < 0,6.
 
 ## 5. Kimia air (⬜)
 | Method | Endpoint | Body / query | Data respons | Siapa |
@@ -182,4 +193,4 @@ Aturan munculnya peringatan (diusulkan): sampel terakhir kolam kelas 3 atau 4, s
 | K6 | Email (undangan, reset sandi) lewat apa? | SMTP via env; di dev cukup dicetak ke log (mock web juga mencetak tautan undangan ke log server) |
 | K7 | `domain.RiskClass` di backend bernilai 0/1/2/4 dan 9 (ditolak), sedangkan kontrak memakai 1-4 dan 0 (ditolak) | Ikuti kontrak: Aman 1, Waspada ringan 2, Waspada tinggi 3, Bahaya 4, ditolak 0. Web memetakan kelas hanya di `src/lib/risk.ts` |
 | K8 | Pesan WA backend memakai `primary_driver` teks bebas | Web mengisi subskor terbesar, mis. "Beban patogen (S_qPCR 3,3)". Backend boleh menggantinya bila punya pemicu yang lebih tepat |
-| K9 | Detail sampel hanya membawa `evidence` (fitur yang tidak aman), tanpa nilai X1-X12 lengkap dari `sdri.Assess` | Tambah `engineered_features: [{ feature, value, threshold, status }]` (semua fitur, termasuk yang aman) di `GET /samples/{id}`, supaya rincian skor bisa menampilkan fold regulation amoA dan indeks disbiosis walau aman. Web sementara menampilkan `evidence`, `predicted_disease`, `disease_name`, dan `mitigation_actions` saja. Kode fitur yang dipakai web: `kontrol_kualitas`, `fold_regulation_amoa`, `indeks_disbiosis`, `jejak_ahpnd`, `jejak_wssv`, `jejak_ehp`, `nh3_mg_l`, `no2_mg_l`, `h2s_mg_l`, `do_mg_l`, `tom_mg_l`, `alkalinity` |
+| K9 | Detail sampel hanya membawa `evidence` (fitur yang tidak aman), tanpa nilai X1-X12 lengkap | **Bentuk disepakati dari backend** (`internal/sdri/features.go`, branch `deployment`, 25 Okt 2026): `engineered_features: [{ code: "X1".."X12", name, value: number \| null, status, threshold }]`, `name` = kode fitur (`kontrol_kualitas`, `fold_regulation_amoa`, `jejak_ahpnd`, `jejak_wssv`, `jejak_ehp`, `indeks_disbiosis`, `nh3_mg_l`, `no2_mg_l`, `h2s_mg_l`, `do_mg_l`, `tom_mg_l`, `alkalinity`), `value` null bila belum bisa dihitung (status `belum_cukup`). **Selesai di branch backend `feat/edna-kelimpahan`** (25 Okt 2026): handler `GET /api/v1/samples/{id}` kini mengirim `engineered_features`; menunggu PR di-merge ke `deployment`. Web sudah siap (skema `.nullish()`, mock mengirim 12 fitur) dan memakai `evidence` selama field ini belum ada |

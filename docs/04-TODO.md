@@ -64,10 +64,12 @@
 | ID | Task | Status | Bukti / catatan |
 |---|---|---|---|
 | T51 | Ingesti CSV/PDF/DOCX/XLSX + QC terstruktur | ⛔ | API multipart `api.documents.ingest` + validasi 4MB + tes kontrak; tampilan UI ditahan menunggu persetujuan desain (freeze) |
-| T52 | Potensi penyakit + bukti + mitigasi SOP | ✅ | 25 Okt (izin user): kartu "Temuan eDNA mikroba" di rincian skor (dugaan, bukti per kelompok mikroba/patogen/kimia/kontrol, mitigasi), dugaan + mitigasi di detail kolam, dasbor, Kolam saya, tugas teknisi. Label kode fitur di `src/lib/edna.ts`. Usulan K9 `engineered_features` ke backend |
+| T52 | Potensi penyakit + bukti + mitigasi SOP | ✅ | 25 Okt (izin user): kartu "Temuan eDNA mikroba" di rincian skor (dugaan, bukti per kelompok mikroba/patogen/kimia/kontrol, mitigasi), dugaan + mitigasi di detail kolam, dasbor, Kolam saya, tugas teknisi. Label kode fitur di `src/lib/edna.ts`. K9: web menampilkan semua X1-X12 (`engineered_features`) di rincian skor bila backend mengirimnya; handler `GET /samples/{id}` backend belum menambahkan field itu |
 | T53 | Insight anomali + prakiraan + kasus mirip | ✅ | 25 Okt (izin user): panel "Pola & prakiraan" di detail kolam (prakiraan 7/14 hari, pola tidak biasa, penjelasan, kasus serupa); gagal diam bila backend belum siap |
 | T54 | Belajar/kalibrasi versi model teraudit | ⛔ | API `api.models.list` dan `promote` + mock V1 beku & V2 kandidat; UI promosi ditahan menunggu izin (freeze) |
 | T55 | Uji integrasi live opt-in | ⛔ | `vitest.live.config.ts` + `tests/live/core.live.test.ts` via `npm run test:live`; bukti RED jujur ECONNREFUSED saat backend mati |
+| T56 | Kelimpahan 16S: keragaman, porsi Vibrio, penanda mingguan (Layar B/C proposal) | ✅ | 25 Okt (izin user): backend `feat/edna-kelimpahan` (POST `/samples/{id}/microbiome`, GET `/ponds/{id}/microbiome`, `engineered_features` di detail sampel; 175 tes Go) + web: kartu "Komunitas mikroba (16S)" dan form unggah di rincian skor, panel "Mikrobioma & penanda mingguan" di detail kolam, contoh CSV. Diuji mock dan live lokal (backend Go mode memori). Menunggu PR di-merge Hadi |
+| T57 | Penjelasan ilmiah per sampel (Opus menulis, Jev memilih, kode memeriksa) | ✅ | 25 Okt (izin user): backend `internal/science` + `GET/POST /samples/{id}/explanation` (184 tes Go), web kartu "Penjelasan ilmiah" + tombol tulis di rincian skor. Aktif otomatis bila `ANTHROPIC_API_KEY`/`AI_*` dan `JEV_API_KEY` ada di server; tanpa kunci memakai template. Belum diuji dengan kunci asli |
 
 ## Alur Inti Check
 | Langkah | Status | Dicek |

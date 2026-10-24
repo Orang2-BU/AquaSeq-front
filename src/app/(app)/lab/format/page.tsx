@@ -38,6 +38,10 @@ export default function Page() {
           </p>
         </div>
         <div className="page-actions">
+          <a className="button secondary" href="/templates/aquaseq-kelimpahan-contoh.csv" download>
+            <Icon icon={Download} />
+            Contoh kelimpahan 16S
+          </a>
           <a className="button secondary" href="/templates/aquaseq-contoh-simulasi.csv" download>
             <Icon icon={Download} />
             Contoh terisi

@@ -7,7 +7,7 @@
 - Selesai: semua halaman **pemilik** di mode mock (P12-P29, P31-P34, P42, 404 dalam shell). Detail per task di `docs/04-TODO.md`.
 - Selesai dari branch rekan (`feat/web-setup`): halaman **teknisi** (T11, T12, T22, P39) dan **landing** baru dengan logo AquaSeq, Motion Primitives, dan GradualBlur.
 - Selesai dari branch deploy (`push-deployment`): integrasi Dokploy packaging, skema live API, kamus istilah baru eDNA, dan unit test lengkap.
-- Selesai 25 Okt: FE menampilkan temuan eDNA mikroba dari backend (`sdri.Assess`) dan insight kolam (T52, T53); istilah UI "hasil lab" diganti "data eDNA". Menunggu backend: K9 `engineered_features` di detail sampel.
+- Selesai 25 Okt: FE menampilkan temuan eDNA mikroba dari backend (`sdri.Assess`) dan insight kolam (T52, T53); istilah UI "hasil lab" diganti "data eDNA". Menunggu backend: handler detail sampel mengirim `engineered_features` (K9, web sudah siap).
 - Belum: publik (P2-P4, T37), nomor WhatsApp tim (`WHATSAPP_NUMBER` di `src/content/landing.ts`), P30 banding dan P35 bantuan (Could), uji live saat backend online.
 
 ## 1b. Sesi 25 Okt: FE disesuaikan dengan BE eDNA (BELUM DI-COMMIT)
@@ -34,11 +34,26 @@ Peta perubahan:
 
 Langkah berikut:
 1. Tanya user: commit + push ke `push-deployment`.
-2. Sampaikan K9 ke Hadi: `GET /samples/{id}` perlu `engineered_features` (semua fitur, termasuk yang aman).
+2. K9 selesai di branch backend `feat/edna-kelimpahan` (lihat §1c); tinggal PR di-merge Hadi.
 3. Uji mode live (`API_MODE=live`) terhadap BE Hadi bila user minta; cek kode penyakit lain yang belum dipetakan (fallback teks sudah ada).
 4. Cek 768px belum dilakukan untuk kartu eDNA (375 dan 1440 sudah).
 
 Jebakan sesi ini: dev server port 3000 sering milik akun lain di folder yang sama (`preview_start` gagal "Another next dev server"); pakai `http://localhost:3000` langsung, jangan kill. Build tetap lolos walau dev server hidup di Next 16.4 (dev memakai `.next/dev`). Untuk logout di browser: tombol "Lihat profil" di topbar → "Keluar" (badge Next devtools di kiri bawah menutupi kartu akun sidebar).
+
+## 1c. Sesi 25 Okt (lanjutan): backend juga dikerjakan, kelimpahan 16S
+Atas izin user, kekurangan proposal (kecuali pengolahan Nanopore) dikerjakan juga di backend.
+- **Repo backend lokal:** `D:\Aplikasi\AquaSeq-back`, branch `feat/edna-kelimpahan` dari `origin/deployment`. Commit `159b40a` (belum di-push). Go 1.27 terpasang lewat winget (`C:\Program Files\Go\bin`, tambahkan ke PATH di Git Bash: `export PATH="$PATH:/c/Program Files/Go/bin"`). `go test ./...` 175 lulus.
+- **Isi backend:** paket `internal/microbiome` (parser CSV `taxon,genus,reads`; Shannon, Chao1 bias-corrected, evenness, porsi Vibrio, Bray-Curtis terhadap baseline siklus pada porsi relatif; sinyal berambang heuristik `MB-V0-heuristik`; `SelectMarkers` 3-5 penanda). Endpoint `POST /samples/{id}/microbiome` (pemilik), `GET /ponds/{id}/microbiome`; `GET /samples/{id}` membawa `engineered_features` + `microbiome`. Tabel `sample_microbiome` di `sql/schema.sql`, kunci `sample_id` didaftarkan di `equalityKeys` (`internal/repository/web.go`). Dokumentasi di `docs/api.md` §7.
+- **Isi web:** skema + klien (`api.samples.uploadMicrobiome`, `api.ponds.microbiome`), mock simulasi per kelas risiko (angka ditulis tetap, tidak dihitung), `components/app/microbiome-card.tsx`, `pond-microbiome.tsx`, form `sampel/[sampleId]/microbiome-upload.tsx` + `actions.ts`, contoh `public/templates/aquaseq-kelimpahan-contoh.csv`.
+- **Verifikasi:** web 123 tes, typecheck, lint, format, knip, build; browser mock 1440/768/375; **uji live lokal** (backend Go mode memori port 18080 + web `API_MODE=live` port 3005): unggah contoh CSV → backend menghitung Shannon 1,79, Chao1 10, Vibrio 18,5%, dan detail sampel membawa 12 fitur X1-X12.
+- **Jebakan:** file Go di repo backend ber-CRLF (autocrlf true); skrip yang menulis ulang file bisa mengubah semua baris. `schema.sql` dan `docs/api.md` dikembalikan ke CRLF dengan `perl -pi -e 's/\r?\n/\r\n/'`. Browser pane hanya membuka server di `.claude/launch.json` (untuk uji live tambah sementara entri `url`).
+- **Belum:** push branch backend + PR ke Hadi, commit web (keduanya menunggu izin user). Ambang MB-V0 belum divalidasi; pemilihan penanda masih aturan, belum optimasi biaya.
+
+## 1d. Sesi 25 Okt (lanjutan): penjelasan ilmiah Opus + Jev
+- **Backend** (`D:\Aplikasi\AquaSeq-back`, branch `feat/edna-kelimpahan`, commit `9ed5131` di atas `f7326f9`; sudah di-rebase ke `origin/deployment` `dd929f7`): paket `internal/science` (knowledge.json, fakta mesin, penulis Claude via `github.com/anthropics/anthropic-sdk-go` v1.84.0 atau gateway OpenAI, pemeriksa angka/sumber/kata mutlak, template, pemilih Jev). Endpoint `GET/POST /samples/{id}/explanation`, tabel `sample_explanations`. Env baru: `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` (bawaan `claude-opus-5-5`), `ANTHROPIC_BASE_URL`. Dokumentasi: `docs/api.md` §8, `docs/DEPLOY-DOKPLOY.md`.
+- **Temuan penyebab "Verifikasi LLM tidak aktif"** (uji XLSX di web deploy): klien kompatibel OpenAI Hadi selalu mengirim `temperature`, yang ditolak API Anthropic sejak 21 Okt 2026. Diperbaiki: tidak dikirim bila nama model mengandung `claude`. Belum terbukti di server karena laptop Hadi mati.
+- **Web**: skema + klien `api.samples.explanation/explain`, mock template, `components/app/science-explanation.tsx`, `sampel/[sampleId]/explain-button.tsx`, aksi `writeExplanation`.
+- **Batas**: penulis 22 detik (server `WriteTimeout` 30 detik), `effort: low`. Docker tidak terpasang di laptop; build Linux lewat `GOOS=linux go build` lolos.
 
 ## 2. Cara menjalankan
 ```bash

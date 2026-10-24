@@ -170,6 +170,89 @@ const pondSampleSchema = z.object({
   sdri_result: sdriResultSchema,
 });
 
+/** Metrik komunitas mikroba dari tabel kelimpahan 16S (backend `internal/microbiome`, ambang heuristik MB-V0). */
+const microbiomeMetricsSchema = z.object({
+  version: z.string(),
+  status: z.enum(["VALID", "BELUM_CUKUP"]),
+  total_reads: z.number().int(),
+  observed_taxa: z.number().int(),
+  shannon: z.number(),
+  chao1: z.number(),
+  evenness: z.number(),
+  vibrio_pct: z.number(),
+  bray_curtis: z.number().nullable(),
+  baseline_sample_id: z.string().optional(),
+  shannon_drop_pct: z.number().nullable(),
+  signals: z.array(
+    z.object({ code: z.string(), value: z.number().nullable(), status: z.string(), threshold: z.string() }),
+  ),
+  top_taxa: z.array(z.object({ taxon: z.string(), genus: z.string(), pct: z.number() })),
+});
+
+const pondMicrobiomeSchema = z.object({
+  pond: pondRef,
+  version: z.string(),
+  series: z.array(
+    z.object({
+      sample_id: z.string(),
+      sample_code: z.string(),
+      sampling_date: z.string(),
+      cycle_day: z.number().int(),
+      source: z.string(),
+      uploaded_at: z.string(),
+      status: z.enum(["VALID", "BELUM_CUKUP"]),
+      shannon: z.number(),
+      chao1: z.number(),
+      vibrio_pct: z.number(),
+      bray_curtis: z.number().nullable(),
+    }),
+  ),
+  latest: microbiomeMetricsSchema.nullable(),
+  markers: z.array(z.object({ target: z.string(), reason: z.string() })),
+});
+
+const microbiomeUploadSchema = z.object({ sample_id: z.string(), microbiome: microbiomeMetricsSchema });
+
+/** Penjelasan ilmiah per sampel (backend `internal/science`): ditulis LLM lalu diperiksa kode, atau template. */
+const explanationSchema = z.object({
+  summary: z.string(),
+  reasons: z.array(z.object({ text: z.string(), sources: z.array(z.string()) })),
+  actions: z.array(z.object({ text: z.string(), source: z.string() })),
+  limitations: z.array(z.string()),
+  writer: z.string(),
+  writer_model: z.string().optional(),
+  fallback_reason: z.string().optional(),
+  priority_action: z
+    .object({ action: z.string(), confidence: z.number(), needs_review: z.boolean(), picker: z.string() })
+    .nullable(),
+  sources: z.array(
+    z.object({
+      id: z.string(),
+      title: z.string(),
+      source: z.string(),
+      doi: z.string(),
+      text: z.string(),
+      limits: z.string(),
+    }),
+  ),
+  generated_at: z.string(),
+});
+
+const sampleExplanationSchema = z.object({
+  sample_id: z.string(),
+  explanation: explanationSchema.nullable(),
+  ai: z.object({ writer: z.string(), writer_model: z.string().optional(), picker: z.string() }),
+});
+
+/** Fitur X1-X12 dari `sdri.Assess` (semua, termasuk yang aman); `value` null bila belum bisa dihitung. */
+const engineeredFeatureSchema = z.object({
+  code: z.string(),
+  name: z.string(),
+  value: z.number().nullable(),
+  status: z.string(),
+  threshold: z.string(),
+});
+
 const sampleSchema = z.object({
   id: z.string(),
   pond: pondRef,
@@ -185,6 +268,8 @@ const sampleSchema = z.object({
   sdri_result: sdriResultSchema,
   copies_per_ml: z.object({ ahpnd: num, wssv: num, ehp: num }),
   nh3_mg_l: num,
+  engineered_features: z.array(engineeredFeatureSchema).nullish(),
+  microbiome: microbiomeMetricsSchema.nullish(),
 });
 
 const batchSummarySchema = z.object({
@@ -327,6 +412,10 @@ const list = <T extends z.ZodType>(item: T) => z.object({ items: z.array(item) }
 
 export type Farm = z.infer<typeof farmSchema>;
 export type SdriResult = z.infer<typeof sdriResultSchema>;
+export type EngineeredFeature = z.infer<typeof engineeredFeatureSchema>;
+export type MicrobiomeMetrics = z.infer<typeof microbiomeMetricsSchema>;
+export type PondMicrobiome = z.infer<typeof pondMicrobiomeSchema>;
+export type SampleExplanation = z.infer<typeof sampleExplanationSchema>;
 export type Pond = z.infer<typeof pondSchema>;
 export type Trajectory = z.infer<typeof trajectorySchema>;
 export type PondSample = z.infer<typeof pondSampleSchema>;
@@ -623,6 +712,8 @@ const live = {
     archive: (token: string, pondId: string) => request("POST", `/ponds/${seg(pondId)}/archive`, pondSchema, { token }),
     trajectory: (token: string, pondId: string) =>
       request("GET", `/ponds/${seg(pondId)}/trajectory`, trajectorySchema, { token }),
+    microbiome: (token: string, pondId: string) =>
+      request("GET", `/ponds/${seg(pondId)}/microbiome`, pondMicrobiomeSchema, { token }),
     samples: (token: string, pondId: string) => requestPaged(`/ponds/${seg(pondId)}/samples`, pondSampleSchema, token),
     waterLogs: (token: string, pondId: string) =>
       requestPaged(`/ponds/${seg(pondId)}/water-logs`, waterLogSchema, token),
@@ -656,6 +747,14 @@ const live = {
   },
   samples: {
     get: (token: string, sampleId: string) => request("GET", `/samples/${seg(sampleId)}`, sampleSchema, { token }),
+    /** Tabel kelimpahan taksa 16S dari lab mitra; backend yang menghitung metrik (09-API-KONTRAK §4). */
+    uploadMicrobiome: (token: string, sampleId: string, body: { csv: string; source?: string }) =>
+      request("POST", `/samples/${seg(sampleId)}/microbiome`, microbiomeUploadSchema, { token, body }),
+    explanation: (token: string, sampleId: string) =>
+      request("GET", `/samples/${seg(sampleId)}/explanation`, sampleExplanationSchema, { token }),
+    /** Tulis (ulang) penjelasan ilmiah; backend memanggil LLM lalu memeriksa hasilnya. */
+    explain: (token: string, sampleId: string) =>
+      request("POST", `/samples/${seg(sampleId)}/explanation`, sampleExplanationSchema, { token }),
     /** Satu CSV = satu batch, atomik (09-API-KONTRAK §4). */
     createBatch: (token: string, body: BatchInput) =>
       request("POST", "/samples/batch", batchResultSchema, { token, body }),

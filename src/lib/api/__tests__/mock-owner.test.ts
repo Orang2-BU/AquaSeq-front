@@ -132,3 +132,74 @@ describe("mock notifikasi", () => {
     expect((await mock.notifications.list(token)).unread).toBe(0);
   });
 });
+
+describe("mock fitur X1-X12 detail sampel", () => {
+  it("mengirim 12 fitur dan evidence hanya berisi fitur yang tidak aman", async () => {
+    const token = await owner();
+    const [latest] = await mock.ponds.samples(token, pond("C4"));
+    const detail = await mock.samples.get(token, latest.sample_id);
+    const features = detail.engineered_features ?? [];
+    expect(features.map((f) => f.code)).toEqual(Array.from({ length: 12 }, (_, i) => `X${i + 1}`));
+    const unsafe = features.filter((f) => f.value !== null && f.status !== "aman").map((f) => f.name);
+    expect(detail.sdri_result.evidence?.map((e) => e.feature)).toEqual(unsafe);
+  });
+
+  it("tidak mengirim fitur untuk sampel yang ditolak", async () => {
+    const token = await owner();
+    const samples = await mock.ponds.samples(token, pond("A4"));
+    const rejected = samples.find((s) => s.sdri_result.status !== "VALID");
+    expect(rejected).toBeDefined();
+    const detail = await mock.samples.get(token, rejected!.sample_id);
+    expect(detail.engineered_features).toEqual([]);
+  });
+});
+
+describe("mock kelimpahan mikroba 16S", () => {
+  it("menolak CSV tanpa kolom taxon dan reads di field csv", async () => {
+    const token = await owner();
+    const [latest] = await mock.ponds.samples(token, pond("C4"));
+    await expect(
+      mock.samples.uploadMicrobiome(token, latest.sample_id, { csv: "nama,jumlah\nA,1\n" }),
+    ).rejects.toMatchObject({
+      code: "VALIDATION_ERROR",
+      fields: { csv: "kolom wajib: taxon dan reads" },
+    });
+  });
+
+  it("menyimpan unggahan lalu muncul di detail sampel dan seri kolam beserta 3-5 penanda", async () => {
+    const token = await owner();
+    const samples = await mock.ponds.samples(token, pond("C4"));
+    const target = samples.find((s) => s.sdri_result.status === "VALID");
+    expect(target).toBeDefined();
+    const { microbiome } = await mock.samples.uploadMicrobiome(token, target!.sample_id, {
+      csv: "taxon,reads\nVibrio harveyi,5000\nBacillus subtilis,5000\n",
+    });
+    expect(microbiome.version).toBe("MB-V0-heuristik");
+    expect((await mock.samples.get(token, target!.sample_id)).microbiome).toEqual(microbiome);
+    const summary = await mock.ponds.microbiome(token, pond("C4"));
+    expect(summary.series.some((s) => s.sample_id === target!.sample_id)).toBe(true);
+    expect(summary.markers.length).toBeGreaterThanOrEqual(3);
+    expect(summary.markers.length).toBeLessThanOrEqual(5);
+  });
+});
+
+describe("mock penjelasan ilmiah", () => {
+  it("kosong sebelum dibuat, lalu tersimpan sebagai template beserta sumber", async () => {
+    const token = await owner();
+    const [latest] = await mock.ponds.samples(token, pond("C4"));
+    const before = await mock.samples.explanation(token, latest.sample_id);
+    expect(before.explanation).toBeNull();
+    expect(before.ai.writer).toBe("template");
+    const { explanation } = await mock.samples.explain(token, latest.sample_id);
+    expect(explanation?.writer).toBe("template");
+    expect(explanation?.reasons.every((r) => r.sources.length > 0)).toBe(true);
+    expect((await mock.samples.explanation(token, latest.sample_id)).explanation).toEqual(explanation);
+  });
+
+  it("hanya pemilik yang boleh menulis penjelasan", async () => {
+    const token = await owner();
+    const [latest] = await mock.ponds.samples(token, pond("B3"));
+    const tech = (await mock.auth.demo("teknisi")).access_token;
+    await expect(mock.samples.explain(tech, latest.sample_id)).rejects.toMatchObject({ code: "FORBIDDEN" });
+  });
+});

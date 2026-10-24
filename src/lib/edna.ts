@@ -66,3 +66,15 @@ export function mitigationList(result: Pick<SdriResult, "mitigation_actions">) {
     typeof m === "string" ? { action: m, source: null, priority: null } : m,
   );
 }
+
+/** Sinyal komunitas mikroba dari backend (`internal/microbiome`) → label dan satuan nilai. */
+const MICROBIOME_SIGNALS: Record<string, { label: string; unit: string }> = {
+  porsi_vibrio: { label: "Porsi Vibrio di komunitas", unit: "%" },
+  penurunan_keragaman: { label: "Penurunan keragaman dari baseline", unit: "%" },
+  pergeseran_komunitas: { label: "Pergeseran komunitas (Bray-Curtis)", unit: "" },
+  kedalaman_baca: { label: "Kedalaman baca", unit: "bacaan" },
+};
+
+export function microbiomeSignalLabel(code: string) {
+  return MICROBIOME_SIGNALS[code] ?? { label: code.replaceAll("_", " "), unit: "" };
+}

@@ -12,6 +12,7 @@ import { CORE_WATER, outOfRange } from "@/lib/water";
 import { mitigationList } from "@/lib/edna";
 import { DiseaseLine } from "@/components/app/edna-findings";
 import { InsightsPanel } from "@/components/app/insights-panel";
+import { PondMicrobiome } from "@/components/app/pond-microbiome";
 import { PageSkeleton } from "@/components/app/page-parts";
 import { RiskBadge } from "@/components/app/risk-badge";
 import { RiskChart } from "@/components/app/risk-chart";
@@ -42,7 +43,7 @@ async function PondDetail({ params, searchParams }: PageProps<"/kolam/[pondId]">
   const [{ pondId }, { tab: rawTab }] = await Promise.all([params, searchParams]);
   const tab = TABS.find((t) => t.value === rawTab)?.value ?? "sampel";
   const pond = await loadEntity((token) => api.ponds.get(token, pondId));
-  const [trajectory, samples, logs, tasks, options, { farms }, insights] = await Promise.all([
+  const [trajectory, samples, logs, tasks, options, { farms }, insights, microbiome] = await Promise.all([
     withSession((token) => api.ponds.trajectory(token, pond.id)),
     withSession((token) => api.ponds.samples(token, pond.id)),
     withSession((token) => api.ponds.waterLogs(token, pond.id)),
@@ -51,6 +52,8 @@ async function PondDetail({ params, searchParams }: PageProps<"/kolam/[pondId]">
     getActiveFarms(),
     // Insight lapis B opsional: kolam tetap tampil walau backend belum siap.
     withSession((token) => api.ponds.insights(token, pond.id).catch(() => null)),
+    // Mikrobioma 16S opsional: backend lama belum punya endpoint ini.
+    withSession((token) => api.ponds.microbiome(token, pond.id).catch(() => null)),
   ]);
   const farm = farms.find((f) => f.id === pond.farm_id);
   const result = pond.latest_result;
@@ -190,6 +193,7 @@ async function PondDetail({ params, searchParams }: PageProps<"/kolam/[pondId]">
       </div>
 
       {insights && <InsightsPanel insights={insights} />}
+      {microbiome && <PondMicrobiome data={microbiome} simulated={farm?.provenance === "simulasi"} />}
 
       <section className="panel" aria-label="Riwayat kolam">
         <nav className="tabs" aria-label="Bagian riwayat kolam">

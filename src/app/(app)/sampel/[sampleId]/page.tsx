@@ -3,17 +3,21 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { ArrowLeft, FileSpreadsheet } from "lucide-react";
 import { api, type SampleFeatures } from "@/lib/api";
-import { getActiveFarms, loadEntity } from "@/lib/auth/session";
+import { getActiveFarms, loadEntity, withSession } from "@/lib/auth/session";
 import { taskOptions } from "@/lib/farm-data";
 import { formatDate, formatNumber } from "@/lib/format";
 import { SUBSCORES, formatProbability, rejectedReason, riskOf } from "@/lib/risk";
 import { WATER_PARAMS, outOfRange } from "@/lib/water";
 import { EdnaFindings } from "@/components/app/edna-findings";
+import { MicrobiomeCard } from "@/components/app/microbiome-card";
+import { ScienceExplanation } from "@/components/app/science-explanation";
 import { PageSkeleton } from "@/components/app/page-parts";
 import { Plate } from "@/components/app/plate";
 import { RiskBadge } from "@/components/app/risk-badge";
 import { CreateTaskButton } from "@/components/app/task-dialog";
 import { Badge, Icon } from "@/components/ui";
+import { ExplainButton } from "./explain-button";
+import { MicrobiomeUpload } from "./microbiome-upload";
 
 export const metadata: Metadata = { title: "Rincian skor" };
 
@@ -40,6 +44,8 @@ async function Breakdown({ params }: Pick<PageProps<"/sampel/[sampleId]">, "para
   const { sampleId } = await params;
   const sample = await loadEntity((token) => api.samples.get(token, sampleId));
   const pond = await loadEntity((token) => api.ponds.get(token, sample.pond.id));
+  // Penjelasan ilmiah opsional: backend lama belum punya endpoint ini.
+  const explanation = await withSession((token) => api.samples.explanation(token, sample.id).catch(() => null));
   const [{ farms }, options] = await Promise.all([getActiveFarms(), taskOptions(pond.farm_id)]);
   const simulated = farms.find((f) => f.id === pond.farm_id)?.provenance === "simulasi";
   const r = sample.sdri_result;
@@ -105,7 +111,17 @@ async function Breakdown({ params }: Pick<PageProps<"/sampel/[sampleId]">, "para
         </section>
       )}
 
-      <EdnaFindings result={r} />
+      <EdnaFindings result={r} features={sample.engineered_features} />
+
+      <ScienceExplanation data={explanation}>
+        {explanation && <ExplainButton sampleId={sample.id} exists={Boolean(explanation.explanation)} />}
+      </ScienceExplanation>
+
+      {valid && (
+        <MicrobiomeCard metrics={sample.microbiome ?? null}>
+          <MicrobiomeUpload sampleId={sample.id} replace={Boolean(sample.microbiome)} />
+        </MicrobiomeCard>
+      )}
 
       <ol className="chain">
         <li className="chain-step">
