@@ -124,7 +124,7 @@ export function ArchivePondDialog({
   return (
     <Modal title={`Arsipkan kolam ${pond.pond_code}?`} onClose={onClose}>
       <p className="dialog-summary">
-        Kolam ini hilang dari daftar dan dilepas dari teknisinya. Hasil lab dan riwayat tugasnya tetap tersimpan.
+        Kolam ini hilang dari daftar dan dilepas dari teknisinya. Data eDNA dan riwayat tugasnya tetap tersimpan.
       </p>
       {state.error && (
         <p className="form-alert" role="alert">

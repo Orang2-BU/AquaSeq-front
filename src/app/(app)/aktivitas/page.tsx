@@ -13,7 +13,7 @@ export const metadata: Metadata = { title: "Log aktivitas" };
 
 const KINDS = [
   { value: "tugas", label: "Tugas" },
-  { value: "batch", label: "Hasil lab" },
+  { value: "batch", label: "Data eDNA" },
   { value: "kolam", label: "Kolam" },
   { value: "anggota", label: "Anggota" },
   { value: "undangan", label: "Undangan" },
@@ -76,7 +76,7 @@ async function ActivityLog({ searchParams }: Pick<PageProps<"/aktivitas">, "sear
         <EmptyState
           icon={History}
           title="Belum ada aktivitas"
-          text="Aksi seperti unggah hasil lab dan buat tugas tercatat di sini."
+          text="Aksi seperti unggah data eDNA dan buat tugas tercatat di sini."
         />
       ) : (
         <section className="panel">

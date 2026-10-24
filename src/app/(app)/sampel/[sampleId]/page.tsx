@@ -8,6 +8,7 @@ import { taskOptions } from "@/lib/farm-data";
 import { formatDate, formatNumber } from "@/lib/format";
 import { SUBSCORES, formatProbability, rejectedReason, riskOf } from "@/lib/risk";
 import { WATER_PARAMS, outOfRange } from "@/lib/water";
+import { EdnaFindings } from "@/components/app/edna-findings";
 import { PageSkeleton } from "@/components/app/page-parts";
 import { Plate } from "@/components/app/plate";
 import { RiskBadge } from "@/components/app/risk-badge";
@@ -96,11 +97,15 @@ async function Breakdown({ params }: Pick<PageProps<"/sampel/[sampleId]">, "para
         <section className="reject-box" role="status">
           <h2>Sampel ditolak: {rejectedReason(r.status)}</h2>
           <p>
-            Kontrol kualitas {formatNumber(sample.features.ct_ppc)} berada di luar rentang yang diterima backend, jadi
-            hasil patogen tidak bisa dipercaya dan tidak diberi angka peluang. {r.recommendation}
+            {r.status === "REJECTED_INHIBITOR"
+              ? `Kontrol kualitas ${formatNumber(sample.features.ct_ppc)} berada di luar rentang yang diterima backend, jadi hasil patogen tidak bisa dipercaya dan tidak diberi angka peluang. `
+              : "Data eDNA atau kimia air belum lengkap, jadi peluang wabah belum dihitung. "}
+            {r.recommendation}
           </p>
         </section>
       )}
+
+      <EdnaFindings result={r} />
 
       <ol className="chain">
         <li className="chain-step">

@@ -31,7 +31,7 @@ export async function previewWhatsApp(pondId: string): Promise<WhatsAppPreview> 
   try {
     const pond = await withSession((token) => api.ponds.get(token, id.data));
     const result = pond.latest_result;
-    if (!result) return { error: "Kolam ini belum punya hasil lab." };
+    if (!result) return { error: "Kolam ini belum punya data eDNA." };
     const { whatsapp_message } = await withSession((token) =>
       api.reports.whatsapp(token, {
         pond_code: pond.pond_code,

@@ -64,8 +64,8 @@
 | ID | Task | Status | Bukti / catatan |
 |---|---|---|---|
 | T51 | Ingesti CSV/PDF/DOCX/XLSX + QC terstruktur | ⛔ | API multipart `api.documents.ingest` + validasi 4MB + tes kontrak; tampilan UI ditahan menunggu persetujuan desain (freeze) |
-| T52 | Potensi penyakit + bukti + mitigasi SOP | ⛔ | API/skema/tes siap; UI baru tidak ditampilkan, menunggu izin desain |
-| T53 | Insight anomali + prakiraan + kasus mirip | ⛔ | API `api.ponds.insights` + skema Zod + mock Lapis B + tes; chart visual ditahan menunggu izin (freeze) |
+| T52 | Potensi penyakit + bukti + mitigasi SOP | ✅ | 25 Okt (izin user): kartu "Temuan eDNA mikroba" di rincian skor (dugaan, bukti per kelompok mikroba/patogen/kimia/kontrol, mitigasi), dugaan + mitigasi di detail kolam, dasbor, Kolam saya, tugas teknisi. Label kode fitur di `src/lib/edna.ts`. Usulan K9 `engineered_features` ke backend |
+| T53 | Insight anomali + prakiraan + kasus mirip | ✅ | 25 Okt (izin user): panel "Pola & prakiraan" di detail kolam (prakiraan 7/14 hari, pola tidak biasa, penjelasan, kasus serupa); gagal diam bila backend belum siap |
 | T54 | Belajar/kalibrasi versi model teraudit | ⛔ | API `api.models.list` dan `promote` + mock V1 beku & V2 kandidat; UI promosi ditahan menunggu izin (freeze) |
 | T55 | Uji integrasi live opt-in | ⛔ | `vitest.live.config.ts` + `tests/live/core.live.test.ts` via `npm run test:live`; bukti RED jujur ECONNREFUSED saat backend mati |
 

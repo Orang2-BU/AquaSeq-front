@@ -770,7 +770,7 @@ function seedTasks(store: Store) {
     "batch.unggah",
     "batch",
     "b-sumber-rejeki-1023",
-    "Mengunggah hasil lab 23 Okt (11 sampel, 1 ditolak)",
+    "Mengunggah data eDNA 23 Okt (11 sampel, 1 ditolak)",
     ISO("2026-10-23", "15:05"),
   );
   log("u-hendra", "tugas.buat", "task", "t-b3-pakan", "Membuat tugas kolam B3 untuk Rizky Pratama", at(-1, 8));

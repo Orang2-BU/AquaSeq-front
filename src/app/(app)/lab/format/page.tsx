@@ -27,7 +27,7 @@ export default function Page() {
     <div className="page-enter">
       <Link className="back-link" href="/lab/unggah">
         <Icon icon={ArrowLeft} size={16} />
-        Unggah hasil lab
+        Unggah data eDNA
       </Link>
       <div className="page-heading">
         <div>

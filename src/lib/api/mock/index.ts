@@ -162,6 +162,57 @@ function summary(farm: MockFarm): Farm {
   };
 }
 
+const NO_FINDINGS = { disease_name: null, predicted_disease: null, evidence: [], mitigation_actions: [] };
+
+/** Temuan eDNA simulasi per kelas risiko (kode penyakit dan fitur sama dengan backend). */
+const EDNA_FINDINGS: Record<
+  number,
+  (ahpnd: number) => Pick<SdriResult, "disease_name" | "predicted_disease" | "evidence" | "mitigation_actions">
+> = {
+  1: () => ({
+    disease_name: "Belum ada target patogen di atas ambang",
+    predicted_disease: "NO_TARGET_WARNING",
+    evidence: [],
+    mitigation_actions: ["Lanjutkan sampling eDNA mingguan dan catat kimia air harian."],
+  }),
+  2: (ahpnd) => ({
+    disease_name: "Risiko AHPND",
+    predicted_disease: "AHPND_RISK",
+    evidence: [{ feature: "jejak_ahpnd", value: ahpnd, threshold: "peringatan ≥ 1000", status: "peringatan" }],
+    mitigation_actions: [
+      "Ulangi sampling eDNA dalam 3 hari untuk memastikan tren jejak AHPND.",
+      "Kurangi pakan 20% dan pantau sisa pakan di anco.",
+    ],
+  }),
+  3: (ahpnd) => ({
+    disease_name: "Risiko AHPND",
+    predicted_disease: "AHPND_RISK",
+    evidence: [
+      { feature: "jejak_ahpnd", value: ahpnd, threshold: "peringatan ≥ 1000; kritis ≥ 10000", status: "kritis" },
+      { feature: "fold_regulation_amoa", value: 0.42, threshold: "peringatan < 0,5", status: "peringatan" },
+    ],
+    mitigation_actions: [
+      "Kurangi pakan 30% dan sifon dasar kolam.",
+      "Tambahkan probiotik Bacillus untuk menekan Vibrio.",
+      "Ulangi sampling eDNA dalam 2 hari.",
+    ],
+  }),
+  4: (ahpnd) => ({
+    disease_name: "Risiko AHPND diperparah amonia",
+    predicted_disease: "AHPND_NH3_RISK",
+    evidence: [
+      { feature: "jejak_ahpnd", value: ahpnd, threshold: "peringatan ≥ 1000; kritis ≥ 10000", status: "kritis" },
+      { feature: "nh3_mg_l", value: 0.118, threshold: "peringatan ≥ 0,05; kritis ≥ 0,1", status: "kritis" },
+      { feature: "indeks_disbiosis", value: 1.84, threshold: "peringatan ≥ 1", status: "peringatan" },
+    ],
+    mitigation_actions: [
+      "Ganti air 20-30% dan nyalakan kincir tambahan.",
+      "Hentikan pakan 1 hari, lalu beri setengah porsi.",
+      "Konsultasikan panen dini dengan petugas kesehatan ikan.",
+    ],
+  }),
+};
+
 function resultOf({ status, probability_pct, risk_class }: MockSample): SdriResult {
   const p = probability_pct / 100;
   const [s_qpcr, s_bio, s_chem] = ARCHETYPES[risk_class].sub;
@@ -176,32 +227,8 @@ function resultOf({ status, probability_pct, risk_class }: MockSample): SdriResu
     s_bio,
     s_chem,
     model_version: "V1-GSI",
-    disease_name: [
-      "Belum dapat dinilai",
-      "Tidak ada indikasi penyakit dominan",
-      "Risiko dini AHPND",
-      "AHPND dan EHP",
-      "AHPND dan toksisitas air",
-    ][risk_class],
-    predicted_disease: ["INVALID", "NORMAL", "EARLY_WARNING_AHPND", "AHPND_EHP", "AHPND_TOXICITY"][risk_class],
-    evidence:
-      status === "VALID"
-        ? [
-            {
-              feature: "Kadar jejak patogen AHPND",
-              value: ARCHETYPES[risk_class].copies.ahpnd ?? 0,
-              threshold: 1000,
-              status: ["tidak_valid", "aman", "pantau", "melampaui", "melampaui"][risk_class],
-            },
-          ]
-        : [],
-    mitigation_actions: [
-      {
-        action: BACKEND_TEXT[risk_class].recommendation,
-        source: "SOP tindakan AquaSeq, contoh simulasi",
-        priority: "tinggi",
-      },
-    ],
+    // Bentuk temuan eDNA mengikuti backend `sdri.Assess`: kode fitur, ambang teks, status aman/peringatan/kritis.
+    ...(status === "VALID" ? EDNA_FINDINGS[risk_class](ARCHETYPES[risk_class].copies.ahpnd ?? 0) : NO_FINDINGS),
     ai_explanation:
       "Ringkasan hasil mesin deterministik dari tabel simulasi. Bukan diagnosis resmi. Konfirmasi dengan petugas kesehatan ikan.",
   };
@@ -1020,7 +1047,7 @@ export const mock: Api = {
         "batch.unggah",
         "batch",
         batch_id,
-        `Mengunggah hasil lab ${run.file_name} (${results.length} sampel, ${rejected} ditolak)`,
+        `Mengunggah data eDNA ${run.file_name} (${results.length} sampel, ${rejected} ditolak)`,
       );
       return { batch_id, results };
     },

@@ -54,7 +54,7 @@ const FIELD_LABEL: Record<(typeof FIELDS)[number], string> = {
   well: "Well",
   sample_code: "Kode sampel",
   target: "Target",
-  ct: "Ct",
+  ct: "Kadar jejak (Ct)",
   tm: "Tm (opsional)",
 };
 const REASONS = ["Gelembung di well", "Kurva amplifikasi abnormal", "Salah pipet", "Puncak leleh ganda"];
@@ -166,7 +166,7 @@ export function UploadWizard({ ponds, today }: { ponds: PondOption[]; today: str
 
   return (
     <>
-      <ol className="toggle flow-steps" aria-label="Langkah unggah hasil lab">
+      <ol className="toggle flow-steps" aria-label="Langkah unggah data eDNA">
         {STEPS.map((label, i) => (
           <li
             key={label}

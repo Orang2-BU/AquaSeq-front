@@ -41,10 +41,10 @@ export interface ShellAccount {
 
 const GUIDE: Record<Role, { intro: string; steps: [string, string][] }> = {
   pemilik: {
-    intro: "Alur dari hasil lab sampai tindakan di kolam.",
+    intro: "Alur dari data eDNA sampai tindakan di kolam.",
     steps: [
       [
-        "Unggah hasil lab",
+        "Unggah data eDNA",
         "Pilih data eDNA dari sampel air, periksa kontrol kualitas plate, cocokkan sampel ke kolam, lalu kirim.",
       ],
       ["Baca risiko", "Dasbor mengurutkan kolam dari peluang wabah tertinggi beserta rekomendasinya."],

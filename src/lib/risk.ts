@@ -50,7 +50,7 @@ export function rejectedReason(status: SdriResult["status"]): string {
   return status === "REJECTED_INHIBITOR"
     ? "Kontrol kualitas di luar rentang: reaksi terhambat inhibitor"
     : status === "REJECTED_INVALID_QC"
-      ? "Kontrol mutu run tidak lolos"
+      ? "Data eDNA atau kimia air belum lengkap atau tidak valid"
       : "";
 }
 

@@ -74,6 +74,7 @@ const sdriResultSchema = z.object({
   s_chem: z.number(),
   model_version: z.string(),
   recommendation: z.string(),
+  // Temuan eDNA (backend `sdri.Assess`); kolom DB bisa null untuk sampel ditolak.
   disease_name: z.string().nullish(),
   predicted_disease: z.string().nullish(),
   evidence: z
