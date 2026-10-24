@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AquaSeq Mobile Mockup</title>
+<!-- Mockup saja. Di aplikasi, font di-self-host lewat next/font. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+  :root {
+    --page: #E6E9ED;
+    --page-ink: #14181D;
+    --page-muted: #5B636D;
+
+    --bg-top: #143457;
+    --bg-mid: #0A1829;
+    --bg-end: #04080E;
+    --ink: #F3F6FA;
+    --ink-2: #A9B6C6;
+    --ink-3: #97A5B7;
+    --glass: rgba(255, 255, 255, 0.065);
+    --glass-2: rgba(255, 255, 255, 0.11);
+    --glass-line: rgba(255, 255, 255, 0.09);
+    --accent: #5CB8FF;
+    --accent-ink: #03111E;
+    --accent-soft: rgba(92, 184, 255, 0.16);
+    --pill: #F4F7FA;
+    --pill-ink: #0A121B;
+    --nav-active: #0B1624;
+
+    --aman: #5BD9A2;
+    --pantau: #F0D35E;
+    --waspada: #FF9D4D;
+    --kritis: #FF6372;
+
+    --r-card: 28px;
+    --r-tile: 22px;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  ::selection { background: var(--accent); color: var(--accent-ink); }
+
+  body {
+    min-height: 100dvh;
+    background: var(--page);
+    color: var(--page-ink);
+    font-family: "Figtree", system-ui, sans-serif;
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+    padding: 56px 16px 80px;
+  }
+
+  .intro { max-width: 1180px; margin: 0 auto 40px; }
+  .intro h1 { font-size: clamp(28px, 4vw, 40px); font-weight: 800; letter-spacing: -0.03em; }
+  .intro p { margin-top: 10px; color: var(--page-muted); max-width: 62ch; line-height: 1.55; }
+
+  .group { max-width: 1180px; margin: 0 auto 64px; }
+  .group h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+  .group > p { color: var(--page-muted); margin: 6px 0 28px; }
+  .row { display: flex; flex-wrap: wrap; gap: 36px; justify-content: center; }
+
+  figure { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  figcaption { font-size: 14px; color: var(--page-muted); font-weight: 500; }
+
+  /* Bingkai ponsel */
+  .phone {
+    width: 360px; height: 760px;
+    border-radius: 56px;
+    padding: 10px;
+    background: #1B1F26;
+    box-shadow: 0 2px 0 1px #2B313B inset, 0 30px 60px -20px rgba(10, 18, 30, 0.45), 0 12px 24px -12px rgba(10, 18, 30, 0.3);
+  }
+  .screen {
+    position: relative; height: 100%; overflow: hidden;
+    border-radius: 46px;
+    background:
+      radial-gradient(120% 60% at 20% 0%, var(--bg-top) 0%, transparent 70%),
+      linear-gradient(180deg, var(--bg-mid) 0%, var(--bg-end) 100%);
+    color: var(--ink);
+    padding: 0 18px;
+  }
+  .island { position: absolute; top: 11px; left: 50%; translate: -50% 0; width: 112px; height: 32px; border-radius: 20px; background: #000; z-index: 5; }
+  .status { display: flex; justify-content: space-between; align-items: center; height: 54px; padding: 0 12px 0 16px; font-size: 15px; font-weight: 600; }
+  .status .sig { display: flex; gap: 5px; align-items: center; }
+  .status svg { width: 16px; height: 16px; }
+
+  .scroll { height: calc(100% - 54px); overflow: hidden; padding-bottom: 110px; }
+
+  /* Header */
+  .top { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 18px; }
+  .top-left { display: flex; align-items: center; gap: 10px; }
+  .round {
+    width: 46px; height: 46px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--glass-2); border: 1px solid var(--glass-line);
+    color: var(--ink);
+    transition: background 180ms var(--ease), scale 180ms var(--ease);
+    cursor: pointer;
+  }
+  .round:hover { background: rgba(255, 255, 255, 0.18); }
+  .round:active { scale: 0.94; }
+  .round svg { width: 20px; height: 20px; }
+  .round.light { background: var(--pill); color: var(--pill-ink); border: 0; }
+  .avatar { width: 46px; height: 46px; border-radius: 50%; background: #2A4A6E; display: grid; place-items: center; font-weight: 700; font-size: 15px; border: 2px solid rgba(255,255,255,0.18); }
+  .who { line-height: 1.2; }
+  .who small { display: block; font-size: 12px; color: var(--ink-3); }
+  .who b { font-size: 15px; font-weight: 700; }
+  .actions { display: flex; gap: 8px; }
+  .dot-badge { position: relative; }
+  .dot-badge::after { content: ""; position: absolute; top: 10px; right: 11px; width: 8px; height: 8px; border-radius: 50%; background: var(--kritis); border: 2px solid #12253C; }
+
+  .sim {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
+    color: var(--pantau); background: rgba(240, 211, 94, 0.12);
+    padding: 4px 9px; border-radius: 999px;
+  }
+  .sim svg { width: 12px; height: 12px; }
+
+  /* Kartu kaca */
+  .glass {
+    background: var(--glass);
+    border: 1px solid var(--glass-line);
+    border-radius: var(--r-card);
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  }
+  .hero { padding: 18px; }
+  .hero-head { display: flex; align-items: center; gap: 12px; }
+  .hero-icon { width: 46px; height: 46px; border-radius: 50%; background: var(--pill); color: var(--pill-ink); display: grid; place-items: center; flex: none; }
+  .hero-icon svg { width: 22px; height: 22px; }
+  .big { font-size: 30px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+  .big small { font-size: 16px; font-weight: 600; color: var(--ink-2); letter-spacing: 0; }
+  .sub { font-size: 12px; color: var(--ink-2); margin-top: 6px; display: flex; align-items: center; gap: 5px; }
+  .sub svg { width: 13px; height: 13px; }
+  .up { color: var(--waspada); }
+  .down { color: var(--aman); }
+
+  /* Batang mingguan */
+  .bars { display: flex; justify-content: space-between; align-items: flex-end; height: 92px; margin: 20px 4px 8px; }
+  .bar { display: flex; gap: 4px; align-items: flex-end; }
+  .bar i { display: block; width: 9px; border-radius: 6px 6px 3px 3px; background: var(--ink); }
+  .bar i + i { background: var(--accent); }
+  .days { display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-3); font-weight: 600; padding: 0 6px; border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 8px; }
+  .legend { display: flex; gap: 14px; font-size: 11px; color: var(--ink-2); margin-top: 10px; }
+  .legend span { display: flex; align-items: center; gap: 6px; }
+  .legend span::before { content: ""; width: 8px; height: 8px; border-radius: 3px; background: var(--ink); }
+  .legend span:last-child::before { background: var(--accent); }
+
+  /* Tombol pil */
+  .btns { display: flex; gap: 10px; margin-top: 16px; }
+  .btn {
+    flex: 1; height: 52px; border-radius: 999px; border: 0;
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    font: 700 15px/1 "Figtree", sans-serif; cursor: pointer;
+    transition: filter 180ms var(--ease), scale 160ms var(--ease);
+  }
+  .btn:hover { filter: brightness(1.06); }
+  .btn:active { scale: 0.97; }
+  .btn:focus-visible, .round:focus-visible, .nav a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .btn .ic { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid currentColor; display: grid; place-items: center; }
+  .btn .ic svg { width: 14px; height: 14px; }
+  .btn-accent { background: var(--accent); color: var(--accent-ink); }
+  .btn-light { background: var(--pill); color: var(--pill-ink); }
+  .btn-full { width: 100%; flex: none; }
+
+  .sec { display: flex; justify-content: space-between; align-items: baseline; margin: 24px 2px 12px; }
+  .sec h3 { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; }
+  .sec a { font-size: 13px; color: var(--ink-2); text-decoration: none; font-weight: 600; }
+
+  /* Grid kolam */
+  .ponds { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .pond { border-radius: var(--r-tile); padding: 13px; background: var(--glass); border: 1px solid var(--glass-line); }
+  .pond.is-light { background: var(--pill); color: var(--pill-ink); border-color: transparent; }
+  .pond.is-accent { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+  .pond-top { display: flex; gap: 8px; align-items: center; }
+  .pond-badge { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; background: rgba(255,255,255,0.12); }
+  .is-light .pond-badge, .is-accent .pond-badge { background: rgba(3,17,30,0.1); }
+  .pond-name { font-size: 13px; font-weight: 700; line-height: 1.15; }
+  .pond-name small { display: block; font-size: 11px; font-weight: 500; opacity: 0.7; }
+  .pond-score { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin-top: 14px; }
+  .pond-foot { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 600; margin-top: 4px; }
+  .cls { display: inline-flex; align-items: center; gap: 5px; }
+  .cls::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .c-aman { color: var(--aman); } .c-pantau { color: var(--pantau); } .c-waspada { color: var(--waspada); } .c-kritis { color: var(--kritis); }
+  .is-light .c-pantau { color: #8A6D00; } .is-light .c-waspada { color: #A84A00; }
+  .is-accent .cls { color: var(--accent-ink); }
+
+  /* Navigasi pil melayang */
+  .nav {
+    position: absolute; left: 18px; right: 18px; bottom: 22px; z-index: 4;
+    height: 68px; border-radius: 999px; background: var(--pill);
+    display: flex; justify-content: space-around; align-items: center; padding: 0 8px;
+    box-shadow: 0 18px 30px -12px rgba(0,0,0,0.6);
+  }
+  .nav a { width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; color: #8C96A3; transition: background 180ms var(--ease), color 180ms var(--ease); }
+  .nav a:hover { color: var(--pill-ink); }
+  .nav a.on { background: var(--nav-active); color: #fff; }
+  .nav svg { width: 21px; height: 21px; }
+  .fade { position: absolute; left: 0; right: 0; bottom: 0; height: 120px; background: linear-gradient(180deg, transparent, var(--bg-end) 70%); z-index: 3; pointer-events: none; }
+
+  /* Detail kolam */
+  .title-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .pond-mark { width: 48px; height: 48px; border-radius: 50%; background: var(--pill); color: var(--pill-ink); display: grid; place-items: center; font-weight: 800; font-size: 16px; flex: none; }
+  .title-row h4 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+  .title-row small { font-size: 12px; color: var(--ink-2); }
+  .title-row .score { margin-left: auto; text-align: right; }
+  .title-row .score b { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; display: block; line-height: 1; }
+  .title-row .score span { font-size: 12px; font-weight: 600; }
+
+  .chart { padding: 16px 14px 12px; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .chart text { font: 600 10px "Figtree", sans-serif; fill: var(--ink-3); }
+  .tip { fill: rgba(255,255,255,0.14); stroke: rgba(255,255,255,0.18); }
+  .ranges { display: flex; justify-content: space-between; margin-top: 12px; font-size: 12px; font-weight: 600; color: var(--ink-2); }
+  .ranges span { padding: 6px 10px; border-radius: 999px; }
+  .ranges .on { background: var(--pill); color: var(--pill-ink); }
+
+  .tabs { display: flex; gap: 8px; margin: 16px 0 6px; }
+  .tab { height: 38px; padding: 0 16px; border-radius: 999px; display: inline-flex; align-items: center; font-size: 13px; font-weight: 600; background: var(--glass-2); color: var(--ink); white-space: nowrap; }
+  .tab.on { background: var(--accent); color: var(--accent-ink); }
+
+  .rows { list-style: none; }
+  .rows li { display: flex; justify-content: space-between; align-items: center; padding: 13px 2px; border-bottom: 1px solid rgba(255,255,255,0.07); font-size: 14px; color: var(--ink-2); }
+  .rows li b { color: var(--ink); font-weight: 700; text-align: right; }
+  .rows li b small { display: block; font-size: 11px; font-weight: 600; }
+
+  .dock { position: absolute; left: 18px; right: 18px; bottom: 26px; z-index: 4; display: flex; gap: 10px; }
+
+  /* Tim */
+  .quick { display: flex; justify-content: space-around; padding: 16px 8px; }
+  .quick div { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; flex: 1; }
+  .quick div + div { border-left: 1px solid rgba(255,255,255,0.1); }
+  .quick .round { background: var(--pill); color: var(--pill-ink); border: 0; width: 42px; height: 42px; }
+
+  .task { border-radius: var(--r-card); padding: 16px; position: relative; overflow: hidden; }
+  .task + .task { margin-top: 10px; }
+  .task.is-accent { background: var(--accent); color: var(--accent-ink); }
+  .task.is-gray { background: linear-gradient(180deg, #E9EDF2, #B9C2CD); color: var(--pill-ink); }
+  .task-top { display: flex; align-items: center; gap: 10px; }
+  .task-top .round { width: 40px; height: 40px; background: var(--nav-active); color: #fff; border: 0; }
+  .task-top b { font-size: 15px; font-weight: 700; display: block; line-height: 1.2; }
+  .task-top small { font-size: 12px; opacity: 0.75; }
+  .task-top .due { margin-left: auto; text-align: right; font-size: 12px; font-weight: 700; }
+  .task-top .due small { display: block; font-weight: 500; }
+  .task hr { border: 0; border-top: 1px solid rgba(3,17,30,0.15); margin: 14px 0 10px; }
+  .task-bot { display: flex; justify-content: space-between; align-items: flex-end; font-size: 12px; position: relative; z-index: 1; }
+  .task-bot b { display: block; font-size: 18px; font-weight: 800; margin-top: 2px; letter-spacing: -0.01em; }
+  .task svg.wave { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 70px; opacity: 0.35; }
+
+  /* Teknisi */
+  .progress { height: 10px; border-radius: 999px; background: rgba(255,255,255,0.1); margin: 16px 0 8px; overflow: hidden; display: flex; gap: 3px; }
+  .progress i { display: block; height: 100%; flex: 1; background: rgba(255,255,255,0.12); }
+  .progress i.done { background: var(--accent); }
+  .progress-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-2); }
+
+  .todo { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .todo li { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: var(--r-tile); background: var(--glass); border: 1px solid var(--glass-line); }
+  .todo .check { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.3); display: grid; place-items: center; flex: none; }
+  .todo .check svg { width: 15px; height: 15px; }
+  .todo li.done .check { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .todo li.done .t b { text-decoration: line-through; text-decoration-color: rgba(255,255,255,0.4); color: var(--ink-2); }
+  .todo .t { flex: 1; line-height: 1.25; }
+  .todo .t b { font-size: 14px; font-weight: 700; display: block; }
+  .todo .t small { font-size: 12px; color: var(--ink-3); }
+  .todo .time { font-size: 12px; font-weight: 700; color: var(--ink-2); }
+  .todo .time.late { color: var(--waspada); }
+
+  /* Form kimia air */
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field { padding: 12px 14px; border-radius: var(--r-tile); background: var(--glass); border: 1px solid var(--glass-line); }
+  .field label { font-size: 12px; color: var(--ink-2); font-weight: 600; display: block; }
+  .field .v { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; margin-top: 4px; display: flex; align-items: baseline; gap: 4px; }
+  .field .v small { font-size: 12px; font-weight: 600; color: var(--ink-3); }
+  .field.focus { border-color: var(--accent); background: var(--accent-soft); }
+  .field.focus .v::after { content: ""; width: 2px; height: 22px; background: var(--accent); align-self: center; margin-left: 2px; }
+  .field.wide { grid-column: span 2; display: flex; justify-content: space-between; align-items: center; }
+  .field .hint { font-size: 11px; color: var(--waspada); font-weight: 600; margin-top: 2px; }
+  .calc { margin-top: 10px; padding: 14px; display: flex; align-items: center; gap: 12px; }
+  .calc .hero-icon { width: 40px; height: 40px; background: var(--accent-soft); color: var(--accent); }
+  .calc b { font-size: 18px; font-weight: 800; }
+  .calc small { display: block; font-size: 12px; color: var(--ink-2); }
+
+  /* Lapor tugas */
+  .brief { padding: 16px; }
+  .brief .from { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--ink-2); }
+  .brief .from .avatar { width: 32px; height: 32px; font-size: 12px; }
+  .brief p { font-size: 14px; line-height: 1.5; margin-top: 12px; }
+  .why { margin-top: 12px; padding: 10px 12px; border-radius: 16px; background: rgba(255,157,77,0.12); color: #FFC497; font-size: 12px; line-height: 1.45; display: flex; gap: 8px; }
+  .why svg { width: 15px; height: 15px; flex: none; margin-top: 1px; }
+  .photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+  .photo { aspect-ratio: 1; border-radius: 18px; background: linear-gradient(160deg, #3C6A8F, #1C3550); position: relative; overflow: hidden; }
+  .photo::after { content: ""; position: absolute; inset: 0; background: radial-gradient(60% 40% at 30% 70%, rgba(120, 200, 190, 0.45), transparent), radial-gradient(50% 30% at 70% 30%, rgba(255,255,255,0.18), transparent); }
+  .photo.add { background: var(--glass); border: 1.5px dashed rgba(255,255,255,0.22); display: grid; place-items: center; color: var(--ink-2); }
+  .photo.add::after { display: none; }
+  .photo.add svg { width: 22px; height: 22px; }
+  .note { margin-top: 10px; padding: 14px; font-size: 13px; color: var(--ink-2); line-height: 1.5; min-height: 70px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="intro">
+  <h1>AquaSeq mobile, mockup v1</h1>
+  <p>Gaya gelap kaca dengan aksen biru, untuk pemilik tambak dan teknisi. Semua angka contoh adalah data simulasi.</p>
+</header>
+
+<!-- ============ PEMILIK ============ -->
+<section class="group">
+  <h2>Pemilik tambak</h2>
+  <p>Memantau semua kolam, membaca skor SDRI, dan membagi tugas ke teknisi.</p>
+  <div class="row">
+
+    <!-- 1. Beranda pemilik -->
+    <figure>
+      <div class="phone"><div class="screen">
+        <div class="island"></div>
+        <div class="status"><span>06.42</span><span class="sig"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+        <div class="scroll">
+          <div class="top">
+            <div class="top-left">
+              <div class="avatar">HK</div>
+              <div class="who"><small>Tambak Sumber Rejeki</small><b>Pak Hendra</b></div>
+            </div>
+            <div class="actions"><span class="round dot-badge" tabindex="0" aria-label="Peringatan"><i data-lucide="bell"></i></span></div>
+          </div>
+
+          <div class="glass hero">
+            <div class="hero-head">
+              <div class="hero-icon"><i data-lucide="waves"></i></div>
+              <div>
+                <div class="big">3 <small>kolam perlu ditangani</small></div>
+                <div class="sub">dari 12 kolam · <span class="up">+1</span> dari minggu lalu</div>
+              </div>
+            </div>
+            <div class="bars" aria-label="Rata-rata SDRI 7 hari">
+              <div class="bar"><i style="height:52px"></i><i style="height:34px"></i></div>
+              <div class="bar"><i style="height:46px"></i><i style="height:41px"></i></div>
+              <div class="bar"><i style="height:58px"></i><i style="height:37px"></i></div>
+              <div class="bar"><i style="height:44px"></i><i style="height:49px"></i></div>
+              <div class="bar"><i style="height:63px"></i><i style="height:55px"></i></div>
+              <div class="bar"><i style="height:49px"></i><i style="height:62px"></i></div>
+              <div class="bar"><i style="height:41px"></i><i style="height:71px"></i></div>
+            </div>
+            <div class="days"><span>S</span><span>S</span><span>R</span><span>K</span><span>J</span><span>S</span><span>M</span></div>
+            <div class="legend"><span>SDRI rata-rata minggu lalu</span><span>Minggu ini</span></div>
+            <div class="btns">
+              <button class="btn btn-accent"><span class="ic"><i data-lucide="send"></i></span>Beri tugas</button>
+              <button class="btn btn-light"><span class="ic"><i data-lucide="file-text"></i></span>Laporan</button>
+            </div>
+          </div>
+
+          <div class="sec"><h3>Kolam</h3><a href="#">Lihat semua</a></div>
+          <div class="ponds">
+            <div class="pond is-accent">
+              <div class="pond-top"><span class="pond-badge">B3</span><span class="pond-name">Kolam B3<small>Rizky Pratama</small></span></div>
+              <div class="pond-score">68</div>
+              <div class="pond-foot"><span class="cls">Waspada</span><span>+9</span></div>
+            </div>
+            <div class="pond is-light">
+              <div class="pond-top"><span class="pond-badge">A2</span><span class="pond-name">Kolam A2<small>Agus Setiawan</small></span></div>
+              <div class="pond-score">47</div>
+              <div class="pond-foot"><span class="cls c-pantau">Pantau</span><span>+3</span></div>
+            </div>
+            <div class="pond">
+              <div class="pond-top"><span class="pond-badge">C1</span><span class="pond-name">Kolam C1<small>Dwi Lestari</small></span></div>
+              <div class="pond-score">22</div>
+              <div class="pond-foot"><span class="cls c-aman">Aman</span><span class="down">-4</span></div>
+            </div>
+            <div class="pond">
+              <div class="pond-top"><span class="pond-badge">B1</span><span class="pond-name">Kolam B1<small>Rizky Pratama</small></span></div>
+              <div class="pond-score">31</div>
+              <div class="pond-foot"><span class="cls c-aman">Aman</span><span class="down">-2</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="fade"></div>
+        <nav class="nav" aria-label="Navigasi utama">
+          <a href="#" class="on" aria-label="Beranda"><i data-lucide="house"></i></a>
+          <a href="#" aria-label="Kolam"><i data-lucide="layout-grid"></i></a>
+          <a href="#" aria-label="Tugas"><i data-lucide="clipboard-check"></i></a>
+          <a href="#" aria-label="Tim"><i data-lucide="users"></i></a>
+          <a href="#" aria-label="Pengaturan"><i data-lucide="settings"></i></a>
+        </nav>
+      </div></div>
+      <figcaption>Beranda pemilik</figcaption>
+    </figure>
+
+    <!-- 2. Detail kolam -->
+    <figure>
+      <div class="phone"><div class="screen">
+        <div class="island"></div>
+        <div class="status"><span>06.44</span><span class="sig"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+        <div class="scroll">
+          <div class="top">
+            <span class="round" tabindex="0" aria-label="Kembali"><i data-lucide="chevron-left"></i></span>
+            <span class="sim"><i data-lucide="flask-conical"></i>Data simulasi</span>
+            <div class="actions"><span class="round" tabindex="0" aria-label="Bagikan"><i data-lucide="share"></i></span></div>
+          </div>
+
+          <div class="title-row">
+            <div class="pond-mark">B3</div>
+            <div><h4>Kolam B3</h4><small>DOC 41 · sampel 23 Okt</small></div>
+            <div class="score"><b>68</b><span class="c-waspada">Waspada</span></div>
+          </div>
+
+          <div class="glass chart">
+            <svg viewBox="0 0 300 150" aria-label="Tren SDRI 8 minggu">
+              <g stroke="rgba(255,255,255,0.12)" stroke-dasharray="3 4">
+                <line x1="26" y1="14" x2="300" y2="14"/><line x1="26" y1="48" x2="300" y2="48"/><line x1="26" y1="82" x2="300" y2="82"/><line x1="26" y1="116" x2="300" y2="116"/>
+              </g>
+              <text x="0" y="17">100</text><text x="6" y="51">75</text><text x="6" y="85">50</text><text x="6" y="119">25</text>
+              <line x1="26" y1="61" x2="300" y2="61" stroke="#FF9D4D" stroke-opacity="0.55" stroke-dasharray="6 5"/>
+              <polyline fill="none" stroke="#F3F6FA" stroke-width="2.2" stroke-linejoin="round" points="34,104 70,101 106,108 142,95 178,90 214,78 250,73 286,57"/>
+              <line x1="286" y1="57" x2="286" y2="128" stroke="#5CB8FF" stroke-width="2" stroke-dasharray="4 3"/>
+              <circle cx="286" cy="57" r="5" fill="#04080E" stroke="#F3F6FA" stroke-width="2.2"/>
+              <rect class="tip" x="198" y="20" width="76" height="34" rx="9"/>
+              <text x="207" y="34" style="fill:#F3F6FA;font-size:11px;font-weight:700">SDRI 68</text>
+              <text x="207" y="47" style="fill:#FFC497">+9 dari mg 7</text>
+              <text x="28" y="146">mg 1</text><text x="138" y="146">mg 4</text><text x="270" y="146">mg 8</text>
+            </svg>
+            <div class="ranges"><span>4 mg</span><span class="on">8 mg</span><span>Siklus</span><span>Semua</span></div>
+          </div>
+
+          <div class="tabs"><span class="tab on">Patogen</span><span class="tab">Kimia air</span><span class="tab">Riwayat</span></div>
+          <ul class="rows">
+            <li>pirAB (AHPND)<b>2.380 kopi/mL<small class="c-waspada">naik 2 minggu</small></b></li>
+            <li>EHP<b>410 kopi/mL<small class="c-pantau">stabil</small></b></li>
+            <li>WSSV<b>Tidak terdeteksi<small style="color:var(--ink-3)">yakin 81%</small></b></li>
+            <li>NH₃ bebas<b>0,041 mg/L</b></li>
+          </ul>
+        </div>
+        <div class="fade"></div>
+        <div class="dock">
+          <button class="btn btn-accent">Tugaskan teknisi</button>
+          <button class="btn btn-light">Kirim WA</button>
+        </div>
+      </div></div>
+      <figcaption>Detail kolam dan jejak skor</figcaption>
+    </figure>
+
+    <!-- 3. Tim & tugas -->
+    <figure>
+      <div class="phone"><div class="screen">
+        <div class="island"></div>
+        <div class="status"><span>06.47</span><span class="sig"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+        <div class="scroll">
+          <div class="top">
+            <span class="round" tabindex="0" aria-label="Kembali"><i data-lucide="chevron-left"></i></span>
+            <div class="actions">
+              <span class="round" tabindex="0" aria-label="Cari"><i data-lucide="search"></i></span>
+              <span class="round" tabindex="0" aria-label="Riwayat tugas"><i data-lucide="history"></i></span>
+            </div>
+          </div>
+
+          <div class="hero-head" style="margin-bottom:16px">
+            <div class="hero-icon"><i data-lucide="users"></i></div>
+            <div><div class="big" style="font-size:26px">4 teknisi</div><div class="sub">2 sedang bertugas di kolam</div></div>
+          </div>
+
+          <div class="glass quick">
+            <div><span class="round" tabindex="0"><i data-lucide="user-plus"></i></span>Undang</div>
+            <div><span class="round" tabindex="0"><i data-lucide="send"></i></span>Beri tugas</div>
+            <div><span class="round" tabindex="0"><i data-lucide="calendar-days"></i></span>Jadwal sampel</div>
+          </div>
+
+          <div class="sec"><h3>Tugas berjalan</h3><a href="#">Semua</a></div>
+
+          <div class="task is-accent">
+            <div class="task-top">
+              <span class="round"><i data-lucide="droplets"></i></span>
+              <div><b>Ganti air 20%</b><small>Kolam B3 · Rizky Pratama</small></div>
+              <div class="due">10.00<small>hari ini</small></div>
+            </div>
+            <hr>
+            <div class="task-bot">
+              <div>Alasan<b>pirAB naik</b></div>
+              <div style="text-align:right">Status<b>Dikerjakan</b></div>
+            </div>
+            <svg class="wave" viewBox="0 0 300 70" preserveAspectRatio="none"><path d="M0 50 L30 44 L60 52 L90 30 L120 38 L150 18 L180 34 L210 26 L240 40 L270 22 L300 30 L300 70 L0 70Z" fill="#03111E" fill-opacity="0.35"/></svg>
+          </div>
+
+          <div class="task is-gray">
+            <div class="task-top">
+              <span class="round"><i data-lucide="test-tube-diagonal"></i></span>
+              <div><b>Ambil sampel air</b><small>Kolam A2 · Agus Setiawan</small></div>
+              <div class="due">13.30<small>hari ini</small></div>
+            </div>
+            <hr>
+            <div class="task-bot">
+              <div>Volume<b>2 x 1 L</b></div>
+              <div style="text-align:right">Status<b>Belum mulai</b></div>
+            </div>
+          </div>
+        </div>
+        <div class="fade"></div>
+        <nav class="nav" aria-label="Navigasi utama">
+          <a href="#" aria-label="Beranda"><i data-lucide="house"></i></a>
+          <a href="#" aria-label="Kolam"><i data-lucide="layout-grid"></i></a>
+          <a href="#" aria-label="Tugas"><i data-lucide="clipboard-check"></i></a>
+          <a href="#" class="on" aria-label="Tim"><i data-lucide="users"></i></a>
+          <a href="#" aria-label="Pengaturan"><i data-lucide="settings"></i></a>
+        </nav>
+      </div></div>
+      <figcaption>Tim dan tugas berjalan</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<!-- ============ TEKNISI ============ -->
+<section class="group">
+  <h2>Teknisi</h2>
+  <p>Mengerjakan tugas dari pemilik, mencatat kimia air, dan melapor dengan foto.</p>
+  <div class="row">
+
+    <!-- 4. Tugas hari ini -->
+    <figure>
+      <div class="phone"><div class="screen">
+        <div class="island"></div>
+        <div class="status"><span>06.20</span><span class="sig"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+        <div class="scroll">
+          <div class="top">
+            <div class="top-left">
+              <div class="avatar" style="background:#35567A">RP</div>
+              <div class="who"><small>Selamat pagi</small><b>Rizky Pratama</b></div>
+            </div>
+            <div class="actions"><span class="round dot-badge" tabindex="0" aria-label="Notifikasi"><i data-lucide="bell"></i></span></div>
+          </div>
+
+          <div class="glass hero">
+            <div class="hero-head">
+              <div class="hero-icon"><i data-lucide="clipboard-check"></i></div>
+              <div><div class="big">1<small> dari 5 tugas selesai</small></div><div class="sub">Kolam B1, B2, B3</div></div>
+            </div>
+            <div class="progress"><i class="done"></i><i></i><i></i><i></i><i></i></div>
+            <div class="progress-meta"><span>Mulai 05.30</span><span>Target selesai 15.00</span></div>
+            <div class="btns">
+              <button class="btn btn-accent"><span class="ic"><i data-lucide="test-tube-diagonal"></i></span>Sampel</button>
+              <button class="btn btn-light"><span class="ic"><i data-lucide="droplet"></i></span>Catat air</button>
+            </div>
+          </div>
+
+          <div class="sec"><h3>Hari ini</h3><a href="#">Besok</a></div>
+          <ul class="todo">
+            <li class="done"><span class="check"><i data-lucide="check"></i></span><span class="t"><b>Catat kimia air pagi</b><small>Kolam B1, B2, B3</small></span><span class="time">05.45</span></li>
+            <li><span class="check"></span><span class="t"><b>Ganti air 20%</b><small>Kolam B3 · dari Pak Hendra</small></span><span class="time late">10.00</span></li>
+            <li><span class="check"></span><span class="t"><b>Ambil sampel eDNA</b><small>Kolam B2 · 2 botol 1 L</small></span><span class="time">11.00</span></li>
+          </ul>
+        </div>
+        <div class="fade"></div>
+        <nav class="nav" aria-label="Navigasi utama">
+          <a href="#" class="on" aria-label="Tugas"><i data-lucide="clipboard-check"></i></a>
+          <a href="#" aria-label="Kolam saya"><i data-lucide="layout-grid"></i></a>
+          <a href="#" aria-label="Catat air"><i data-lucide="droplet"></i></a>
+          <a href="#" aria-label="Akun"><i data-lucide="user-round"></i></a>
+        </nav>
+      </div></div>
+      <figcaption>Tugas hari ini</figcaption>
+    </figure>
+
+    <!-- 5. Catat kimia air -->
+    <figure>
+      <div class="phone"><div class="screen">
+        <div class="island"></div>
+        <div class="status"><span>06.31</span><span class="sig"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+        <div class="scroll">
+          <div class="top">
+            <span class="round" tabindex="0" aria-label="Kembali"><i data-lucide="chevron-left"></i></span>
+            <div class="actions"><span class="round" tabindex="0" aria-label="Riwayat"><i data-lucide="history"></i></span></div>
+          </div>
+
+          <div class="title-row">
+            <div class="pond-mark">B2</div>
+            <div><h4>Catat kimia air</h4><small>Kolam B2 · Jumat 24 Okt, 06.31</small></div>
+          </div>
+
+          <div class="fields">
+            <div class="field"><label>pH</label><div class="v">7,9</div></div>
+            <div class="field"><label>Suhu</label><div class="v">29,4<small>°C</small></div></div>
+            <div class="field"><label>DO</label><div class="v">3,6<small>mg/L</small></div><div class="hint">Di bawah 4</div></div>
+            <div class="field focus"><label>TAN</label><div class="v">0,74<small>mg/L</small></div></div>
+            <div class="field"><label>Salinitas</label><div class="v">17<small>ppt</small></div></div>
+            <div class="field"><label>Kecerahan</label><div class="v">32<small>cm</small></div></div>
+          </div>
+
+          <div class="glass calc">
+            <div class="hero-icon"><i data-lucide="calculator"></i></div>
+            <div><small>NH₃ bebas, dihitung otomatis</small><b>0,058 mg/L</b></div>
+            <span class="cls c-pantau" style="margin-left:auto;font-size:12px;font-weight:700">Pantau</span>
+          </div>
+        </div>
+        <div class="dock"><button class="btn btn-accent btn-full"><span class="ic"><i data-lucide="check"></i></span>Simpan catatan</button></div>
+      </div></div>
+      <figcaption>Catat kimia air</figcaption>
+    </figure>
+
+    <!-- 6. Lapor tugas -->
+    <figure>
+      <div class="phone"><div class="screen">
+        <div class="island"></div>
+        <div class="status"><span>10.12</span><span class="sig"><i data-lucide="signal"></i><i data-lucide="wifi"></i><i data-lucide="battery-full"></i></span></div>
+        <div class="scroll">
+          <div class="top">
+            <span class="round" tabindex="0" aria-label="Kembali"><i data-lucide="chevron-left"></i></span>
+            <span class="sim"><i data-lucide="flask-conical"></i>Data simulasi</span>
+            <div class="actions"><span class="round" tabindex="0" aria-label="Menu lain"><i data-lucide="ellipsis"></i></span></div>
+          </div>
+
+          <div class="title-row">
+            <div class="pond-mark">B3</div>
+            <div><h4>Ganti air 20%</h4><small>Batas 10.00 · terlambat 12 menit</small></div>
+          </div>
+
+          <div class="glass brief">
+            <div class="from"><span class="avatar">HK</span>Instruksi dari Pak Hendra</div>
+            <p>Buang air dasar sekitar 20%, isi dari tandon 2. Catat DO setelah selesai.</p>
+            <div class="why"><i data-lucide="triangle-alert"></i>Dari SDRI 68: pirAB naik dua minggu berturut-turut, NH₃ bebas mendekati batas.</div>
+          </div>
+
+          <div class="sec" style="margin-top:18px"><h3>Bukti</h3><a href="#">2 foto</a></div>
+          <div class="photos">
+            <div class="photo" role="img" aria-label="Foto kolam sebelum"></div>
+            <div class="photo" role="img" aria-label="Foto kolam sesudah" style="background:linear-gradient(160deg,#4A7C98,#22405C)"></div>
+            <div class="photo add" tabindex="0" aria-label="Tambah foto"><i data-lucide="camera"></i></div>
+          </div>
+          <div class="glass note">DO setelah ganti air 4,3 mg/L. Air tandon agak keruh, perlu dicek besok.</div>
+        </div>
+        <div class="dock"><button class="btn btn-accent btn-full"><span class="ic"><i data-lucide="check"></i></span>Tandai selesai</button></div>
+      </div></div>
+      <figcaption>Lapor tugas selesai</figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

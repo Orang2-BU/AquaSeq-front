@@ -1,6 +1,5 @@
-docs/
-dist/
-assets/
-scripts/
-*.md
+docs
+.next
 package-lock.json
+src/styles/theme.css
+next-env.d.ts

@@ -1,58 +1,35 @@
 {
-  "name": "aquaseq",
-  "version": "1.0.0",
-  "main": "expo-router/entry",
+  "name": "aquaseq-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
   "dependencies": {
-    "@expo-google-fonts/figtree": "^0.4.1",
-    "@react-native-async-storage/async-storage": "2.2.0",
-    "@tanstack/react-query": "^5.104.5",
-    "expo": "~58.0.17",
-    "expo-blur": "~58.0.5",
-    "expo-clipboard": "~58.0.4",
-    "expo-constants": "~58.0.13",
-    "expo-font": "~58.0.9",
-    "expo-glass-effect": "~58.0.4",
-    "expo-linear-gradient": "~58.0.3",
-    "expo-linking": "~58.0.14",
-    "expo-router": "~58.0.25",
-    "expo-system-ui": "~58.0.6",
-    "lucide-react-native": "^1.61.0",
-    "papaparse": "^5.7.0",
+    "lucide-react": "^1.61.0",
+    "next": "16.4.3",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-native": "0.88.0",
-    "react-native-safe-area-context": "~5.10.1",
-    "react-native-screens": "~4.30.0",
-    "react-native-svg": "15.16.0",
-    "react-native-web": "^0.21.4"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@testing-library/react-native": "^14.1.0",
-    "@types/jest": "30.0.0",
-    "@types/papaparse": "^5.5.2",
-    "@types/react": "~19.3.0",
-    "eslint": "^9.0.0",
-    "eslint-config-expo": "~58.0.4",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.7",
-    "jest": "~30.5.2",
-    "jest-expo": "~58.0.12",
+    "@tailwindcss/turbopack": "^4",
+    "@types/node": "^22.20.5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.3",
     "knip": "^6.42.1",
     "prettier": "^3.9.10",
-    "typescript": "~6.0.3"
-  },
-  "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
-    "test": "jest",
-    "lint": "expo lint",
-    "typecheck": "tsc --noEmit",
-    "verify": "tsc --noEmit && expo lint && jest"
-  },
-  "private": true,
-  "jest": {
-    "preset": "jest-expo"
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vitest": "^5.0.5"
   }
 }

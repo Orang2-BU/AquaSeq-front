@@ -1,69 +1,133 @@
-# 04 — TODO: Pelacak Progres
+# 04 — TODO: Progres Build
 
-> "Memori" projek. AI wajib memperbarui file ini setiap kali status task berubah.
-> ID task sama dengan 03-ARCHITECTURE.
+> AI wajib memperbarui file ini setiap status task berubah. ID sama dengan 03-ARCHITECTURE.
 
-**Legenda status:** ⬜ Todo · 🟦 In Progress · 🟨 Review · ✅ Done · ⛔ Blocked
+**Legenda:** ⬜ Todo · 🟦 In Progress · ✅ Done · ⛔ Blocked · ✂️ Dipotong (scope cut)
 
-## Ringkasan
-| Milestone | Total | ✅ Done | Progres |
-|---|---|---|---|
-| M1 — Fondasi | 3 | 3 | 100% |
-| M2 — Mesin SDRI v1 | 5 | 5 | 100% |
-| M3 — Data | 3 | 3 | 100% |
-| M4 — UI dasar | 4 | 4 | 100% |
-| M5 — Alur analis | 7 | 7 | 100% |
-| M6 — Alur manajer | 4 | 4 | 100% |
-| M7 — Rilis demo | 4 | 1 | 25% |
-| M8 — Should / Could | 4 | 3 | 75% |
+**Target:** tanpa deadline · **Update terakhir:** 24 Okt 2026
 
 ## Task
-| ID | Task | Status | Bukti verifikasi / Catatan | Update |
-|---|---|---|---|---|
-| T1.1 | Proyek Expo SDK 58 + TS strict, Router, ESLint, Prettier, jest-expo, knip, skrip verify | ✅ Done | expo 58.0.17, RN 0.88, TS 6; tsc/lint/prettier/knip/test hijau; `expo export -p web` OK; dev server web jalan. Expo Go belum diuji (butuh HP) | 24 Okt 2026 |
-| T1.2 | Kerangka semua rute PRD + layout per peran | ✅ Done | 24 rute + `+not-found`; dicek di web: `/`, `/lab/run/RUN-23OKT/well/C6`, `/tambak/kolam/B-03/patogen/pirA`, rute salah → "Halaman tidak ditemukan" | 24 Okt 2026 |
-| T1.3 | Pasang dependensi stack | ✅ Done | Query, AsyncStorage, papaparse, svg, blur, glass-effect, linear-gradient, lucide, expo-font + @expo-google-fonts/figtree, expo-clipboard. Zustand tidak dipakai (state UI cukup di komponen) | 24 Okt 2026 |
-| T2.1 | `params/sdri-v1.ts` + tipe hasil dan trace | ✅ Done | `src/engine/params/sdri-v1.ts`, `types.ts` (`Traced`) | 24 Okt 2026 |
-| T2.2 | Konversi: kurva standar, copies/mL, NH3, fold regulation | ✅ Done | Tes: efisiensi 98,84%, pirA POND-TOX 1,60e4/mL, NH3 4 arketipe cocok 4 desimal | 24 Okt 2026 |
-| T2.3 | Gerbang QC | ✅ Done | Tes: UNK-HUMIC DITOLAK "PPC 24,46 > 22", 16S, NTC, SD replikat, Nanopore, kimia kosong, run gagal kurva | 24 Okt 2026 |
-| T2.4 | Komponen SDRI + gabungan + kelas (tes emas) | ✅ Done | Tes emas 5/5 cocok `sdri_v1_check.py` (0 / 42,8 / 100 / 80 / DITOLAK); S_Micro + normalisasi bobot teruji | 24 Okt 2026 |
-| T2.5 | Keyakinan negatif + EWMA + trace | ✅ Done | Tes 45/70/91/97%, saran 6 sampel; EWMA sinyal pada deret naik; trace per komponen. Trace sampai well dirakit di T5.6 | 24 Okt 2026 |
-| T3.1 | Tipe + Repository + hook Query | ✅ Done | `src/data/types.ts`, `repository.ts` (kontrak), `queries.ts` (hook + mutasi); dipakai semua layar | 24 Okt 2026 |
-| T3.2 | Seed SIMULASI + MockRepository (AsyncStorage) | ✅ Done | Seed 1 tambak, 5 kolam, 8 run mingguan; run terbaru = 5 arketipe persis (SDRI 100/80/42,8/0/DITOLAK di aplikasi); reset di Pengaturan; 11 tes repository | 24 Okt 2026 |
-| T3.3 | Parser CSV qPCR + Nanopore + file contoh | ✅ Done | Parser qPCR (2 bagian) + Nanopore, galat per baris; contoh CSV via tombol "Pakai contoh" dan halaman Format; 7 tes | 24 Okt 2026 |
-| T4.1 | Token tema + primitif (Figtree lokal, ekspor dtcg) | ✅ Done | `src/ui/theme/tokens.ts` dari export dtcg; primitif di `src/ui/primitives.tsx`; badge SIMULASI tidak bisa disembunyikan | 24 Okt 2026 |
-| T4.2 | GlassSurface (web + native) | ✅ Done | Komponen `Glass`: web backdrop-filter, iOS 26 GlassView, iOS lama BlurView, Android/reduce-transparency panel pekat. Blur Android dimezis belum (fallback pekat sesuai dokumen) | 24 Okt 2026 |
-| T4.3 | Nav pil kaca + FAB teal solid | ✅ Done | `src/ui/BottomNav.tsx`, FAB teal solid + badge peringatan, label aksesibilitas. Rail desktop ≥ 1200 belum: bar tetap di tengah lebar maks 520 | 24 Okt 2026 |
-| T4.4 | Grafik SVG (WaterColumnCard, AreaTrend, SegmentBar, PlateHeatmap, StandardCurve, TraceFlow) | ✅ Done | `src/ui/charts.tsx` (TrendChart + EWMA, PlateHeatmap, StandardCurveChart) + WaterColumnCard di `features/shared.tsx`; semua punya ringkasan teks | 24 Okt 2026 |
-| T5.1 | P1 pilih peran + P2 antrian run | ✅ Done | P1 pilih peran, P2 hub analis (alur sampel, pintasan, kartu Lanjutkan) | 24 Okt 2026 |
-| T5.2 | P3 unggah run | ✅ Done | P3 tempel CSV / pakai contoh, galat per baris, pemetaan sampel → kolam + acuan | 24 Okt 2026 |
-| T5.3 | P4 ruang QC + P5 kurva standar | ✅ Done | P4 heatmap plate + status NTC/kurva, P5 grafik kurva standar; dicek di web | 24 Okt 2026 |
-| T5.4 | P6 detail well + keluarkan well | ✅ Done | P6 alasan wajib (pilihan cepat + isian), pratinjau SDRI sebelum → sesudah, tercatat di jejak | 24 Okt 2026 |
-| T5.5 | P7 sampel + P8 kimia + P9 Nanopore | ✅ Done | P7 daftar sampel, P8 kimia (validasi rentang, NH3 langsung), P9 Nanopore (< 5.000 read → Tinjau) | 24 Okt 2026 |
-| T5.6 | P10 hasil SDRI + P11 jejak bukti | ✅ Done | P10 kartu kolom air + tindakan + per target; P11 jejak SDRI → komponen → target → well (ketuk ke P6) | 24 Okt 2026 |
-| T5.7 | P12 tinjau & terbitkan | ✅ Done | P12 Draf → Terbit; DITOLAK tidak bisa terbit (tes repository) | 24 Okt 2026 |
-| T6.1 | P15 beranda kolam | ✅ Done | P15 peta kolam urut risiko, pintasan, kartu tindakan; dicek di web 400 px | 24 Okt 2026 |
-| T6.2 | P16 detail kolam + P17 detail patogen | ✅ Done | P16 tren SDRI + EWMA "sinyal tren", keyakinan negatif per patogen ND; P17 riwayat copies/mL | 24 Okt 2026 |
-| T6.3 | P18 pusat peringatan | ✅ Done | P18 peringatan Waspada/Kritis, tandai ditangani | 24 Okt 2026 |
-| T6.4 | P19 laporan + P20 pratinjau WA | ✅ Done | P19 laporan, P20 pesan ≤ 600 karakter (tes), tombol salin (expo-clipboard) | 24 Okt 2026 |
-| T7.1 | P23 tentang & disclaimer + error/offline | ✅ Done | P23 tentang & batas klaim, +not-found. Banner offline belum (data lokal, tidak butuh jaringan) | 24 Okt 2026 |
-| T7.2 | Audit a11y + kontras + reduced motion | ⬜ Todo | — | 23 Okt 2026 |
-| T7.3 | Ekspor web + EAS Hosting + uji Expo Go | ⬜ Todo | — | 23 Okt 2026 |
-| T7.4 | Naskah demo 6 menit | ⬜ Todo | — | 23 Okt 2026 |
-| T8.1 | P13 riwayat run + P14 panduan format | ✅ Done | P13 riwayat dengan filter, P14 format + salin CSV contoh | 24 Okt 2026 |
-| T8.2 | P21 banding kolam + P22 pengaturan | ✅ Done | P21 banding 2-4 kolam, P22 peran + reset demo | 24 Okt 2026 |
-| T8.3 | P24 simulator skenario | ✅ Done | P24 simulator stepper, SDRI dihitung engine langsung, label SIMULASI | 24 Okt 2026 |
-| T8.4 | Ekspor PDF laporan | ⬜ Todo | — | 23 Okt 2026 |
+| ID | Task | Pemilik | Prioritas | Status | Bukti verifikasi / Catatan |
+|---|---|---|---|---|---|
+| T1 | Scaffold Next.js + tooling + `.env.example` | Krisna | Must | ✅ | 24 Okt: Next 16.4.3; typecheck, lint, format:check, test (10), knip, build (42 rute) hijau |
+| T2 | Token 08-DESIGN + starter Soft Op + nav PRD + placeholder halaman | Krisna | Must | ✅ | 24 Okt: 38 halaman placeholder + not-found + error; shell dibandingkan dengan preview starter di 1440/768 (Chrome headless) dan 375 (emulasi): drawer, Esc, fokus kembali, tanpa scroll horizontal, target ≥ 44px, console bersih. `Modal` dipisah ke `ui/modal.tsx` supaya `Icon` bisa dipakai Server Component |
+| T3 | `src/lib/api`: skema Zod, klien live, pemilih `API_MODE`, tes kontrak | Krisna | Must | 🟦 | Sebagian: amplop + `ApiError` + health (live/mock) + `/api/health` + 3 tes kontrak. Endpoint lain ditambah per task. `server-only` belum dipasang (perlu izin dependency) |
+| T4 | Mock API + data SIMULASI + akun demo | Krisna | Must | ⬜ | — |
+| T5 | Sesi cookie httpOnly + `proxy.ts` | Krisna | Must | ⬜ | — |
+| T6 | Masuk, daftar, keluar, akun demo, redirect peran, akses ditolak | Krisna | Must | ⬜ | — |
+| T7 | Onboarding `/mulai` | Krisna | Must | ⬜ | — |
+| T8 | Lokasi P27 + pemilih lokasi | Krisna | Must | ⬜ | — |
+| T9 | Daftar kolam P14 + modal | Krisna | Must | ⬜ | — |
+| T10 | Tim P25 + undangan P11 + bagi kolam | Krisna | Must | ⬜ | — |
+| T11 | Shell teknisi + Tugas saya P36 | Krisna | Must | ⬜ | — |
+| T12 | Catat kimia air P38 | Krisna | Must | ⬜ | — |
+| T13 | `src/lib/csv`: parser + ringkas Ct + tes | Krisna | Must | ⬜ | — |
+| T14 | Unggah P17 langkah 1-2 + Format CSV P20 + template | Krisna | Must | ⬜ | — |
+| T15 | Unggah P17 langkah 3-4: pratinjau QC, cocokkan kolam, kimia air, kirim batch | Krisna | Must | ⬜ | — |
+| T16 | Detail unggahan P18 | Krisna | Must | ⬜ | — |
+| T17 | Rincian skor P16 | Krisna | Must | ⬜ | — |
+| T18 | Detail kolam P15 + catat hasil siklus | Krisna | Must | ⬜ | — |
+| T19 | Dasbor P13 | Krisna | Must | ⬜ | — |
+| T20 | Peringatan P22 | Krisna | Must | ⬜ | — |
+| T21 | Modal buat tugas + Daftar tugas P23 | Krisna | Must | ⬜ | — |
+| T22 | Kerjakan tugas P37 + foto | Krisna | Must | ⬜ | — |
+| T23 | Detail tugas P24 + proxy foto | Krisna | Must | ⬜ | — |
+| T24 | Halaman galat + penanganan 401/403/skema | Krisna | Must | ⬜ | — |
+| T25 | Uji alur inti end-to-end di mock (1440 + 375) | Krisna | Must | ⬜ | — |
+| T26 | Landing: token + SmoothScroll + Motion Primitives + reduced-motion | Krisna | Must | ⬜ | — |
+| T27 | Landing: Section, navbar, footer, `pill-link` | Krisna | Must | ⬜ | — |
+| T28 | Landing: Hero + kalkulator kolom air | Krisna | Must | ⬜ | Butuh `sdri/preview` (ada cadangan statis) |
+| T29 | Landing: Masalah | Krisna | Must | ⬜ | — |
+| T30 | Landing: Cara kerja | Krisna | Must | ⬜ | — |
+| T31 | Landing: Kemampuan | Krisna | Must | ⬜ | — |
+| T32 | Landing: Metode & batasan | Krisna | Must | ⬜ | — |
+| T33 | Landing: FAQ + CTA penutup | Krisna | Must | ⬜ | — |
+| T34 | Landing: `content/landing.ts`, SEO, OG, sitemap, robots | Krisna | Must | ⬜ | — |
+| T35 | Landing: audit performa + a11y + impeccable | Krisna | Must | ⬜ | — |
+| T36 | Sambung ke backend live per kelompok endpoint + uji alur inti | Krisna | Must | ⬜ | Menunggu endpoint backend (09-API-KONTRAK) |
+| T37 | Verifikasi email, lupa sandi, atur sandi | Krisna | Should | ⬜ | — |
+| T38 | Riwayat unggahan P19 + riwayat kimia air P28 + ekspor | Krisna | Should | ⬜ | — |
+| T39 | Pratinjau peringatan WA | Krisna | Should | ⬜ | Endpoint sudah ada |
+| T40 | Notifikasi P32 | Krisna | Should | ⬜ | — |
+| T41 | Detail teknisi P26 + Kolam saya P39 | Krisna | Should | ⬜ | — |
+| T42 | Laporan periode P29 | Krisna | Should | ⬜ | — |
+| T43 | Log aktivitas P31 | Krisna | Should | ⬜ | — |
+| T44 | Pengaturan akun P33 + tambak P34 | Krisna | Should | ⬜ | — |
+| T45 | Publik: Metode P2, Kontak P3, Privasi P4 + Hasil siklus P21 | Krisna | Should | ⬜ | — |
+| T46 | Tugas terlambat ditandai + notifikasi | Krisna | Could | ⬜ | Fitur kecil bernilai besar |
+| T47 | "Pakai nilai kemarin" di catat air | Krisna | Could | ⬜ | Fitur kecil bernilai besar |
+| T48 | Banding kolam P30 | Krisna | Could | ⬜ | Fitur kecil bernilai besar |
+| T49 | Tautan kolam di teks WA + P5, P35, P43 | Krisna | Could | ⬜ | Fitur kecil bernilai besar |
+| T50 | Deploy Vercel + cek alur inti di produksi | Krisna | Must | ⬜ | Butuh backend produksi |
 
-## Issue / Bug
-| ID | Deskripsi | Status | Terkait task | Catatan |
-|---|---|---|---|---|
-| B1 | Tabel SDRI dokumen GSI salah hitung (POND-REM, POND-TOX) | ⬜ Todo | T2.4 | Dilaporkan ke tim lewat `docs/catatan-tim-sdri-v1.md`; v1 tidak bergantung pada angka itu |
-
-## Log Perubahan
-| Tanggal | Task | Ringkasan perubahan |
+## Alur Inti Check
+| Langkah | Status | Dicek |
 |---|---|---|
-| 24 Okt 2026 | T1.3, T3, T4, T5, T6, T7.1, T8.1-T8.3 | Data layer + seed + parser, UI kaca v2.1, 25 layar; 57 tes; dicek di web
-| 24 Okt 2026 | T1.1, T1.2, T2.1-T2.5 | Proyek Expo SDK 58 dibuat, 24 rute placeholder, mesin SDRI v1 (34 tes, cakupan engine 99%, tes emas 5/5) |
-| 24 Okt 2026 | T4.1-T4.4 | 08-DESIGN v2.1 (Iconly Pro, kaca terang) di-ACC; blokir T4.x dicabut; Gauge diganti WaterColumnCard; 6 file desain v1 dihapus |
-| 23 Okt 2026 | — | TODO dibuat dari 03-ARCHITECTURE |
+| 1. Siapkan tambak (daftar, lokasi, kolam, undang teknisi) | ⬜ | — |
+| 2. Teknisi catat kimia air dari HP | ⬜ | — |
+| 3. Unggah hasil lab, pratinjau QC, kirim batch | ⬜ | — |
+| 4. Baca risiko (dasbor, peringatan, rincian skor) | ⬜ | — |
+| 5. Tugaskan teknisi dari peringatan | ⬜ | — |
+| 6. Teknisi lapor foto, pemilik tutup tugas | ⬜ | — |
+
+## Halaman
+> Dari 01-PRD §5. Selesai = halaman jalan dengan data (mock lalu live) + semua state (kosong, loading, error) + responsif.
+
+| # | Halaman | Prioritas | Status | Catatan |
+|---|---|---|---|---|
+| P1 | Landing | Must | ⬜ | 7 section |
+| P2 | Metode | Should | ⬜ | — |
+| P3 | Kontak | Should | ⬜ | — |
+| P4 | Kebijakan privasi | Should | ⬜ | — |
+| P5 | Syarat layanan | Could | ⬜ | — |
+| P6 | Masuk | Must | ⬜ | — |
+| P7 | Daftar pemilik | Must | ⬜ | — |
+| P8 | Verifikasi email | Should | ⬜ | — |
+| P9 | Lupa sandi | Should | ⬜ | — |
+| P10 | Atur sandi baru | Should | ⬜ | — |
+| P11 | Terima undangan | Must | ⬜ | — |
+| P12 | Mulai (onboarding) | Must | ⬜ | — |
+| P13 | Dasbor | Must | ⬜ | — |
+| P14 | Daftar kolam | Must | ⬜ | — |
+| P15 | Detail kolam | Must | ⬜ | — |
+| P16 | Rincian skor | Must | ⬜ | — |
+| P17 | Unggah hasil lab | Must | ⬜ | — |
+| P18 | Detail unggahan | Must | ⬜ | — |
+| P19 | Riwayat unggahan | Should | ⬜ | — |
+| P20 | Format CSV | Must | ⬜ | — |
+| P21 | Hasil siklus | Should | ⬜ | — |
+| P22 | Peringatan | Must | ⬜ | — |
+| P23 | Daftar tugas | Must | ⬜ | — |
+| P24 | Detail tugas | Must | ⬜ | — |
+| P25 | Tim | Must | ⬜ | — |
+| P26 | Detail teknisi | Should | ⬜ | — |
+| P27 | Lokasi | Must | ⬜ | — |
+| P28 | Riwayat kimia air | Should | ⬜ | — |
+| P29 | Laporan | Should | ⬜ | — |
+| P30 | Banding kolam | Could | ⬜ | — |
+| P31 | Log aktivitas | Should | ⬜ | — |
+| P32 | Notifikasi | Should | ⬜ | — |
+| P33 | Pengaturan akun | Should | ⬜ | — |
+| P34 | Pengaturan tambak | Should | ⬜ | — |
+| P35 | Bantuan | Could | ⬜ | — |
+| P36 | Tugas saya (teknisi) | Must | ⬜ | — |
+| P37 | Kerjakan tugas (teknisi) | Must | ⬜ | — |
+| P38 | Catat kimia air (teknisi) | Must | ⬜ | — |
+| P39 | Kolam saya (teknisi) | Should | ⬜ | — |
+| P40 | Tidak ditemukan | Must | ⬜ | — |
+| P41 | Terjadi galat | Must | ⬜ | — |
+| P42 | Akses ditolak | Must | ⬜ | — |
+| P43 | Pemeliharaan | Could | ⬜ | — |
+| P44 | Beranda peran (redirect) | Must | ⬜ | — |
+
+## Scope Cut
+| Fitur/task | Alasan dipotong | Tanggal |
+|---|---|---|
+| Profil Nanopore, meter keyakinan hasil negatif, sinyal EWMA, mesin skor di web | Backend tidak mendukung; skor ikut backend (keputusan user) | 24 Okt 2026 |
+
+## Log
+| Tanggal | Ringkasan |
+|---|---|
+| 24 Okt 2026 | TODO dibuat (setup-project-00, versi web) |
+| 24 Okt 2026 | Disusun ulang: auth + data lewat backend Go, Supabase dihapus, mock API dulu |
+| 24 Okt 2026 | Setup projek: T1 ✅, T2 ✅, T3 sebagian. Go belum terpasang di laptop (backend lokal belum bisa dijalankan) |

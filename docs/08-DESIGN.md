@@ -1,457 +1,502 @@
 ---
 version: alpha
 name: "AquaSeq"
-description: "Kaca terang gaya Iconly Pro: kanvas abu netral bercahaya pastel, panel kaca putih bertepi tebal, UI hitam-abu monokrom, satu aksen teal solid dengan glow"
+description: "Tenang, presisi, padat data untuk aplikasi; air dalam yang jernih dan meyakinkan untuk landing"
 colors:
-  primary: "#0A6B78"
+  canvas: "#F4F4F3"
+  surface: "#FFFFFF"
+  surface-muted: "#ECECEA"
+  on-surface: "#141414"
+  on-surface-muted: "#6B6B68"
+  on-inverse: "#FFFFFF"
+  border: "#E2E2DF"
   on-primary: "#FFFFFF"
-  fab: "#0B7D8A"
-  on-fab: "#FFFFFF"
-  accent-glow: "#3CC6D2"
-  primary-soft: "#DDF1F3"
-  on-primary-soft: "#0A6B78"
-  canvas: "#EEEEEF"
-  canvas-low: "#E4E6E8"
-  bloom-aqua: "#BDEBF0"
-  bloom-sky: "#CFE3FB"
-  bloom-lilac: "#E3DCF7"
-  glass: "#F4F5F6"
-  glass-strong: "#FAFAFB"
-  surface: "#F7F7F8"
-  surface-raised: "#FFFFFF"
-  water-top: "#EEF1F2"
-  water-mid: "#D6ECEF"
-  water-bottom: "#9FD3DA"
-  track: "#E4E6E8"
-  on-surface: "#0D0E10"
-  on-surface-muted: "#5E6168"
-  ink-soft: "#4B5058"
-  outline: "#E3E4E7"
-  outline-strong: "#C9CCD1"
-  rim: "#FFFFFF"
-  success: "#1C7A4E"
-  success-soft: "#E2F3EA"
-  warning: "#8A5A00"
-  warning-soft: "#FBF1D6"
-  alert: "#B04A06"
-  alert-soft: "#FDE8D7"
-  danger: "#C0262D"
-  danger-soft: "#FBE3E3"
-  on-danger: "#FFFFFF"
-  simulation: "#5B3FC4"
-  simulation-soft: "#ECE8FB"
-  focus-ring: "#0A6B78"
+  status-ok: "#146C34"
+  status-ok-soft: "#E8F5EC"
+  status-warn: "#94580A"
+  status-warn-soft: "#FDF4DC"
+  status-crit: "#B91C1C"
+  status-crit-soft: "#FCE9E9"
+  focus: "#1D4ED8"
+  primary: "#1764C0"
+  primary-hover: "#12519E"
+  accent-fill: "#2B8AE2"
+  accent-soft: "#E7F1FC"
+  surface-inverse: "#0E2135"
+  on-inverse-muted: "#A7BCD2"
+  neutral-fill: "#DCE3EA"
+  risk-aman: "#146C34"
+  risk-aman-soft: "#E8F5EC"
+  risk-ringan: "#5E5300"
+  risk-ringan-soft: "#F6F0C4"
+  risk-tinggi: "#9A3F08"
+  risk-tinggi-soft: "#FDE8D8"
+  risk-bahaya: "#B91C1C"
+  risk-bahaya-soft: "#FCE9E9"
+  landing-deep: "#06131F"
+  landing-deep-raised: "#0D2234"
+  landing-on-deep: "#EAF2FA"
+  landing-on-deep-muted: "#9DB3C8"
+  landing-line-deep: "#1E3448"
+  landing-accent: "#5CB8FF"
+  landing-on-accent: "#04121E"
+  landing-paper: "#F3F6F5"
+  landing-ink: "#0C1620"
+  landing-ink-muted: "#4B5863"
+  landing-line: "#D6DEDB"
 typography:
-  display-xl:
-    fontFamily: "Figtree"
-    fontSize: "48px"
-    fontWeight: 400
-    lineHeight: 1.05
-    letterSpacing: "-0.02em"
-  display-lg:
-    fontFamily: "Figtree"
-    fontSize: "36px"
-    fontWeight: 400
-    lineHeight: 1.1
-    letterSpacing: "-0.015em"
-  display-md:
-    fontFamily: "Figtree"
-    fontSize: "28px"
-    fontWeight: 500
-    lineHeight: 1.15
-    letterSpacing: "-0.01em"
-  headline:
-    fontFamily: "Figtree"
-    fontSize: "22px"
+  display:
+    fontFamily: Onest
+    fontSize: 32px
     fontWeight: 600
-    lineHeight: 1.25
+    lineHeight: 1.15
+    letterSpacing: -0.02em
   title:
-    fontFamily: "Figtree"
-    fontSize: "17px"
+    fontFamily: Onest
+    fontSize: 18px
     fontWeight: 600
     lineHeight: 1.3
-  body-md:
-    fontFamily: "Figtree"
-    fontSize: "16px"
+  metric:
+    fontFamily: Onest
+    fontSize: 28px
+    fontWeight: 600
+    lineHeight: 1.1
+    fontFeature: '"tnum"'
+  body:
+    fontFamily: Onest
+    fontSize: 14px
     fontWeight: 400
     lineHeight: 1.5
-  body-sm:
-    fontFamily: "Figtree"
-    fontSize: "14px"
-    fontWeight: 400
-    lineHeight: 1.45
-  label-md:
-    fontFamily: "Figtree"
-    fontSize: "15px"
+  label:
+    fontFamily: Onest
+    fontSize: 12px
+    fontWeight: 500
+    lineHeight: 1.4
+  mono:
+    fontFamily: JetBrains Mono
+    fontSize: 12px
+    fontWeight: 500
+    lineHeight: 1.4
+  landing-display-xl:
+    fontFamily: Bricolage Grotesque
+    fontSize: 88px
+    fontWeight: 700
+    lineHeight: 0.98
+    letterSpacing: -0.035em
+  landing-display-lg:
+    fontFamily: Bricolage Grotesque
+    fontSize: 56px
+    fontWeight: 700
+    lineHeight: 1.04
+    letterSpacing: -0.03em
+  landing-title:
+    fontFamily: Bricolage Grotesque
+    fontSize: 28px
     fontWeight: 600
     lineHeight: 1.2
-  label-sm:
-    fontFamily: "Figtree"
-    fontSize: "12px"
-    fontWeight: 500
-    lineHeight: 1.2
-  caption:
-    fontFamily: "Figtree"
-    fontSize: "12px"
+    letterSpacing: -0.015em
+  landing-body:
+    fontFamily: Onest
+    fontSize: 18px
     fontWeight: 400
-    lineHeight: 1.35
-  label-caps:
-    fontFamily: "Figtree"
-    fontSize: "11px"
-    fontWeight: 700
-    lineHeight: 1
-    letterSpacing: "0.06em"
+    lineHeight: 1.6
+  landing-body-sm:
+    fontFamily: Onest
+    fontSize: 15px
+    fontWeight: 400
+    lineHeight: 1.55
 rounded:
-  xs: 8px
-  sm: 12px
+  sm: 10px
   md: 16px
   lg: 24px
   xl: 32px
-  frame: 44px
   full: 9999px
 spacing:
   xs: 4px
   sm: 8px
-  md: 12px
-  lg: 16px
-  xl: 24px
-  2xl: 32px
-  3xl: 48px
-  gutter: 12px
-  margin: 20px
+  md: 16px
+  lg: 24px
+  xl: 32px
+  2xl: 48px
+  landing-section-y: 128px
+  landing-section-y-mobile: 80px
+  landing-gutter: 24px
 components:
-  page:
+  app-page:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.on-surface}"
-  page-caption:
+    typography: "{typography.body}"
+  app-page-muted:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.on-surface-muted}"
-    typography: "{typography.body-sm}"
-  page-low:
-    backgroundColor: "{colors.canvas-low}"
-    textColor: "{colors.on-surface-muted}"
-  glass-panel:
-    backgroundColor: "{colors.glass}"
-    textColor: "{colors.on-surface}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.xl}"
-  glass-caption:
-    backgroundColor: "{colors.glass}"
-    textColor: "{colors.on-surface-muted}"
-    typography: "{typography.body-sm}"
-  glass-strong:
-    backgroundColor: "{colors.glass-strong}"
-    textColor: "{colors.on-surface}"
-    rounded: "{rounded.lg}"
+    typography: "{typography.label}"
   card:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.on-surface}"
     rounded: "{rounded.lg}"
-    padding: "{spacing.lg}"
-  card-caption:
+    padding: 20px
+  card-muted-text:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.on-surface-muted}"
-    typography: "{typography.body-sm}"
-  card-raised:
-    backgroundColor: "{colors.surface-raised}"
+    typography: "{typography.label}"
+  panel:
+    backgroundColor: "{colors.surface-muted}"
     textColor: "{colors.on-surface}"
-    rounded: "{rounded.md}"
-    padding: "{spacing.md}"
-  raised-caption:
-    backgroundColor: "{colors.surface-raised}"
+    rounded: "{rounded.lg}"
+    padding: 20px
+  panel-muted-text:
+    backgroundColor: "{colors.surface-muted}"
     textColor: "{colors.on-surface-muted}"
-    typography: "{typography.caption}"
-  water-card-top:
-    backgroundColor: "{colors.water-top}"
-    textColor: "{colors.on-surface}"
-    rounded: "{rounded.xl}"
-  water-card-mid:
-    backgroundColor: "{colors.water-mid}"
-    textColor: "{colors.on-surface-muted}"
-  water-card-bottom:
-    backgroundColor: "{colors.water-bottom}"
-    textColor: "{colors.on-surface}"
-  bloom-aqua:
-    backgroundColor: "{colors.bloom-aqua}"
-    textColor: "{colors.on-surface}"
-  bloom-sky:
-    backgroundColor: "{colors.bloom-sky}"
-    textColor: "{colors.on-surface}"
-  bloom-lilac:
-    backgroundColor: "{colors.bloom-lilac}"
-    textColor: "{colors.on-surface}"
+    typography: "{typography.label}"
+  accent-text-on-card:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.primary}"
+    typography: "{typography.label}"
   button-primary:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
-    typography: "{typography.label-md}"
+    typography: "{typography.body}"
     rounded: "{rounded.full}"
-    padding: "0 24px"
-    height: "52px"
-  button-glass:
-    backgroundColor: "{colors.glass-strong}"
+    height: 44px
+  button-primary-hover:
+    backgroundColor: "{colors.primary-hover}"
+    textColor: "{colors.on-primary}"
+  button-secondary:
+    backgroundColor: "{colors.surface}"
     textColor: "{colors.on-surface}"
-    typography: "{typography.label-md}"
+    typography: "{typography.body}"
     rounded: "{rounded.full}"
-    padding: "0 24px"
-    height: "52px"
-  button-danger:
-    backgroundColor: "{colors.danger}"
-    textColor: "{colors.on-danger}"
-    typography: "{typography.label-md}"
-    rounded: "{rounded.full}"
-    height: "52px"
-  button-link:
-    backgroundColor: "{colors.glass}"
+    height: 44px
+  highlight-card:
+    backgroundColor: "{colors.surface-inverse}"
+    textColor: "{colors.on-inverse}"
+    rounded: "{rounded.lg}"
+    padding: 24px
+  highlight-card-muted:
+    backgroundColor: "{colors.surface-inverse}"
+    textColor: "{colors.on-inverse-muted}"
+    typography: "{typography.label}"
+  chip-accent:
+    backgroundColor: "{colors.accent-soft}"
     textColor: "{colors.primary}"
-    typography: "{typography.label-md}"
-  fab:
-    backgroundColor: "{colors.fab}"
-    textColor: "{colors.on-fab}"
+    typography: "{typography.label}"
     rounded: "{rounded.full}"
-    size: "56px"
-  action-pill:
-    backgroundColor: "{colors.glass-strong}"
+  chart-bar-current:
+    backgroundColor: "{colors.accent-fill}"
     textColor: "{colors.on-surface}"
-    rounded: "{rounded.full}"
-    height: "56px"
-  icon-button:
-    backgroundColor: "{colors.glass-strong}"
-    textColor: "{colors.on-surface}"
-    rounded: "{rounded.full}"
-    size: "44px"
-  input:
-    backgroundColor: "{colors.glass-strong}"
-    textColor: "{colors.on-surface}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.lg}"
-    height: "52px"
-  input-placeholder:
-    backgroundColor: "{colors.glass-strong}"
-    textColor: "{colors.on-surface-muted}"
-  segment-track:
-    backgroundColor: "{colors.track}"
-    textColor: "{colors.ink-soft}"
-    rounded: "{rounded.sm}"
-  segment-active:
-    backgroundColor: "{colors.surface-raised}"
-    textColor: "{colors.on-surface}"
-    typography: "{typography.label-sm}"
-    rounded: "{rounded.xs}"
-  chip:
-    backgroundColor: "{colors.glass-strong}"
-    textColor: "{colors.on-surface}"
-    typography: "{typography.label-sm}"
-    rounded: "{rounded.full}"
-    height: "36px"
-  chip-selected:
-    backgroundColor: "{colors.primary-soft}"
-    textColor: "{colors.on-primary-soft}"
-    typography: "{typography.label-sm}"
-    rounded: "{rounded.full}"
-    height: "36px"
-  nav-bar:
-    backgroundColor: "{colors.glass}"
-    textColor: "{colors.on-surface}"
-    rounded: "{rounded.full}"
-    height: "72px"
-  nav-item-active:
-    backgroundColor: "{colors.glass}"
-    textColor: "{colors.on-surface}"
-    typography: "{typography.label-sm}"
-  nav-item-inactive:
-    backgroundColor: "{colors.glass}"
-    textColor: "{colors.on-surface-muted}"
-    typography: "{typography.label-sm}"
-  value-pill:
-    backgroundColor: "{colors.on-surface}"
-    textColor: "{colors.surface-raised}"
-    typography: "{typography.label-sm}"
-    rounded: "{rounded.full}"
-  risk-aman:
-    backgroundColor: "{colors.success-soft}"
-    textColor: "{colors.success}"
-    typography: "{typography.label-sm}"
-    rounded: "{rounded.full}"
-  risk-pantau:
-    backgroundColor: "{colors.warning-soft}"
-    textColor: "{colors.warning}"
-    typography: "{typography.label-sm}"
-    rounded: "{rounded.full}"
-  risk-waspada:
-    backgroundColor: "{colors.alert-soft}"
-    textColor: "{colors.alert}"
-    typography: "{typography.label-sm}"
-    rounded: "{rounded.full}"
-  risk-kritis:
-    backgroundColor: "{colors.danger-soft}"
-    textColor: "{colors.danger}"
-    typography: "{typography.label-sm}"
-    rounded: "{rounded.full}"
-  risk-aman-on-glass:
-    backgroundColor: "{colors.glass}"
-    textColor: "{colors.success}"
-  risk-pantau-on-glass:
-    backgroundColor: "{colors.glass}"
-    textColor: "{colors.warning}"
-  risk-waspada-on-glass:
-    backgroundColor: "{colors.glass}"
-    textColor: "{colors.alert}"
-  risk-kritis-on-glass:
-    backgroundColor: "{colors.glass}"
-    textColor: "{colors.danger}"
-  badge-simulasi:
-    backgroundColor: "{colors.simulation-soft}"
-    textColor: "{colors.simulation}"
-    typography: "{typography.label-caps}"
-    rounded: "{rounded.full}"
-  shortcut:
-    backgroundColor: "{colors.glass-strong}"
-    textColor: "{colors.on-surface}"
-    rounded: "{rounded.lg}"
-    size: "60px"
-  glow:
-    backgroundColor: "{colors.accent-glow}"
-    textColor: "{colors.on-surface}"
-  rim:
-    backgroundColor: "{colors.rim}"
+  chart-bar-compare:
+    backgroundColor: "{colors.neutral-fill}"
     textColor: "{colors.on-surface}"
   divider:
-    backgroundColor: "{colors.outline}"
-  divider-strong:
-    backgroundColor: "{colors.outline-strong}"
+    backgroundColor: "{colors.border}"
+    textColor: "{colors.on-surface}"
+  badge-ok:
+    backgroundColor: "{colors.status-ok-soft}"
+    textColor: "{colors.status-ok}"
+    typography: "{typography.label}"
+    rounded: "{rounded.full}"
+  badge-warn:
+    backgroundColor: "{colors.status-warn-soft}"
+    textColor: "{colors.status-warn}"
+    typography: "{typography.label}"
+    rounded: "{rounded.full}"
+  badge-crit:
+    backgroundColor: "{colors.status-crit-soft}"
+    textColor: "{colors.status-crit}"
+    typography: "{typography.label}"
+    rounded: "{rounded.full}"
+  risk-badge-aman:
+    backgroundColor: "{colors.risk-aman-soft}"
+    textColor: "{colors.risk-aman}"
+    typography: "{typography.label}"
+    rounded: "{rounded.full}"
+  risk-badge-pantau:
+    backgroundColor: "{colors.risk-ringan-soft}"
+    textColor: "{colors.risk-ringan}"
+    typography: "{typography.label}"
+    rounded: "{rounded.full}"
+  risk-badge-waspada:
+    backgroundColor: "{colors.risk-tinggi-soft}"
+    textColor: "{colors.risk-tinggi}"
+    typography: "{typography.label}"
+    rounded: "{rounded.full}"
+  risk-badge-kritis:
+    backgroundColor: "{colors.risk-bahaya-soft}"
+    textColor: "{colors.risk-bahaya}"
+    typography: "{typography.label}"
+    rounded: "{rounded.full}"
+  risk-text-aman:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.risk-aman}"
+  risk-text-pantau:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.risk-ringan}"
+  risk-text-waspada:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.risk-tinggi}"
+  risk-text-kritis:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.risk-bahaya}"
   focus-ring:
-    backgroundColor: "{colors.focus-ring}"
+    backgroundColor: "{colors.focus}"
+    textColor: "{colors.on-inverse}"
+  landing-hero:
+    backgroundColor: "{colors.landing-deep}"
+    textColor: "{colors.landing-on-deep}"
+    typography: "{typography.landing-display-xl}"
+  landing-hero-sub:
+    backgroundColor: "{colors.landing-deep}"
+    textColor: "{colors.landing-on-deep-muted}"
+    typography: "{typography.landing-body}"
+  landing-deep-card:
+    backgroundColor: "{colors.landing-deep-raised}"
+    textColor: "{colors.landing-on-deep}"
+    rounded: "{rounded.xl}"
+  landing-deep-card-muted:
+    backgroundColor: "{colors.landing-deep-raised}"
+    textColor: "{colors.landing-on-deep-muted}"
+    typography: "{typography.landing-body-sm}"
+  landing-deep-line:
+    backgroundColor: "{colors.landing-line-deep}"
+    textColor: "{colors.landing-on-deep}"
+  landing-accent-on-deep:
+    backgroundColor: "{colors.landing-deep}"
+    textColor: "{colors.landing-accent}"
+    typography: "{typography.landing-title}"
+  landing-cta:
+    backgroundColor: "{colors.landing-accent}"
+    textColor: "{colors.landing-on-accent}"
+    typography: "{typography.landing-body-sm}"
+    rounded: "{rounded.full}"
+    height: 52px
+  landing-cta-secondary:
+    backgroundColor: "{colors.landing-on-deep}"
+    textColor: "{colors.landing-deep}"
+    typography: "{typography.landing-body-sm}"
+    rounded: "{rounded.full}"
+    height: 52px
+  landing-paper-section:
+    backgroundColor: "{colors.landing-paper}"
+    textColor: "{colors.landing-ink}"
+    typography: "{typography.landing-display-lg}"
+  landing-paper-body:
+    backgroundColor: "{colors.landing-paper}"
+    textColor: "{colors.landing-ink-muted}"
+    typography: "{typography.landing-body}"
+  landing-paper-line:
+    backgroundColor: "{colors.landing-line}"
+    textColor: "{colors.landing-ink}"
+  landing-paper-cta:
+    backgroundColor: "{colors.landing-ink}"
+    textColor: "{colors.landing-paper}"
+    typography: "{typography.landing-body-sm}"
+    rounded: "{rounded.full}"
+    height: 52px
 ---
 
 # AquaSeq — Design System
 
-> Sumber kebenaran untuk semua kerja UI. Format: [Google DESIGN.md spec](https://github.com/google-labs-code/design.md) (alpha). Token di YAML di atas adalah nilai resmi; jangan pakai warna, ukuran, radius, atau bayangan di luar token dan resep di bawah. Di React Native, token masuk ke kode lewat `src/ui/theme/tokens.ts` (lihat Implementation).
-> Status: ✅ ACC oleh user 24 Okt 2026 · v2.1 · Lint 0 error, 0 warning. Desain v1 (R1-R4, pita biru) dibuang total atas permintaan user. Analisis referensi: `docs/design/refs/iconly-pro-analysis.md`.
+> Sumber kebenaran untuk semua kerja UI. Format: [Google DESIGN.md spec](https://github.com/google-labs-code/design.md) (alpha). Token di YAML di atas adalah nilai resmi; jangan pakai warna, ukuran, radius, atau shadow di luar token.
+> Status: ✅ ACC 24 Okt 2026 · Kemiripan referensi: belum diukur (tanpa preview) · Lint: 0 error, 0 warning
+> Template: Soft Op Dashboard (asal K-DASP) untuk Area Aplikasi, warna merek: biru AquaSeq (dipilih AI dari domain air, selaras dengan mockup mobile tim). Area Landing: arah dipilih AI (impeccable mode Persuade), tanpa situs inspirasi dari user.
 
 ## Overview
 
-Kaca terang yang tenang, dipelajari dari seluruh 378 shot publik Iconly Pro di Dribbble. Kanvas abu netral dengan cahaya pastel samar di belakang, panel kaca putih bertepi tebal yang seolah timbul dari kanvas, UI hampir monokrom (hitam dan abu), dan **satu** aksen jenuh: tombol aksi utama teal solid dengan glow. Untuk analis lab dan manajer tambak yang membaca risiko kolam dari HP, sering di luar ruangan, jadi mode terang dan kontras teks dijaga ketat.
+### Peta area (baca dulu sebelum mengerjakan UI)
+| Area | Berlaku untuk file | Mode | Pakai bagian |
+|---|---|---|---|
+| Bersama | semua | - | `### Bersama` di tiap bagian + token tanpa awalan |
+| Aplikasi | `src/app/(app)/**`, `src/app/(auth)/**`, `src/components/app/**`, `src/components/shell/**`, `src/components/solo/**` | Operate | `### Area Aplikasi` + token tanpa awalan |
+| Landing | `src/app/(marketing)/**`, `src/components/marketing/**`, `src/components/motion/**` | Persuade | `### Area Landing` + token `landing-*` |
 
-- **Referensi:** Iconly Pro (dribbble.com/iconlypro), 378 shot ditinjau satu per satu lewat lembar kontak, ±40 shot UI/kaca dipelajari pada resolusi penuh, warna diambil dari piksel. Shot acuan utama: "iOS Navigation Menu", "Navigation Menu" (Home/Search/Library), "iOS input Design", "Financial App!", "Financial Widget", "UI Card Design", "UI Widgets", "UI Components!", "Weather App!", "Health App!", "Dashboard App". Situs iconly.pro dicek untuk font (Gellix).
-- **Ciri yang diambil:** kanvas abu `#EEEEEF` → `#E4E6E8`; bloom pastel buram; panel kaca bertepi putih 2px dengan bayangan dalam bawah dan bayangan luar lebar; nav pil kaca dengan item aktif ikon terisi hitam; FAB bulat beraksen dengan glow; tombol aksi berupa pil kaca; kartu "kolom air" bergradasi vertikal; angka besar bertipe tipis; grafik garis hitam dengan pil nilai hitam; kontrol segmen track abu.
-- **Signature AquaSeq: kartu kolom air.** Kartu hero SDRI memakai gradasi vertikal abu jernih → aqua (pola "Financial Widget"), seperti sampel air dalam tabung. Warnanya selalu aqua (merek), bukan warna kelas risiko; kelas dinyatakan oleh pil warna + ikon + teks.
-- **Dihindari:** label abu muda bergaya Iconly yang gagal kontras, aksen lebih dari satu per layar, kaca di atas tabel padat, mode gelap (di luar MVP: tidak terbaca di bawah terik).
-- **Mode:** terang saja.
+Aturan: kerjakan file Landing → baca Bersama + Area Landing saja, abaikan Area Aplikasi (dan sebaliknya). Komponen `src/components/ui/` memakai token Bersama.
+
+### Bersama
+- **Merek:** satu biru (`primary` #1764C0 untuk teks/tombol, `accent-fill` #2B8AE2 untuk grafik/isian besar). Biru tidak pernah berarti status: risiko memakai skala `risk-*`.
+- **Font:** Onest untuk semua teks, JetBrains Mono hanya untuk ID, kode sampel, posisi well, dan rumus. Landing menambah Bricolage Grotesque khusus judul display.
+- **Ikon:** Lucide, stroke 1.75, satu gaya.
+- **Mode:** Aplikasi light. Landing berselang-seling deep (gelap) dan paper (terang); token deep tetap berawalan `landing-` karena itu area, bukan tema alternatif.
+- **Kejujuran data:** setiap angka contoh berlabel "Data simulasi". Skor dari backend ditulis "peluang wabah (model V1-GSI)" dan versi model selalu bisa dilihat; tidak ada klaim akurasi.
+- **Dihindari:** gradien ungu-biru bawaan AI, glassmorphism dekoratif, emoji, em-dash di teks UI, warna merek untuk menyatakan bahaya.
+
+### Area Aplikasi
+Tenang, lembut, padat data. Untuk pemilik tambak yang membuka dasbor tiap pagi di laptop, dan teknisi yang membuka tugas di HP di pematang kolam saat terik. Kanvas abu terang, panel abu berisi kartu putih membulat besar, navigasi pill, satu warna merek sebagai aksen, satu kartu sorotan navy per layar untuk kolam paling berisiko. Kedalaman dari lapisan warna, bukan bayangan. Mode light dipilih karena teknisi membaca di bawah matahari.
+
+### Area Landing
+"Air dalam yang jernih." Pengunjung adalah calon pemilik tambak dan juri: mereka perlu yakin dalam 10 detik bahwa AquaSeq mengubah angka lab jadi tindakan, lalu cukup jujur soal batasnya. Hero gelap seperti kolom air dalam dengan satu alat yang bisa dicoba (kalkulator kolom air). Section berselang-seling deep dan paper supaya ritmenya berganti padat-lega. Satu ide visual khas: **kolom air**, batang vertikal berlapis (S_qPCR, S_Bio, S_Chem) yang terisi sesuai subskor dari backend.
 
 ## Colors
 
-UI monokrom, warna masuk lewat aksi (aksen) dan data (status risiko). Pastel hanya sebagai cahaya latar.
+### Bersama
+- **Primary (#1764C0):** tombol utama (maks satu per layar), link, teks aksen kecil. Kontras dengan putih 5,9:1.
+- **Primary-hover (#12519E):** hover tombol utama.
+- **Accent-fill (#2B8AE2):** batang periode ini, garis tren, ikon besar. Tidak untuk teks < 18px.
+- **Accent-soft (#E7F1FC):** baris terpilih, chip aksen.
+- **Focus (#1D4ED8):** ring fokus 2px offset 2px di semua area.
+- **Skala risiko** (hanya untuk kelas skor dari backend, dipetakan di `src/lib/risk.ts`; selalu teks + warna, tidak pernah warna saja):
 
-- **On-surface (#0D0E10):** teks, ikon aktif, garis grafik, pil nilai. Hampir hitam seperti Iconly.
-- **On-surface-muted (#5E6168):** teks pendukung dan item nav nonaktif. Lebih gelap dari abu Iconly (#9E9E9E, 2,5:1) supaya lolos AA di kaca (5,35:1 di `canvas`, 5,68:1 di `glass`).
-- **Ink-soft (#4B5058):** teks segmen nonaktif di atas `track`.
-- **Primary (#0A6B78):** teks tombol utama berlatar, tautan, cincin fokus. Teal dalam, teks putih 6,2:1.
-- **Fab (#0B7D8A):** isi solid satu warna tombol aksi utama (FAB, tombol kirim), tanpa gradasi. Ikon putih 4,87:1. **Satu per layar.**
-- **Accent-glow (#3CC6D2):** hanya untuk glow di bawah FAB dan titik data terpilih. Tidak untuk teks.
-- **Primary-soft (#DDF1F3):** chip terpilih, sorotan baris.
-- **Canvas (#EEEEEF) / canvas-low (#E4E6E8):** kanvas bergradasi atas → bawah (diukur dari shot: `#EFEFEF` → `#DEDEDE`).
-- **Bloom-aqua / sky / lilac:** cahaya pastel buram di kanvas (lingkaran blur 120, opasitas 55-70%), maksimal dua per layar, tidak pernah di belakang teks kecil tanpa panel.
-- **Glass (#F4F5F6) / glass-strong (#FAFAFB):** warna jadi panel kaca dan tombol kaca untuk menghitung kontras; render ada di Elevation & Depth.
-- **Surface (#F7F7F8) / surface-raised (#FFFFFF):** kartu solid untuk data padat (tabel, heatmap) dan elemen di dalam kaca.
-- **Water-top / mid / bottom (#EEF1F2 / #D6ECEF / #9FD3DA):** gradasi kartu kolom air. Teks di bagian bawah tetap `on-surface` (11,8:1), bukan putih.
-- **Risiko (selalu warna + ikon + teks):** Aman `success`, Pantau `warning`, Waspada `alert`, Kritis `danger`, masing-masing dengan `-soft` untuk latar pil.
-- **Simulation (#5B3FC4):** khusus badge SIMULASI.
+| Kelas (`risk_class`) | Peluang | Teks | Latar lembut | Pakai |
+|---|---|---|---|---|
+| Aman (1) | < 5% | `risk-aman` #146C34 | `risk-aman-soft` | badge, angka kelas |
+| Waspada ringan (2) | 5-25% | `risk-ringan` #5E5300 | `risk-ringan-soft` | badge, angka kelas |
+| Waspada tinggi (3) | 25-60% | `risk-tinggi` #9A3F08 | `risk-tinggi-soft` | badge, angka kelas |
+| Bahaya (4) | ≥ 60% | `risk-bahaya` #B91C1C | `risk-bahaya-soft` | badge, angka kelas |
+| Ditolak (`REJECTED_*`) | - | `on-surface-muted` | `surface-muted` + ikon `ban` | tanpa angka peluang |
+
+- **Status umum** (`status-ok/warn/crit` + `-soft`): status non-skor, mis. unggahan terkirim, tugas terlambat, undangan kedaluwarsa.
+
+### Area Aplikasi
+- **Canvas (#F4F4F3) / Surface (#FFFFFF) / Surface-muted (#ECECEA):** latar halaman / kartu / panel pengelompok.
+- **On-surface (#141414) / On-surface-muted (#6B6B68):** teks utama / pendukung.
+- **Border (#E2E2DF):** garis baris tabel dan pemisah, halus.
+- **Surface-inverse (#0E2135) + On-inverse-muted (#A7BCD2):** satu kartu sorotan navy per layar.
+- **Neutral-fill (#DCE3EA):** batang pembanding (minggu lalu), arsir kolam diarsipkan.
+- Warna masuk lewat data (kelas risiko, tren, status tugas), bukan lewat tombol atau ikon dekoratif.
+
+### Area Landing
+- **Deep (#06131F) / Deep-raised (#0D2234) / Line-deep (#1E3448):** latar section gelap / kartu di atasnya / garis.
+- **On-deep (#EAF2FA) / On-deep-muted (#9DB3C8):** teks di section gelap.
+- **Accent (#5CB8FF) + On-accent (#04121E):** CTA utama di section gelap, isian kolom air, angka hasil kalkulator. Biru terang yang sama dengan mockup mobile tim.
+- **Paper (#F3F6F5) / Ink (#0C1620) / Ink-muted (#4B5863) / Line (#D6DEDB):** section terang.
+- Skala `risk-*` dipakai juga di kalkulator hero (di atas kartu `landing-on-deep` sebagai chip terang supaya kontrasnya tetap AA).
 
 ## Typography
 
-**Figtree** (Google Fonts, SIL OFL), pengganti bebas lisensi untuk **Gellix**, font yang dipakai Iconly (diverifikasi dari computed style iconly.pro). Dipilih dari 8 kandidat yang dirender berdampingan dengan crop teks asli: paling dekat dalam bentuk 'a' dua lantai, ekor 'y' lurus, 'S' geometris, dan lebar huruf. Dimuat lokal lewat `expo-font` (`assets/fonts/Figtree-*.ttf`), web `font-display: swap`. Fallback: `System`, `-apple-system`, `Segoe UI`, `Roboto`.
+### Bersama
+Onest (Google Fonts, OFL) lewat `next/font/google` dengan `display: swap`, variabel `--font-onest`; JetBrains Mono `--font-jetbrains`. Angka di tabel dan metrik memakai `font-variant-numeric: tabular-nums`. Desimal memakai koma (format Indonesia): `0,041 mg/L`, `2.380 kopi/mL`.
 
-- **Display (48 / 36 / 28):** angka utama (SDRI, copies/mL, jumlah kolom). Tipis (400) dan besar seperti "$ 12 651" Iconly; 28 memakai 500.
-- **Headline (22) / title (17), semibold:** sapaan, judul layar, judul kartu.
-- **Body (16 / 14):** penjelasan dan rekomendasi, line-height 1,5.
-- **Label (15 semibold / 12 medium):** tombol, chip, label nav (12).
-- **Caption (12):** tanggal, satuan, keterangan grafik.
-- **Label caps (11, bold, +0,06em):** "SIMULASI", "PPC", kepala kolom tabel.
-- Angka desimal pakai koma. Satuan lebih kecil dan muted di samping angka ("1,6 × 10⁴ copies/mL").
+### Area Aplikasi
+| Token | Ukuran | Pakai |
+|---|---|---|
+| `display` | 32/1.15 600 | judul halaman (h1) |
+| `title` | 18/1.3 600 | judul kartu/panel |
+| `metric` | 28/1.1 600 tnum | angka kartu metrik, peluang di kartu kolam |
+| `body` | 14/1.5 | isi, tabel (16px di < 768px) |
+| `label` | 12/1.4 500 | label, badge, caption |
+| `mono` | 12/1.4 500 | kode sampel `B3-0923`, well `C7`, ID run |
+
+Peluang besar di detail kolam dan kartu sorotan memakai `metric` diperbesar 48px (satu-satunya pengecualian), tetap Onest 600.
+
+### Area Landing
+| Token | Ukuran | Pakai |
+|---|---|---|
+| `landing-display-xl` | `clamp(44px, 7vw, 88px)` / 0.98, Bricolage Grotesque 700, -0.035em | judul hero saja |
+| `landing-display-lg` | `clamp(34px, 4.6vw, 56px)` / 1.04 | judul section |
+| `landing-title` | 28/1.2 600 | judul kartu, langkah cara kerja |
+| `landing-body` | 18/1.6 | paragraf (maks 62ch) |
+| `landing-body-sm` | 15/1.55 | caption, FAQ jawaban, tombol |
+
+Rumus di section Metode memakai JetBrains Mono (rumus adalah kode, bukan kostum). Tanpa eyebrow label di atas judul.
 
 ## Layout
 
-- **Grid & margin:** margin layar 20, jarak antarkartu 12, padding panel kaca 24, padding kartu 16. Basis spacing 4.
-- **Container web:** max-width 1200, di tengah.
-- **Breakpoint & navigasi.** Referensi (dan PRD) memakai **bar navigasi pil melayang**, jadi burger + drawer tidak dipakai untuk navigasi utama:
+### Bersama
+Standar responsif:
 
 | Nama | Lebar | Grid | Navigasi |
 |---|---|---|---|
-| Mobile | < 768 | 1 kolom, margin 20 (16 di lebar ≤ 360) | Nav pil kaca melayang, 16 dari bawah + safe area |
-| Tablet | 768-1199 | 2 kolom kartu | Nav pil kaca, lebar maks 520, di tengah |
-| Desktop (web) | ≥ 1200 | 12 kolom, max 1200 | Rail kaca vertikal melayang di kiri (ikon + label), FAB di atas rail |
+| Mobile | < 768px | 1 kolom, gutter 16px | Burger 44×44 + drawer `<dialog>` |
+| Tablet | 768-1199px | 2 kolom | Aplikasi: sidebar ciut 76px otomatis. Landing: burger + drawer |
+| Desktop | ≥ 1200px | 12 kolom, gap 16px | Aplikasi: sidebar 264px. Landing: navbar penuh, konten maks 1200px |
 
-- **Kanvas:** gradasi `canvas` → `canvas-low` (atas → bawah) + 1-2 bloom pastel di pojok (aqua kanan atas, lilac/sky kiri bawah). Bloom diam, tidak beranimasi.
-- **Header layar (pola Iconly):** kiri: tanggal/konteks (`caption` muted) di atas judul atau sapaan (`headline`); kanan: tombol ikon kaca bulat 44 dan/atau avatar 44. Menempel saat scroll dengan latar kaca.
-- **Sheet bawah:** panel kaca radius atas 32, scrim redup, tutup lewat scrim, tombol tutup, gesek turun, atau `Esc`; fokus masuk dan kembali ke pemicu.
-- **Urutan konten mobile:** angka utama (kartu kolom air) → alasan (komponen) → tindakan → detail/riwayat.
-- **Target sentuh:** ≥ 44 di bawah 1200, ≥ 36 di desktop. Body ≥ 16 di HP. Tanpa scroll horizontal di 360 (tabel lebar digulir di dalam kartunya).
-- **Konten lewat di bawah nav:** padding bawah daftar = 72 + 16 + 12 + safe area.
+- **Drawer:** dari kiri (aplikasi) / kanan (landing), lebar ≤ 85vw, scrim 40% + blur; tutup lewat scrim, tombol close, Esc, atau memilih item; `aria-expanded` + `aria-controls`; fokus masuk, terkunci, dan kembali ke burger; scroll halaman terkunci; menutup sendiri saat layar melebar ke desktop.
+- **Target sentuh:** ≥ 44px di bawah 1200px, ≥ 36px di desktop. Body ≥ 16px di mobile. Tanpa scroll horizontal di 360px.
+- Bagian setinggi layar memakai `min-h-[100dvh]`.
 
-| Jenis layar | Tugas | Pola layout | Info utama | Info pendukung |
+### Area Aplikasi
+Spesifikasi shell persis template (sumber: `starter/`):
+- **Frame:** kanvas `canvas` penuh layar, tanpa margin dan tanpa sudut membulat; padding konten 32px desktop, 16px mobile.
+- **Sidebar** (`app-shell.tsx` starter): 264px, padding 28/20/20, garis kanan `border`, `position: sticky; top: 0; height: 100dvh; overflow-y: auto`. Baris brand: simbol + "AquaSeq" + caption 10px muted "Pemantau risiko kolam". Grup dari PRD §5b (judul 11px muted, maks 4 item): *Pantau* (Dasbor, Peringatan, Kolam) · *Lab* (Unggah hasil lab, Riwayat unggahan) · *Tim* (Tugas, Tim) · *Tambak* (Lokasi, Laporan). Item pill 44px, 13px, ikon 19px; aktif = latar `surface`, teks 600, ikon `primary`; halaman yang belum dibangun diberi titik 4px. Bawah: "Bantuan" + kartu akun `surface` radius 16px (avatar `neutral-fill` 36px, nama, peran "Pemilik" / "Teknisi", chevron → menu akun). Ciut 76px otomatis di 768-1199px atau lewat tombol. Teknisi: grup tunggal (Tugas saya, Catat air, Kolam saya).
+- **Top bar:** 85px (76 tablet, 72 mobile), garis bawah. Kiri: tombol ciut + breadcrumb "Nama lokasi / Halaman" 12px. Kanan: badge "Data simulasi" (bila lokasi seed), pill pemilih lokasi (dialog), notifikasi bulat dengan angka `primary`, avatar 40px. Mobile: burger + "AquaSeq".
+- **Judul halaman:** h1 `display` + subjudul 13px muted, aksi pill di kanan (secondary + maks satu primary).
+- **Footer:** "AquaSeq / Pemantau risiko kolam" kiri; "Model V1-GSI · bukan diagnosis resmi" + titik status kanan; 10px muted.
+- **Grid:** 12 kolom gap 16px; panel `surface-muted` (radius `lg`, padding 20px) mengelompokkan 2-4 kartu putih.
+- **Responsif:** 768 grid 2 kolom; 375 satu kolom, tabel jadi daftar kartu, panel dua kolom jadi tab. Komponen lebar (heatmap plate 96-well, tabel run) scroll di dalam kartunya sendiri.
+
+**Pola per jenis halaman:**
+
+| Jenis halaman | Contoh | Pola layout | Info utama (besar) | Info pendukung (kecil) |
 |---|---|---|---|---|
-| **Beranda / hub** (P2, P15) | Melihat keadaan lalu pergi ke tugas | Header sapaan → kartu status kaca (peta kolam / alur sampel) → baris 4 pintasan squircle → kartu tindakan teratas | Jumlah Kritis/Waspada, SDRI tertinggi; run menunggu QC | "dari 5 kolam aktif", waktu pembaruan |
-| Daftar (run, kolam, peringatan) | Memilih yang ditangani | Baris `card-raised` di dalam satu panel kaca, filter chip di atas | Nama + kelas + SDRI | Tanggal, DOC |
-| Ringkasan risiko (P10, P16) | Memahami dan bertindak | Kartu kolom air (SDRI besar + pil kelas + pil aksi kaca) → kartu komponen → kartu tindakan | SDRI + kelas | Komponen, versi rumus |
-| QC run (P4, P5) | Menilai validitas | Ringkasan status di kaca, heatmap plate di kartu solid, kurva standar | Status run + efisiensi | SD replikat, Tm |
-| Detail data (P6, P17) | Memeriksa angka | Kartu grafik garis + kontrol segmen + tabel ringkas | Nilai terakhir | Riwayat, aturan |
-| Jejak bukti (P11) | Menelusur skor | Diagram node vertikal di kartu solid, node bisa diketuk | Skor → komponen | Ct, copies/mL, aturan |
-| Form (P3, P8, P9) | Memasukkan data | Satu kolom input kaca, label di atas, hasil turunan (NH3) langsung di bawah | Field | Rentang aman, satuan |
-| Laporan & WA (P12, P19, P20) | Menerbitkan/meneruskan | Kartu laporan + gelembung pesan; tombol utama menempel di bawah | Kelas + tindakan | Penerima, waktu |
-| Kosong / galat / offline | Menjelaskan keadaan | Panel kaca: ikon dalam lingkaran kaca 64 + judul + 1 kalimat + 1 tombol (pola "Empty State UI") | Apa yang terjadi | Langkah berikutnya |
+| Monitor | Dasbor P13 | Baris 4 kartu metrik → kartu sorotan navy (kolam paling berisiko: peluang 48px, kelas, rekomendasi, aksi "Buat tugas") + panel kolam berisiko → panel tugas jatuh tempo → rata-rata peluang per lokasi (batang minggu ini `accent-fill` vs minggu lalu `neutral-fill`) | Kolam Bahaya/Waspada tinggi, alasan | Sampling terakhir, jumlah kolam |
+| Daftar | Kolam P14, Tugas P23, Tim P25, Riwayat unggahan P19 | Filter pill di atas → tabel (header `label` muted, tanpa garis vertikal, angka rata kanan, kode `mono`) → mobile: kartu | Nama/kode, peluang + badge kelas, status | Teknisi, tanggal, tren |
+| Detail | Kolam P15 | Judul (kode kolam besar + nama + DOC) + peluang 48px + badge kelas di kanan → kartu sorotan rekomendasi + pesan tren → grafik riwayat peluang (garis `accent-fill`, garis ambang kelas putus-putus, tanda tren dari `trajectory`) → tab Sampel / Kimia air / Tugas | Peluang, kelas, rekomendasi | Subskor, versi model |
+| Telusuri | Rincian skor P16 | Kiri 5 kolom: rantai bertingkat (peluang → Z → S_qPCR / S_Bio / S_Chem → fitur: Ct, kopi/mL, NH₃ → well) dengan chip versi model `mono` "V1-GSI"; kanan 7 kolom: gerbang PPC + plate dari `meta.wells` + catatan kalibrasi | Peluang dan subskor terbesar | Z, Ct mentah |
+| Form/unggah | Unggah hasil lab P17 | Stepper `.toggle`: Pilih file → Cocokkan kolom → Pratinjau QC → Kolam & kimia air → Kirim; galat per baris dalam tabel `status-crit-soft` | Langkah aktif, galat | Metadata run |
+| QC | Pratinjau QC (langkah P17) + Detail unggahan P18 | Baris status kontrol (pipeline node pill: Kurva standar → PPC → NTC → 16S → Replikat) → heatmap plate 8×12 (sel 36px, Ct sebagai warna `neutral-fill`→`accent-fill`, Undetermined berarsir) → tabel sampel + status gerbang | Status kontrol, hasil backend per sampel | Slope, efisiensi, R² |
+| Tugas teknisi | Tugas saya P36, Kerjakan P37 | Satu kolom bahkan di desktop (maks 640px): progres x dari y → daftar tugas (pill waktu kanan, terlambat `status-crit`) → detail: instruksi besar, kotak alasan `risk-*-soft` (rekomendasi backend), foto 3 kolom, tombol utama menempel di bawah | Instruksi, batas waktu | Pemberi tugas |
+| Form isian cepat | Catat kimia air P38 | Grid 2 kolom isian besar (nilai 24px, satuan kecil), keyboard angka (`inputmode="decimal"`), hasil NH₃ bebas dari backend + badge zona, tombol Simpan menempel di bawah | Nilai yang diisi | Zona, rentang aman |
+| Pengaturan | P33, P34 | Panel kiri kategori, kanan form; mobile: daftar → halaman | Isian | Penjelasan |
+| Auth | Masuk P6, Undangan P11 | `SoloFrame` starter: kartu tengah maks 440px di kanvas, brand di atas; tombol akun demo sebagai secondary penuh | Form | Tautan |
+| Kosong/galat | semua daftar, P40-P42 | Placeholder starter: ikon dalam lingkaran 64px, judul, satu kalimat, satu aksi | Apa yang terjadi | Langkah berikutnya |
+
+### Area Landing
+- Konten maks 1200px, gutter `landing-gutter` 24px (16px mobile); paragraf maks 62ch.
+- Ritme section: padding vertikal `landing-section-y` 128px desktop, `landing-section-y-mobile` 80px; section padat diikuti section lega.
+- **Urutan section dan pola:**
+
+| # | Section | Latar | Pola | Isi |
+|---|---|---|---|---|
+| 1 | Hero | deep | Kiri 6 kolom: judul `landing-display-xl` "Hasil lab masuk. Kolam mana yang ditangani hari ini?" + satu paragraf + CTA "Coba demo" (accent) + "Masuk" (secondary). Kanan 6 kolom: **kalkulator kolom air** di kartu `landing-deep-raised`: kolom air vertikal (3 lapis: S_qPCR, S_Bio, S_Chem) + 3 slider (Ct pirAB, TAN mg/L, DO mg/L) + peluang besar + chip kelas + rekomendasi + label "Data simulasi". Hasil dari `sdri/preview`; bila backend mati, slider berganti jadi pilihan 5 contoh tersimpan. Mobile: judul dulu, kalkulator di bawah | `min-h-[100dvh]` |
+| 2 | Masalah | paper | Satu kalimat besar `landing-display-lg` di kiri + tiga baris masalah bernomor tidak (baris berpemisah garis, kalimat pengguna dalam tanda kutip) | Angka Ct tidak terbaca; "tidak terdeteksi" dikira aman; perintah ke teknisi hilang di chat |
+| 3 | Cara kerja | deep | Pipeline horizontal 3 node dihubungkan garis `landing-line-deep` (mengulang pola pipeline aplikasi); mobile vertikal | Unggah hasil lab → skor + alasan per kolam → tugas ke teknisi sampai dilaporkan |
+| 4 | Kemampuan | paper | Asimetris: satu blok besar 7 kolom "Skor bisa dirinci sampai well" dengan cuplikan rantai rincian; 5 kolom berisi 4 baris pendek (sampel terhambat ditolak, tanda tren, tugas + foto, peringatan WA) | Hasil, bukan nama fitur |
+| 5 | Metode & batasan | deep | Kiri: rumus logit V1-GSI dalam `mono` di kartu raised; kanan: 3 batasan jujur (koefisien awal GSI, dikalibrasi ulang dari data hasil siklus, bukan diagnosis resmi) + link "Baca metode" | Untuk juri |
+| 6 | FAQ | paper | Akordeon `<details>` satu kolom maks 760px | 4-6 pertanyaan |
+| 7 | CTA penutup | deep | Judul pendek + dua kartu akun demo (Pemilik, Teknisi) yang masing-masing tombol | "Coba sebagai pemilik" / "Coba sebagai teknisi" |
+
+- **Navbar:** transparan di atas hero, jadi `landing-deep` 92% + garis bawah setelah scroll 24px; kiri logo, tengah tautan anchor, kanan "Masuk" + CTA. Mobile: burger + drawer kanan.
+- **Footer:** deep, 3 kolom (AquaSeq + kalimat, tautan, kontak) + baris "Data di situs ini adalah simulasi".
 
 ## Elevation & Depth
 
-Kedalaman dari kaca bertepi dan bayangan lebar yang lembut, bukan border gelap.
+### Area Aplikasi
+Kedalaman dari lapisan warna (canvas → panel → kartu), bukan bayangan. Satu-satunya bayangan: dialog `0 24px 48px -12px rgba(20,20,20,.25)` dan drawer.
 
-- **Kanvas:** gradasi + bloom (lihat Layout).
-- **Panel kaca (`glass-panel`, header, sheet, nav, kartu status):**
-  - Isi: putih 62% (`rgba(255,255,255,0.62)`) + blur 24 + saturasi 1,4 (web `backdrop-filter`; iOS 26 `GlassView` `regular`; iOS lama `BlurView` `systemThinMaterialLight`; Android `BlurView` dimezis intensitas 50).
-  - Kilau atas: gradien vertikal putih 55% → 0% di 40% tinggi teratas.
-  - Rim: 2,5 px, gradien 160° putih 100% → 80% → 35% → 90% (paling terang di atas-kiri, seperti shot "iOS Navigation menu").
-  - Bayangan dalam bawah: `inset 0 -6px 14px rgba(13,14,16,0.04)`.
-  - Bayangan luar: `0 2px 6px rgba(13,14,16,0.04), 0 18px 40px rgba(13,14,16,0.10)`.
-  - Reduce transparency: `surface-raised` pekat + rim 1 `outline` + bayangan yang sama.
-- **Tombol kaca / pil aksi (`button-glass`, `action-pill`, `icon-button`):** isi gradien vertikal putih 95% → 70%, rim 1,5 putih, bayangan dalam bawah `inset 0 -3px 6px rgba(13,14,16,0.06)`, bayangan luar `0 6px 14px rgba(13,14,16,0.08)`. Tekan: bayangan luar hilang, skala 0,97.
-- **Kartu solid (`card`, `card-raised`):** `0 1px 2px rgba(13,14,16,0.04), 0 8px 24px rgba(13,14,16,0.06)`, tanpa border.
-- **Kartu kolom air:** gradien 180° `water-top` 0% → `water-mid` 55% → `water-bottom` 100%, rim 2 putih, glow dalam bawah `inset 0 -18px 36px rgba(60,198,210,0.30)`, bayangan luar seperti panel kaca.
-- **FAB:** isi solid `fab`, rim 2 putih 70%, glow `0 10px 24px rgba(60,198,210,0.45)`. Tanpa gradasi dan tanpa kilau.
+### Area Landing
+Kartu raised di atas deep tanpa bayangan, dibedakan warna + garis `landing-line-deep`. Kalkulator hero boleh satu cahaya lembut biru di belakang kolom air (efek khas satu-satunya di halaman).
 
 ## Shapes
 
-- **Radius:** `frame` 44 untuk bingkai layar penuh/desktop panel besar; `xl` 32 untuk panel kaca dan kartu kolom air; `lg` 24 untuk kartu, input, ubin pintasan; `md` 16 untuk elemen dalam kartu; `sm` 12 untuk track segmen; `xs` 8 untuk segmen aktif dan sel heatmap; `full` untuk nav, tombol, chip, pil, FAB, avatar. Dasar: bingkai Iconly ≈ 14% lebar (setara sudut layar iPhone), kartu dalam ≈ 6%.
-- **Ikon:** Lucide (`lucide-react-native`), stroke 1,75, ukuran 22 (default), 24 (nav), 16 (dalam teks). Gaya Iconly "outline nonaktif / bold aktif" ditiru: ikon aktif nav diisi `on-surface` dengan detail `surface-raised` (lihat Deviations). Tanpa emoji sebagai ikon.
-- **Ikon kelas risiko:** Aman `ShieldCheck`, Pantau `Eye`, Waspada `TriangleAlert`, Kritis `Siren`, Ditolak `Ban`.
-- **Gambar:** tanpa foto dan tanpa avatar foto (tanpa login); avatar = inisial di lingkaran kaca. Visual datang dari data.
+### Bersama
+- **Radius:** `sm` 10px chip kecil/sel heatmap · `md` 16px input, kartu akun · `lg` 24px kartu & panel · `xl` 32px kartu landing · `full` tombol, badge, pill.
+- **Ikon:** Lucide, outline, stroke 1.75, 19px di navigasi, 16px inline, 20px di tombol bulat 44px. Tanpa emoji.
+- **Logo:** belum ada; sementara simbol tetes air bergaris + wordmark "AquaSeq" Onest 600 (konsep logo bisa dibuat lewat `logo-design`).
+- **Foto:** foto laporan tugas radius `md`, rasio 1:1 di grid, buka penuh di dialog.
 
 ## Components
 
-- **Sumber komponen:** komponen yang sudah ada di projek → primitif React Native/Expo → komponen pilihan user: **GlassSurface** (`docs/glass-surface-port.md`) → tulis sendiri. shadcn/ui tidak dipakai (web/Tailwind).
-- **Nav pil kaca (`nav-bar`):** inset kiri/kanan 20, bawah 16 + safe area, tinggi 72, radius penuh, resep panel kaca. Lima slot: dua item, FAB, dua item. Item: ikon 24 + label 12; aktif ikon terisi + label `on-surface` semibold, nonaktif ikon garis + label `on-surface-muted`. Area sentuh ≥ 56 × 56. **FAB:** 56, di tengah bar sejajar garis tengah (seperti "Health App!"), ikon putih 24, label aksesibilitas wajib ("Unggah run" / "Peringatan, 2 aktif"), badge jumlah 20 `danger`. Tekan: skala 0,96 + haptik ringan.
-- **Header sapaan:** `caption` muted ("Jumat, 24 Okt · diperbarui 3 menit lalu") di atas `headline` ("Selamat pagi, Krisna"); kanan tombol kaca bulat 44 (Cari, Ganti peran) + avatar inisial 44. Badge SIMULASI di judul kartu status.
-- **Kartu status (hub):** panel kaca radius 32.
-  - **Manajer, "Status 5 kolam":** ubin kolam di dalam kaca berupa `card-raised` radius 16: kode kolam, SDRI `display-md`, pil kelas. Kolam paling berisiko jadi ubin lebar penuh; sisanya grid 2×2. Lebih dari 5: tampil 5 teratas + "Semua".
-  - **Analis, "Alur sampel":** lima tahap (Diunggah → QC → Ditolak → Draf → Terbit) sebagai lingkaran kaca 40 dengan ikon + angka `title` + label `caption`, dihubungkan garis putus-putus `outline-strong`.
-  - **Baris fakta** di kaki: 2-3 fakta dipisah titik, angka tebal.
-- **Pintasan:** 4 kolom; ubin squircle kaca transparan 60 radius 24 (`shortcut`, resep tombol kaca: isi putih 95% → 70%, rim putih 1,5, bayangan dalam bawah), ikon `on-surface` 26 stroke 1,75, label `label-sm` di bawah. Monokrom seperti lingkaran kaca ikon Iconly, jadi aksen tetap hanya di FAB (keputusan user, 24 Okt). Hanya halaman yang tidak ada di nav.
-- **Kartu kolom air (hero risiko):** radius 32, gradasi `water-*`. Atas: `caption` konteks ("Kolam B-03 · DOC 85 · 23 Okt") + badge SIMULASI. Tengah: SDRI `display-xl` + "/100" `body-sm` muted + pil kelas. Bawah: baris 3-4 pil aksi kaca bulat dengan label di bawahnya ("Jejak", "Laporan", "Bagikan WA", "Tren"), seperti tombol Deposit/Withdraw di "Financial Widget". Di bawahnya dua angka pendukung ("Patogen 80 · Lingkungan 0").
-- **Kartu tindakan:** panel kaca; baris atas kode kolam · pil kelas; judul `title` (kata kerja di depan); satu kalimat alasan `body-sm` muted; tombol primary + tombol kaca. Kritis: rim dalam `danger` 25%.
-- **Tombol:** `button-primary` (satu per layar, teal, huruf biasa, tinggi 52), `button-glass` (sekunder), `button-danger`. Fokus web: cincin 2 `focus-ring` offset 2. Nonaktif: opacity 0,45. Loading: spinner + label tetap. Label menyebut konsekuensi: "Terbitkan ke Tambak Sumberejo", "Salin pesan untuk 3 petambak".
-- **Pil aksi / tombol ikon kaca:** lingkaran atau pil 44-56 dengan resep tombol kaca; ikon `on-surface` 22.
-- **Input kaca (pola "iOS input Design"):** `input` radius 24, label `label-sm` di atas, placeholder `on-surface-muted`, ikon kiri 20; satuan di kanan, muted. Fokus: rim berubah 2 `primary`. Galat: rim `danger` + pesan `body-sm` `danger` di bawah.
-- **Kontrol segmen:** track `track` radius 12 padding 4; segmen 32 tinggi, lebar ≥ 44, aktif `surface-raised` radius 8 + bayangan halus; nonaktif teks `ink-soft`. Area sentuh diperluas ke 44 lewat `hitSlop` (RN) / pseudo-elemen (web), bentuk tetap ringkas seperti Iconly. Untuk Patogen / Kimia / Mikroba dan 7h / 30h / Siklus. Chip 36 memakai cara yang sama.
-- **Grafik tren (pola "Health App!" / "Dashboard App"):** garis `on-surface` 2 dengan halo abu 6 px di bawahnya, titik terpilih = pil nilai hitam (`value-pill`) + garis vertikal tipis; area di atas batas kontrol EWMA diarsir aqua 12% berlabel "sinyal tren"; garis batas kontrol `danger` putus-putus; sumbu `caption` muted.
-- **Meter keyakinan:** 10 kapsul (radius penuh), isi `on-surface`, sisa `track`; persen `display-md` di kanan + "keyakinan".
-- **Tabel ringkas:** baris `card-raised` radius 16, label kiri `body-sm` muted, nilai kanan `label-md`.
-- **Heatmap plate 8×12:** kartu solid, sel radius 8, skala `primary-soft` → `primary` menurut Ct; sel gagal QC pola garis `danger` + ikon; sel dikeluarkan bergaris abu. Selalu dengan legenda dan ringkasan teks.
-- **Diagram jejak bukti:** node lingkaran kaca 44 dengan cincin aqua sebagian, konektor garis `outline-strong` 1,5, node dapat diketuk membuka sheet.
-- **Pil kelas risiko:** `risk-*`, ikon 14 + teks, tinggi 28. Di atas kaca boleh teks berwarna `risk-*-on-glass` + ikon tanpa latar.
-- **Badge SIMULASI:** `badge-simulasi`, ikon `FlaskConical` 12 + "SIMULASI", selalu terlihat, tidak bisa disembunyikan.
-- **Chip filter:** `chip` kaca; terpilih `chip-selected` + ikon centang.
-- **Sheet / toast:** panel kaca; toast di atas nav, 3 detik, aksi "Batalkan" bila relevan.
-- **Kosong / galat / offline:** pola "Empty State UI": ikon Lucide 28 di lingkaran kaca 64, judul `title`, satu kalimat, satu tombol.
-- **Skeleton:** blok `track` dengan kilau halus; diam bila reduce motion.
-- **Motion:** 200-260 ms, easing `cubic-bezier(0.2, 0.8, 0.2, 1)`. Satu momen khusus: kartu kolom air "mengisi" (gradasi naik dari bawah) dan angka SDRI menghitung naik sekali saat muncul (700 ms). Reduce motion: langsung tampil.
+### Bersama
+- **Sumber komponen:** Area Aplikasi = kelas CSS + komponen `starter/` template Soft Op (`AppShell`, `SoloFrame`, `Placeholder`, `Icon`, `Badge`, `Modal` dialog native) dan pola dari `starter/reference/kdasp-globals.css`; **tanpa shadcn dan tanpa sidebar-21st** (03-ARCHITECTURE Q2). Area Landing = komponen sendiri per section + Motion Primitives di `components/motion/` + `pill-link` (gaya tombol rekomendasi AI).
+- **Badge kelas risiko:** pill bertitik, `risk-*-soft` + teks `risk-*`, selalu memuat kata kelas.
+- **Badge "Data simulasi":** pill `status-warn-soft` + ikon `flask-conical`, tidak bisa ditutup.
+- **Focus:** ring 2px `focus` offset 2px di semua elemen interaktif.
+- **Motion:** warna/tekan 150-250ms `cubic-bezier(0.22,1,0.36,1)`; hormati `prefers-reduced-motion`.
+
+### Area Aplikasi
+- **Tombol:** pill 44px; primary `primary` (hover `primary-hover`, tekan `scale-[0.97]`), secondary `surface`, ikon bulat 44px. Loading: spinner + label tetap. Label menyebut konsekuensi: "Tugaskan ke Rizky", "Tolak run (12 sampel)".
+- **Kartu metrik:** ikon dalam lingkaran 36px + label; angka `metric`; delta dengan arti (naik risiko = `risk-tinggi`, turun = `risk-aman`).
+- **Kartu sorotan (navy):** satu per layar; dasbor = kolam paling berisiko; detail kolam = alasan skor; berisi judul, konteks waktu, 2-4 poin, satu aksi pill putih.
+- **Kartu kolam:** kode kolam (mono kecil) + nama, peluang `metric`, badge kelas, teknisi, panah tren. Seluruh kartu adalah link ke P15.
+- **Grafik riwayat peluang:** SVG dari `trajectory.history`, garis `accent-fill` 2px, titik sampel, garis ambang kelas (5/25/60%) putus-putus halus, sampel ditolak = titik berongga abu dengan tooltip alasan; label tren ("Naik cepat", "Stabil", "Turun", "Data belum cukup") dari `trend`; sumbu `label` muted.
+- **Heatmap plate:** grid 8×12, sel 36px radius `sm`, isi warna dari Ct, teks posisi `mono` 10px saat hover/fokus, well dikeluarkan dicoret, klik → dialog detail well.
+- **Dialog keputusan** (keluarkan well, tolak run, minta ulang tugas): `Modal` native, focus trap, Esc; catatan wajib; hasil tercatat dengan nama + waktu.
+- **Modal buat tugas:** kolom: jenis, kolam (terisi), teknisi (terisi pemegang kolam), instruksi (terisi dari `recommendation` backend, bisa diubah), jatuh tempo; ringkasan "Rizky akan menerima tugas ini di HP".
+- **Tabel:** header `label` muted, tanpa garis vertikal, garis baris `border`, angka rata kanan, aksi sekunder di menu ⋯; mobile jadi kartu.
+- **Empty state:** placeholder starter dengan kalimat langkah berikutnya ("Belum ada hasil lab. Unggah CSV pertama untuk melihat skor kolam.").
+- **Skeleton:** blok `surface-muted` radius sama dengan isi, tanpa shimmer saat reduced-motion.
+- **Toast:** kecil di kanan bawah, `surface-inverse`, 4 detik, untuk konfirmasi simpan.
+
+### Area Landing
+- **Tombol (gaya rekomendasi AI):** `pill-link` 52px, panah geser 3px saat hover, tekan `scale-[0.97]`, ring fokus. CTA utama `landing-cta` (accent) maks satu per section; secondary `landing-cta-secondary`; di paper `landing-paper-cta`.
+- **Kalkulator kolom air:** slider native `<input type="range">` bergaya token (track `landing-line-deep`, thumb `landing-accent` 24px), label dan nilai terbaca screen reader (`aria-valuetext` "Ct pirAB 31,5"); hasil dari backend `sdri/preview` lewat `/api/kalkulator` (debounce 250ms); perubahan kelas diumumkan lewat `aria-live="polite"`.
+- **Kolom air:** 4 lapis vertikal, tinggi tiap lapis = kontribusi komponen; isian `landing-accent` dengan opasitas bertingkat; transisi `scaleY` 400ms.
+- **Baris berpanah** (`action-row` dari skill): hanya pada baris yang benar-benar link.
+- **Token gerak** (`src/lib/motion.ts`):
+  - Lenis: `lerp 0.1`, `anchors: true`; tidak diinisialisasi saat reduced-motion.
+  - Hero: `text-effect` fade per kata sekali, 600ms total (satu-satunya efek teks di halaman); kolom air terisi dari 0 saat pertama tampil.
+  - Section: `in-view` naik 24px + opacity, 500ms ease-out, stagger anak 80ms; hanya judul dan blok utama, bukan setiap elemen.
+  - Angka peluang kalkulator: `animated-number` 400ms.
+  - Reduced-motion: semua animasi scroll mati, konten langsung tampil; transisi warna tetap.
 
 ## Do's and Don'ts
 
@@ -459,62 +504,85 @@ Kedalaman dari kaca bertepi dan bayangan lebar yang lembut, bukan border gelap.
 
 | # | Prinsip | Penerapan di projek ini |
 |---|---|---|
-| 1 | Desain untuk sistem | Diuji dengan nama kolam panjang ("Kolam Intensif Blok C-07 Sumberejo"), data kosong, SDRI 100, copies/mL 1,6×10⁴; teks di atas kaca dicek di atas bloom terang dan kartu kolom air bagian bawah. |
-| 2 | Konsisten | Satu grid (margin 20, jarak 12), satu font (Figtree), satu keluarga ikon (Lucide), satu resep kaca, satu aksen. |
-| 3 | Hierarki | Monokrom untuk UI; aksen hanya FAB/tombol utama; warna lain hanya status. Angka utama tipis dan besar, judul semibold, paragraf muted. |
-| 4 | Info di titik keputusan | SDRI + pil kelas di kartu kolom air paling atas; status QC di samping nama run; rentang aman tepat di bawah input kimia. |
-| 5 | Konsekuensi sebelum aksi | Tombol menyebut tujuan dan jumlah ("Terbitkan ke Tambak Sumberejo", "Keluarkan well C6 dari perhitungan"); keluarkan well menampilkan perubahan SDRI sebelum disimpan. |
-| 6 | Kurangi hambatan | Aksi utama di FAB dan tombol menempel di bawah; header menempel; contoh CSV siap pakai; alasan keluarkan well berupa pilihan cepat + isian bebas. |
-| 7 | Hapus yang berlebihan | Tanpa label "Nama:"; badge satu kata; tanpa eyebrow di atas judul; judul tidak memuat periode yang diatur segmen. |
-| 8 | Detail premium | Rim putih tipis, bayangan lebar lembut, label caps diberi tracking, satuan lebih kecil di samping angka, angka tabel `tabular-nums`. |
-| 9 | Aksi utama jelas tapi tidak agresif | Satu FAB/tombol primary per layar, huruf biasa, tinggi 52; aksi lain kaca. |
+| 1 | Desain untuk sistem: tahan variasi konten | Kartu kolam tetap rapi untuk nama kolam panjang ("Kolam Bioflok Utara 12"), peluang 0,0% sampai 99,9%, sampel Ditolak (tanpa angka), dan kolam tanpa teknisi; daftar diuji dengan 0, 1, dan 40 kolam |
+| 2 | Konsisten | Satu grid 12 kolom, Onest saja, Lucide stroke 1.75, satu skala risiko di semua layar (dasbor, detail, peringatan, landing) |
+| 3 | Hierarki | Peluang dan kelas paling besar; kode sampel dan posisi well kecil `mono`; biru hanya untuk aksi |
+| 4 | Info di titik keputusan | Rekomendasi dan pesan tren tepat di bawah angka peluang; teknisi pemegang kolam terlihat di sebelah tombol "Tugaskan" |
+| 5 | Konsekuensi terlihat sebelum aksi | "Kirim 12 sampel ke analisis"; "Rizky akan menerima tugas ini di HP"; "Keluarkan well C7: Ct sampel B3-1023 dihitung dari 2 replikat" |
+| 6 | Kurangi hambatan | Tombol Simpan/Laporkan menempel di bawah layar teknisi; instruksi tugas terisi dari rekomendasi backend; "Pakai nilai kemarin" di catat air |
+| 7 | Hapus yang berlebihan | Tidak ada label "Peluang:" di kartu kolam bila angka + badge sudah jelas; tidak ada sapaan "Selamat datang" kosong di dasbor |
+| 8 | Detail premium | Garis baris `border` halus, angka tabular rata kanan, jarak menyatakan kelompok (kartu metrik rapat, panel berjarak) |
+| 9 | Aksi utama jelas tapi tidak agresif | Satu primary pill per layar, tanpa huruf kapital semua |
+
+**Anti tampilan AI (A1-A11, A13)**
+- **A1** Ikon Lucide saja, tidak ada emoji di UI, data, atau seed.
+- **A2** Warna hanya dari token; biru untuk aksi, `risk-*` untuk kelas, sisanya netral.
+- **A3** Satu layar satu tugas: dasbor memantau, detail kolam memahami, rincian skor menelusur, pratinjau QC memvalidasi. Data well tidak diulang di dasbor.
+- **A4** Sidebar hanya berisi halaman yang sering dipakai (9 item pemilik, 3 teknisi); pengaturan, log, bantuan di menu akun; kartu akun sederhana, bukan avatar gradien.
+- **A5** Aksi sekunder (ekspor, arsipkan, pratinjau WA) di menu ⋯; angka rata kanan; ID dan posisi well kecil.
+- **A6** Tidak ada kartu promosi, ilustrasi dekoratif, atau badge tanpa fungsi.
+- **A7** Isian sedikit (tambah kolam, buat tugas, undang) = modal; QC yang padat = halaman; opsi lanjutan unggah (volume elusi) dilipat; riwayat kolam di tab.
+- **A8** Data bisa dibandingkan: riwayat peluang, batang minggu ini vs lalu, heatmap plate, tabel yang bisa diurutkan, banding kolam berdampingan.
+- **A9** Tanpa em-dash/en-dash di teks UI; rentang memakai tanda hubung (`20-39`).
+- **A10** Konten realistis lokal: Tambak Sumber Rejeki (Puger, Jember), Tambak Mina Lestari (Situbondo), teknisi Rizky Pratama, Agus Setiawan, Dwi Lestari; angka seperti Ct 31,5, peluang 34,8%; tanpa kata klise pemasaran.
+- **A11** `min-h-[100dvh]` untuk hero dan auth; font lewat `next/font`.
+- **A13** Setiap elemen klik punya hover, tekan, dan fokus beranimasi 150-250ms; elemen yang tidak bisa diklik tidak memakai panah/chevron/kursor pointer. Aplikasi: warna + tekan saja. Landing: sesuai LANDING-PAGE §5.
+
+**Aturan template (Area Aplikasi)**
+- Satu primary per layar; satu kartu sorotan navy per layar.
+- Tidak ada hex di komponen.
+- `accent-fill` tidak untuk teks < 18px.
+- Setiap klaim sistem punya sumber yang bisa diklik (peluang → rincian skor, versi model tampil).
+- Data simulasi diberi badge.
+
+**Larangan AI slop (Area Landing)**
+- Hero generik (judul tengah + dua tombol + gradien + mockup miring). Hero AquaSeq = kalkulator kolom air yang bisa dicoba.
+- Grid fitur 3 kolom ikon-dalam-lingkaran. Kemampuan memakai blok asimetris.
+- Eyebrow label di atas judul.
+- Gradient text, blob blur, glow di mana-mana (hanya satu cahaya di kolom air).
+- Animasi di semua elemen; lebih dari satu efek teks.
+- Testimoni atau logo klien karangan. Belum ada pengguna nyata, jadi section testimoni tidak dibuat.
+- Kata klise dan em-dash.
+- Ritme section seragam.
 
 **Aksesibilitas**
-- Do: kontras teks ≥ 4,5:1, teks besar/UI ≥ 3:1 (dicek `lint`, termasuk di atas kaca lewat warna `glass`); fokus selalu terlihat di web; target ≥ 44; `accessibilityLabel` untuk ikon tanpa teks, FAB, dan setiap grafik ("SDRI 80, kelas Kritis, naik dari 46 minggu lalu"); hormati reduce motion dan reduce transparency.
-- Don't: kelas risiko hanya lewat warna; tabel atau heatmap di atas kaca; teks putih di atas `water-bottom`; label abu muda bergaya Iconly.
+- Do: kontras ≥ 4.5:1 (teks besar/elemen UI ≥ 3:1, dicek `lint`); fokus selalu terlihat; semua aksi bisa lewat keyboard (heatmap: panah untuk berpindah sel); target ≥ 44px di bawah 1200px; label untuk setiap input; `aria-label` untuk ikon tanpa teks; grafik punya ringkasan teks.
+- Don't: menyampaikan kelas risiko hanya lewat warna.
 
 **Checklist review UI**
-- [ ] Hanya token file ini (lewat `src/ui/theme/tokens.ts`)
-- [ ] Semua state ada (tekan, fokus, nonaktif, loading, kosong, galat)
-- [ ] Web 375 / 768 / 1440 tanpa scroll horizontal; Expo Go HP kecil dan besar, aman dari notch
-- [ ] Lulus Prinsip UX 1-9 dengan konten ekstrem
-- [ ] Badge SIMULASI tampil di semua data simulasi
+- [ ] Hanya memakai token dari file ini
+- [ ] Semua state ada (hover, focus, disabled, loading, empty, error)
+- [ ] Responsif di 375px, 768px, 1440px tanpa scroll horizontal
+- [ ] Lulus Prinsip UX 1-9 dan Anti tampilan AI
+- [ ] Shell aplikasi lolos verifikasi berdampingan dengan `starter/` preview
 - [ ] `lint` 0 error dan tanpa warning `contrast-ratio`
 
 ## Deviations from Reference
 
-| Aspek | Referensi (Iconly) | Di sini | Alasan |
+| Aspek | Referensi | Di sini | Alasan |
 |---|---|---|---|
-| Teks/ikon nonaktif | Abu `#9E9E9E`-an di `#ECECEC` (±2,5:1) | `on-surface-muted` `#5E6168` (5,35:1) | Kontras AA; dipakai di luar ruangan |
-| Font | Gellix (berbayar) | Figtree (OFL) | Lisensi; bentuk paling mirip dari 8 kandidat |
-| Ikon | Iconly Pro outline + bold berpasangan | Lucide outline; aktif diisi `on-surface` | Satu keluarga ikon, tanpa dependensi berbayar (keputusan user) |
-| Aksen | Berganti per aplikasi, sering bergradasi | Teal solid satu warna, tetap | Identitas AquaSeq (air) dan konsistensi (keputusan user) |
-| Teks di kartu bergradasi | Putih di atas teal `#48AEBC` (±2,4:1) | Hitam di atas `water-bottom` (11,8:1) | Kontras AA |
-| Warna kelas risiko | Tidak ada di referensi | Hijau/kuning tua/oranye/merah + ikon + teks | Kebutuhan PRD; warna tidak jadi satu-satunya penanda |
-| Avatar | Foto orang | Inisial di lingkaran kaca | Tanpa login, tanpa foto (PRD) |
-| FAB | Kadang hitam, kadang di luar bar | Di tengah bar, aqua-teal | PRD: tombol tengah = aksi utama per peran |
-| Ubin pintasan | Squircle bergradien jenuh ("Delivery app") | Kaca transparan, ikon hitam | Keputusan user; satu aksen per layar |
-| Navigasi desktop | Tidak ada (mobile saja) | Rail kaca kiri ≥ 1200 | Diturunkan untuk web |
-| Tabel padat, heatmap, diagram jejak | Tidak ada | Kartu solid dengan resep bayangan Iconly | Kebutuhan PRD ("diturunkan") |
+| Warna merek | K-DASP oranye #C2410C | Biru #1764C0 / #2B8AE2 | Slot merek per projek (TEMPLATE §3b); domain air, selaras mockup mobile tim |
+| Skala status | 3 tingkat (`status-ok/warn/crit`) | Tambah skala 4 kelas `risk-*` khusus skor | Kebutuhan PRD: kelas Aman/Waspada ringan/Waspada tinggi/Bahaya dari backend harus bisa dibedakan |
+| Bingkai | Preview K-DASP membulat 12px | Penuh layar tanpa sudut | Revisi template (PANTARA, Okt 2026) |
+| Font | Onest saja | Landing menambah Bricolage Grotesque untuk display | Landing butuh suara sendiri (mode Persuade); aplikasi tetap Onest |
 
 ## Implementation
 
-Token tidak ditulis ulang di kode. Sumber kebenaran: YAML di atas.
+Token tidak ditulis ulang di kode; hasilkan dari file ini (Windows: pakai alias `designmd`):
 
 ```bash
 npx -p @google/design.md designmd lint docs/08-DESIGN.md
-npx -p @google/design.md designmd export --format dtcg docs/08-DESIGN.md > src/ui/theme/tokens.dtcg.json
+npx -p @google/design.md designmd export --format css-tailwind docs/08-DESIGN.md > src/styles/theme.css
 ```
 
-- React Native tidak memakai Tailwind, jadi format yang dipakai `dtcg`. `src/ui/theme/tokens.ts` mengimpor JSON itu dan memetakannya ke objek bertipe (`colors`, `typography`, `rounded`, `spacing`), plus konstanta yang belum didukung spec (bayangan, resep kaca, gradien, motion) yang disalin dari Elevation & Depth dan Components.
-- Font: `assets/fonts/Figtree-Regular.ttf`, `-Medium`, `-SemiBold`, `-Bold` (unduh dari Google Fonts, OFL; simpan lisensinya di `assets/fonts/OFL.txt`).
-- Pratinjau web: `docs/design/preview.html` memakai CSS variables dari `export --format css-tailwind` (`docs/design/theme.css`).
-- Setelah token diubah: jalankan ulang `lint` dan `export`, lalu `designmd diff` terhadap versi sebelumnya.
+- Setelah `@import` theme di `globals.css`, lepas bentrok spacing Tailwind v4: `@theme inline { --spacing-xs: initial; --spacing-sm: initial; --spacing-md: initial; --spacing-lg: initial; --spacing-xl: initial; --spacing-2xl: initial; }`.
+- **Implementasi acuan Area Aplikasi:** `~/.claude/skills/setup-project-00/design-templates/soft-ops-dashboard/starter/` (salin, jangan tafsir ulang); shell, ukuran, perilaku sesuai Layout di atas. Verifikasi berdampingan 1440/768/375 sesuai `starter/README.md`.
+- Komponen landing: `pill-link.tsx` dan `action-row.tsx` dari `~/.claude/skills/setup-project-00/components/buttons/` ke `src/components/ui/`.
+- Setelah mengubah token: `lint` + `export` ulang, lalu `diff` theme lama dan baru.
 
 ## Changelog
 
 | Tanggal | Perubahan |
 |---|---|
-| 24 Okt 2026 | v2.1 di-ACC user. 6 file desain v1 dihapus (motif pita, R1-R3, analisis R4 lama, skrip motif). |
-| 24 Okt 2026 | v2.1: ubin pintasan jadi kaca transparan dengan ikon hitam (token `tile-1..4`, `on-tile` dihapus); FAB satu warna solid (token `fab-end` dihapus). Keputusan user. |
-| 24 Okt 2026 | v2: desain v1 (R1-R4, pita biru, Outfit) dibuang total. Dibangun ulang dari 378 shot Iconly Pro: kaca terang, kanvas abu + bloom pastel, UI monokrom, aksen aqua-teal gradasi (keputusan user), font Figtree, ikon Lucide (keputusan user), kartu kolom air sebagai signature. |
+| 24 Okt 2026 | Dokumen awal: Soft Op Dashboard + merek biru + skala risiko + Area Landing. Kemiripan belum diukur (tanpa preview); preview dan penyamaan ≥95% bisa dijalankan nanti lewat skill `project-design` |
+| 24 Okt 2026 | Skala risiko mengikuti kelas backend (Aman, Waspada ringan, Waspada tinggi, Bahaya); meter keyakinan dan EWMA dihapus; kalkulator memakai `sdri/preview` |

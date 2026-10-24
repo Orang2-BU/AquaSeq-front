@@ -1,38 +1,45 @@
-# AquaSeq (Frontend)
+# AquaSeq Web
 
-> Dibuat oleh skill project-setup saat onboarding (23 Okt 2026). File ini dimuat otomatis setiap sesi,
+> Dibuat oleh skill setup-project-00 (24 Okt 2026). File ini dimuat otomatis setiap sesi,
 > jadi tidak perlu membaca ulang docs/ kecuali dibutuhkan (lihat bagian "Kapan baca docs").
 
 ## Aplikasi Ini
-AquaSeq adalah software interpretasi hasil lab air tambak udang vaname untuk GENOHACK 2026 (Track 2). Masukannya qPCR (`pirA`, `vp28`, `swp1`, `amoA`, `16S`, PPC), profil Nanopore 16S, dan kimia air. Keluarannya **SDRI** (Shrimp Disease Risk Index, 0-100) dengan kelas Aman/Pantau/Waspada/Kritis, rekomendasi tindakan, jejak bukti sampai ke well, meter keyakinan hasil negatif, dan tren EWMA. Pengguna: analis lab (utama) dan manajer tambak; petambak menerima ringkasan WhatsApp. Di luar scope: backend/login/WA asli, probabilitas wabah %, target RNA, IoT, sertifikat. Rumus dikunci di `docs/sdri-v1.md`.
+
+Web AquaSeq: landing publik + aplikasi berlogin untuk tambak udang vaname, di atas backend Go tim (`Orang2-BU/AquaSeq-back`). Pemilik tambak (bisa beberapa lokasi) mengunggah CSV hasil qPCR; web menampilkan pratinjau QC lalu mengirim ringkasan ke backend, yang menghitung peluang wabah dan kelas risiko (model V1-GSI). Web menampilkan dasbor, peringatan, rincian skor sampai well, dan alur tugas: pemilik memberi tugas, teknisi mencatat kimia air dan melapor dengan foto dari HP. Di luar scope: backend, aplikasi mobile, bisnis/harga, LLM, menghitung skor di web. Ide asli user: `docs/00-BRIEF.md`.
 
 ## Stack & Perintah
-- **Stack:** Expo SDK 58 + React Native + TypeScript strict, Expo Router, TanStack Query + Zustand, react-native-svg, expo-blur + expo-glass-effect + expo-linear-gradient (GlassSurface), papaparse, lucide-react-native, jest-expo. Frontend saja; data lewat Repository mock (AsyncStorage).
-- **Test:** `npm test` · **Build:** `npx expo export -p web` · **Typecheck:** `npx tsc --noEmit` · **Lint:** `npx expo lint` · **Dead code:** `npx knip` · **Uji emas:** `python scripts/sdri_v1_check.py`
+
+- **Stack:** Next.js 16 App Router + TS strict (frontend + BFF tipis), backend Go tim via `src/lib/api` (mode `mock`/`live`), JWT di cookie httpOnly, Tailwind v4 (token dari 08-DESIGN), Zod, Vitest, starter Soft Op (aplikasi), Lenis + Motion Primitives (landing).
+- **Test:** `npm test` · **Build:** `npm run build` · **Typecheck:** `npm run typecheck` · **Lint:** `npm run lint && npm run format:check` · **Dead code:** `npx knip`
 
 ## Konvensi Singkat (dari docs/02-AGENT.md)
-- Kode/nama Inggris; komentar dan teks UI Bahasa Indonesia; istilah domain apa adanya (`pirA`, `sdri`, `copiesMl`).
-- `src/engine` = TS murni tanpa React; setiap angka untuk pengguna mengembalikan `{ value, trace }`; ambang hanya di `src/engine/params/sdri-v1.ts`.
-- `app/` rute tipis; logika di `src/features/<fitur>`; UI umum di `src/ui`; warna/ukuran hanya dari token.
-- Setiap entitas punya `provenance`; data `simulasi` wajib badge SIMULASI. Tidak ada "probabilitas wabah %" dan tidak ada klaim diagnosis/lead time.
-- Parser mengembalikan `{ ok, data | errors[{row, message}] }`, tidak melempar.
-- Tes di `src/**/__tests__`, nama tes Bahasa Indonesia; tes emas 5 arketipe GSI wajib sama dengan skrip Python (selisih ≤ 0,1).
-- Commit Conventional Commits Bahasa Indonesia, atas akun `krizzn65 <krisnadewa6565@gmail.com>`, **tanpa trailer Co-Authored-By AI**. Repo: `https://github.com/Orang2-BU/AquaSeq-front.git`. Push hanya setelah user setuju.
-- Paket Expo dipasang dengan `npx expo install`; dependensi baru wajib izin.
+
+- Backend hanya dipanggil dari server lewat `src/lib/api` (`server-only`); browser tidak pernah memegang token atau memanggil backend.
+- Respons backend selalu di-parse Zod (`src/lib/api/schemas.ts`, sesuai `docs/09-API-KONTRAK.md`); kebutuhan API baru ditulis dulu di kontrak.
+- Web tidak menghitung skor; kelas risiko dipetakan di satu tempat: `src/lib/risk.ts`.
+- Server Component bawaan; mutasi lewat Server Actions + Zod; galat `VALIDATION_ERROR.fields` dipetakan ke form.
+- Rute Bahasa Indonesia kebab-case, terdaftar di `src/lib/nav.ts` dengan ID PRD.
+- Data simulasi berbadge "Data simulasi"; versi model tampil di rincian skor.
+- Commit Conventional Commits berbahasa Indonesia, hanya bila user setuju.
+- UI wajib ikut `docs/08-DESIGN.md`, termasuk Standar UI anti tampilan AI. Sebelum mengerjakan UI, baca "Peta area" di 08-DESIGN. File landing → Bersama + Area Landing; file aplikasi → Bersama + Area Aplikasi. Jangan campur gaya kedua area. Lenis, efek Motion Primitives, dan GSAP hanya di area landing.
 
 ## Aturan Wajib
+
 @docs/07-RULES.md
 
 ## Aturan Main
+
 @docs/06-WORKFLOW.md
 
 ## Kapan baca docs
+
+- Ide asli, tujuan, batasan → `docs/00-BRIEF.md`
 - Mulai task baru → bagian task terkait di `docs/03-ARCHITECTURE.md`
 - Status task berubah → update `docs/04-TODO.md` (wajib)
-- Task engine/skor → `docs/sdri-v1.md` (audit GSI: `docs/sdri-audit-gsi.md`)
-- Komponen kaca → `docs/glass-surface-port.md`
-- Butuh pola testing/review/refactor → `docs/05-SKILL.md`
+- Endpoint, bentuk data, otorisasi → `docs/09-API-KONTRAK.md`
 - Ragu soal scope fitur → `docs/01-PRD.md`
 - Membuat/mengubah halaman → bagian "Peta Halaman" di `docs/01-PRD.md` + `docs/08-DESIGN.md`
+- Kerja UI (halaman, komponen, warna, font) → `docs/08-DESIGN.md` (wajib, jangan pakai nilai di luar token)
 - Detail konvensi koding → `docs/02-AGENT.md`
-- Konteks lomba & riset → `riset-lomba-genohack-2026.md`
+- Latar belakang rumus lama (arsip, tidak berlaku) → `docs/arsip/`
+- Aturan kerja always-on → `docs/ALWAYS-ON.md` (jika ada)
