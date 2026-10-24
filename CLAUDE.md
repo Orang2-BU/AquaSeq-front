@@ -33,6 +33,7 @@ Web AquaSeq: landing publik + aplikasi berlogin untuk tambak udang vaname, di at
 
 ## Kapan baca docs
 
+- Melanjutkan dari sesi/akun lain → `docs/LANJUTAN.md` (posisi kerja, desain task berjalan, jebakan)
 - Ide asli, tujuan, batasan → `docs/00-BRIEF.md`
 - Mulai task baru → bagian task terkait di `docs/03-ARCHITECTURE.md`
 - Status task berubah → update `docs/04-TODO.md` (wajib)

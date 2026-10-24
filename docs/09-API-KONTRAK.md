@@ -9,7 +9,7 @@
 - **Amplop respons** (mengikuti backend yang sudah ada):
   - Sukses: `{ "success": true, "data": {...}, "error": null }`
   - Gagal: `{ "success": false, "data": null, "error": { "code": "VALIDATION_ERROR", "message": "...", "fields": { "email": "Format email salah" } } }`
-- **Kode galat yang dipakai web:** `BAD_REQUEST`, `VALIDATION_ERROR` (dengan `fields`), `UNAUTHORIZED` (401, token tidak ada/kedaluwarsa), `FORBIDDEN` (403, peran/lokasi tidak berhak), `NOT_FOUND`, `CONFLICT` (mis. kode kolam sudah dipakai), `RATE_LIMITED`, `INTERNAL`.
+- **Kode galat yang dipakai web:** `BAD_REQUEST`, `VALIDATION_ERROR` (dengan `fields`), `UNAUTHORIZED` (401, token tidak ada/kedaluwarsa), `FORBIDDEN` (403, peran/lokasi tidak berhak), `NOT_FOUND`, `CONFLICT` (mis. kode kolam sudah dipakai), `RATE_LIMITED`, `EXPIRED` (undangan kedaluwarsa), `INTERNAL`.
 - **Pesan galat** Bahasa Indonesia, menyebut masalah dan cara memperbaiki (ditampilkan langsung ke pengguna).
 - **Format:** JSON snake_case; waktu ISO 8601 dengan zona (`2026-10-24T06:31:00+07:00`); tanggal `YYYY-MM-DD`; ID UUID.
 - **Daftar** memakai `?page=1&per_page=20` dan mengembalikan `data: { items: [...], total: 57 }`.
@@ -41,19 +41,21 @@ Mekanisme usulan: **JWT access token (15 menit) + refresh token (30 hari, rotasi
 | GET | `/farms/{id}/ponds` | ⬜ | `?status=ACTIVE&assignee_id=` | `items: Pond[]` **termasuk `latest_result`** | pemilik: semua; teknisi: hanya kolam yang ditugaskan |
 | POST | `/farms/{id}/ponds` | 🔧 | `pond_code, name?, system, area_sqm?, stocked_at?, assignee_id?` | `Pond` | pemilik; `pond_code` huruf besar, `^[A-Z0-9-]{1,12}$`, unik per lokasi → bentrok `CONFLICT` dengan `fields.pond_code`. Onboarding memanggil endpoint ini per kode (maks 50) |
 | GET | `/ponds/{id}` | ⬜ | — | `Pond` + `latest_result` + `latest_water_log` | pemilik / teknisi pemegang |
-| PATCH | `/ponds/{id}` | ⬜ | sebagian field, termasuk `assignee_id`, `wa_target` | `Pond` | pemilik |
-| POST | `/ponds/{id}/archive` | ⬜ | — | `Pond` | pemilik |
-| GET | `/farms/{id}/members` | ⬜ | — | `items: Member[]` + undangan tertunda | pemilik |
-| PATCH | `/farms/{id}/members/{user_id}` | ⬜ | `active` | `Member` | pemilik |
+| PATCH | `/ponds/{id}` | ⬜ | sebagian field: `pond_code`, `system`, `area_sqm` (boleh `null`), `assignee_id`, `wa_target`; kode bentrok → `CONFLICT` dengan `fields.pond_code` | `Pond` | pemilik |
+| POST | `/ponds/{id}/archive` | ⬜ | — | `Pond` | pemilik; kolam hilang dari daftar dan dilepas dari teknisinya, riwayat tetap |
+| GET | `/farms/{id}/members` | ⬜ | — | `items: Member[]`, `invitations: PendingInvitation[]` (belum dipakai/dibatalkan, termasuk yang kedaluwarsa) | pemilik |
+| PATCH | `/farms/{id}/members/{user_id}` | ⬜ | `active` | `Member` | pemilik; menonaktifkan juga melepas kolam teknisi itu |
+| PUT | `/farms/{id}/members/{user_id}/ponds` | ⬜ | `pond_ids[]` | `Member` | pemilik; atomik: kolam terpilih pindah ke teknisi ini, kolam lamanya yang tidak dipilih dilepas; teknisi nonaktif → `VALIDATION_ERROR` |
 | POST | `/farms/{id}/invitations` | ⬜ | `email, pond_ids[]` | `Invitation` | pemilik; backend mengirim email berisi `{WEB_URL}/undangan/{token}` |
-| DELETE | `/invitations/{id}` | ⬜ | — | `{}` | pemilik |
-| GET | `/invitations/by-token/{token}` | ⬜ | — | `farm_name, owner_name, email, pond_codes[], expired` | publik |
-| POST | `/invitations/by-token/{token}/accept` | ⬜ | `full_name, password` | `user, access_token, refresh_token` | publik; token sekali pakai, kedaluwarsa 7 hari |
+| DELETE | `/invitations/{id}` | ⬜ | — | `{}` | pemilik; token undangan langsung tidak berlaku |
+| GET | `/invitations/by-token/{token}` | ⬜ | — | `farm_name, owner_name, email, pond_codes[], expired` | publik; sudah dipakai/dibatalkan/tidak ada → `NOT_FOUND` |
+| POST | `/invitations/by-token/{token}/accept` | ⬜ | `full_name, password` | `user, access_token, refresh_token, expires_in` | publik; token sekali pakai, kedaluwarsa 7 hari → `EXPIRED`; email sudah punya akun → `CONFLICT`. Kolam undangan langsung dipegang teknisi baru |
 
 - `Farm`: `{ id, name, regency, address, owner_id, provenance: "simulasi"|"nyata", archived_at, created_at, pond_count, technician_count, at_risk_count }`. Tiga angka terakhir untuk kartu lokasi (P27): jumlah kolam, teknisi aktif, dan kolam dengan sampel terakhir kelas 3-4.
 - `/auth/me` hanya memuat lokasi yang **belum** diarsipkan di `memberships`.
-- `Pond`: `{ id, farm_id, pond_code, name, system: "intensif"|"bioflok", area_sqm, current_cycle, stocked_at, assignee: { id, full_name } | null, wa_target, status, latest_result: SdriResult | null, latest_sampling_date }`
-- `Member`: `{ user_id, full_name, email, role, active, pond_codes[], open_tasks }`
+- `Pond`: `{ id, farm_id, pond_code, name, system: "intensif"|"bioflok", area_sqm, current_cycle, stocked_at, assignee: { id, full_name } | null, wa_target, status, latest_result: SdriResult | null, latest_sampling_date, trend }`. `trend` = `RAPID_INCREASE`|`STABLE`|`DECREASING`|`INSUFFICIENT_DATA`, sama dengan `trajectory.trend`; ikut di daftar supaya P14 tidak memanggil trajectory per kolam.
+- `Member`: `{ user_id, full_name, email, role, active, pond_codes[], open_tasks }` (`pond_codes` hanya kolam aktif)
+- `PendingInvitation`: `{ id, email, pond_codes[], expires_at }`. Token undangan hanya disimpan sebagai hash di backend dan tidak pernah dikirim ke web; satu-satunya jalan ke teknisi adalah email.
 
 ## 4. Sampel, skor, tren
 | Method | Endpoint | Status | Body / query | Data respons | Siapa |
@@ -148,4 +150,5 @@ Aturan munculnya peringatan (diusulkan): sampel terakhir kolam kelas 3 atau 4, s
 | K3 | Pesan WhatsApp memakai emoji 🚨 | Boleh di isi pesan WA; web tidak memakai emoji di UI-nya sendiri |
 | K4 | Akun demo dan reset data harian | `POST /auth/demo` + job reset harian di backend |
 | K5 | Penyimpanan foto (disk/S3/MinIO)? | Bebas, asal `GET /files/{id}` memeriksa hak akses |
-| K6 | Email (undangan, reset sandi) lewat apa? | SMTP via env; di dev cukup dicetak ke log |
+| K6 | Email (undangan, reset sandi) lewat apa? | SMTP via env; di dev cukup dicetak ke log (mock web juga mencetak tautan undangan ke log server) |
+| K7 | `domain.RiskClass` di backend bernilai 0/1/2/4 dan 9 (ditolak), sedangkan kontrak memakai 1-4 dan 0 (ditolak) | Ikuti kontrak: Aman 1, Waspada ringan 2, Waspada tinggi 3, Bahaya 4, ditolak 0. Web memetakan kelas hanya di `src/lib/risk.ts` |

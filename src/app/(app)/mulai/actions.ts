@@ -69,7 +69,7 @@ const inviteSchema = z.object({
   pond_ids: z.array(z.string().max(100)).max(MAX_PONDS_PER_BATCH),
 });
 
-/** Langkah 3 onboarding: undang teknisi lewat email dan bagi kolam. */
+/** Undang teknisi lewat email dan bagi kolam (onboarding langkah 3 dan P25). */
 export async function inviteTechnician(_: SentInvitation, formData: FormData): Promise<SentInvitation> {
   const values = valuesOf(formData, ["email"]);
   const parsed = inviteSchema.safeParse({
@@ -81,6 +81,7 @@ export async function inviteTechnician(_: SentInvitation, formData: FormData): P
   const { farm_id, ...body } = parsed.data;
   try {
     const invitation = await withSession((token) => api.invitations.create(token, farm_id, body));
+    revalidatePath("/tim");
     return { ok: true, data: { email: invitation.email } };
   } catch (error) {
     return { ...messageOf(error), values };

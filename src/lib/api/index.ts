@@ -49,20 +49,75 @@ const farmSchema = z.object({
   at_risk_count: z.number().int(),
 });
 
-const pondSchema = z.object({
+/** Hasil skor backend (09-API-KONTRAK §4). Web hanya menampilkan, tidak menghitung. */
+const sdriResultSchema = z.object({
+  status: z.enum(["VALID", "REJECTED_INHIBITOR", "REJECTED_INVALID_QC"]),
+  z_score: z.number(),
+  probability_pct: z.number(),
+  /** 1-4, 0 bila sampel ditolak. */
+  risk_class: z.number().int().min(0).max(4),
+  risk_level: z.string(),
+  s_qpcr: z.number(),
+  s_bio: z.number(),
+  s_chem: z.number(),
+  model_version: z.string(),
+  recommendation: z.string(),
+});
+
+export const pondSchema = z.object({
   id: z.string(),
   farm_id: z.string(),
   pond_code: z.string(),
+  name: z.string().nullable(),
   system: z.enum(["intensif", "bioflok"]),
+  area_sqm: z.number().nullable(),
+  current_cycle: z.number().int(),
+  assignee: z.object({ id: z.string(), full_name: z.string() }).nullable(),
+  latest_result: sdriResultSchema.nullable(),
+  latest_sampling_date: z.string().nullable(),
+  trend: z.enum(["RAPID_INCREASE", "STABLE", "DECREASING", "INSUFFICIENT_DATA"]),
 });
 
+const memberSchema = z.object({
+  user_id: z.string(),
+  full_name: z.string(),
+  email: z.string(),
+  role: z.enum(["pemilik", "teknisi"]),
+  active: z.boolean(),
+  pond_codes: z.array(z.string()),
+  open_tasks: z.number().int(),
+});
+
+const pendingInvitationSchema = z.object({
+  id: z.string(),
+  email: z.string(),
+  pond_codes: z.array(z.string()),
+  expires_at: z.string(),
+});
+
+const membersSchema = z.object({ items: z.array(memberSchema), invitations: z.array(pendingInvitationSchema) });
+
 const invitationSchema = z.object({ id: z.string(), email: z.string(), expires_at: z.string() });
+
+const invitationInfoSchema = z.object({
+  farm_name: z.string(),
+  owner_name: z.string(),
+  email: z.string(),
+  pond_codes: z.array(z.string()),
+  expired: z.boolean(),
+});
 
 const list = <T extends z.ZodType>(item: T) => z.object({ items: z.array(item) }).transform((d) => d.items);
 
 export type Farm = z.infer<typeof farmSchema>;
+export type SdriResult = z.infer<typeof sdriResultSchema>;
+export type Pond = z.infer<typeof pondSchema>;
+export type Member = z.infer<typeof memberSchema>;
+export type PendingInvitation = z.infer<typeof pendingInvitationSchema>;
+export type InvitationInfo = z.infer<typeof invitationInfoSchema>;
 type FarmInput = { name: string; regency: string; address?: string };
 type PondInput = { pond_code: string; system: "intensif" | "bioflok"; area_sqm?: number };
+type PondUpdate = { pond_code?: string; system?: "intensif" | "bioflok"; area_sqm?: number | null };
 
 export type Tokens = z.infer<typeof tokensSchema>;
 export type AuthResult = z.infer<typeof authResultSchema>;
@@ -83,7 +138,7 @@ export function unwrap<T>(body: unknown, schema: z.ZodType<T>): T {
 }
 
 async function request<T>(
-  method: "GET" | "POST" | "PATCH",
+  method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE",
   path: string,
   schema: z.ZodType<T>,
   { token, body }: { token?: string; body?: unknown } = {},
@@ -103,6 +158,8 @@ async function request<T>(
 }
 
 const ok = z.unknown();
+/** Segmen path aman dari ID. */
+const seg = encodeURIComponent;
 
 const live = {
   health: () => request("GET", "/health", healthSchema),
@@ -119,17 +176,39 @@ const live = {
     list: (token: string) => request("GET", "/farms", list(farmSchema), { token }),
     create: (token: string, body: FarmInput) => request("POST", "/farms", farmSchema, { token, body }),
     update: (token: string, id: string, body: FarmInput) =>
-      request("PATCH", `/farms/${encodeURIComponent(id)}`, farmSchema, { token, body }),
-    archive: (token: string, id: string) =>
-      request("POST", `/farms/${encodeURIComponent(id)}/archive`, farmSchema, { token }),
+      request("PATCH", `/farms/${seg(id)}`, farmSchema, { token, body }),
+    archive: (token: string, id: string) => request("POST", `/farms/${seg(id)}/archive`, farmSchema, { token }),
   },
   ponds: {
+    list: (token: string, farmId: string) =>
+      request("GET", `/farms/${seg(farmId)}/ponds?status=ACTIVE`, list(pondSchema), { token }),
     create: (token: string, farmId: string, body: PondInput) =>
-      request("POST", `/farms/${encodeURIComponent(farmId)}/ponds`, pondSchema, { token, body }),
+      request("POST", `/farms/${seg(farmId)}/ponds`, pondSchema, { token, body }),
+    update: (token: string, pondId: string, body: PondUpdate) =>
+      request("PATCH", `/ponds/${seg(pondId)}`, pondSchema, { token, body }),
+    archive: (token: string, pondId: string) => request("POST", `/ponds/${seg(pondId)}/archive`, pondSchema, { token }),
+  },
+  members: {
+    list: (token: string, farmId: string) => request("GET", `/farms/${seg(farmId)}/members`, membersSchema, { token }),
+    /** Menonaktifkan teknisi juga melepas kolam yang dipegangnya. */
+    update: (token: string, farmId: string, userId: string, body: { active: boolean }) =>
+      request("PATCH", `/farms/${seg(farmId)}/members/${seg(userId)}`, memberSchema, { token, body }),
+    /** Atomik: kolam terpilih pindah ke teknisi ini, kolam lamanya yang tidak dipilih dilepas. */
+    assignPonds: (token: string, farmId: string, userId: string, pond_ids: string[]) =>
+      request("PUT", `/farms/${seg(farmId)}/members/${seg(userId)}/ponds`, memberSchema, {
+        token,
+        body: { pond_ids },
+      }),
   },
   invitations: {
     create: (token: string, farmId: string, body: { email: string; pond_ids: string[] }) =>
-      request("POST", `/farms/${encodeURIComponent(farmId)}/invitations`, invitationSchema, { token, body }),
+      request("POST", `/farms/${seg(farmId)}/invitations`, invitationSchema, { token, body }),
+    revoke: (token: string, invitationId: string) =>
+      request("DELETE", `/invitations/${seg(invitationId)}`, ok, { token }).then(() => {}),
+    byToken: (invitationToken: string) =>
+      request("GET", `/invitations/by-token/${seg(invitationToken)}`, invitationInfoSchema),
+    accept: (invitationToken: string, body: { full_name: string; password: string }) =>
+      request("POST", `/invitations/by-token/${seg(invitationToken)}/accept`, authResultSchema, { body }),
   },
 };
 

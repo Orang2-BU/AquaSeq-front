@@ -1,0 +1,70 @@
+name: CI/CD & Deploy to Dokploy
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - push-deployment
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  verify:
+    name: Verify (Lint, Typecheck, Test, Dead Code, Build)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Check code formatting
+        run: npm run format:check
+
+      - name: Run typecheck
+        run: npm run typecheck
+
+      - name: Run tests
+        run: npm test
+
+      - name: Check dead code
+        run: npx knip
+
+      - name: Build Next.js application
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          API_MODE: mock
+
+  deploy:
+    name: Deploy to Dokploy
+    needs: verify
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Dokploy Deployment Webhook
+        env:
+          DOKPLOY_WEBHOOK_URL: ${{ secrets.DOKPLOY_WEBHOOK_URL }}
+        run: |
+          if [ -z "$DOKPLOY_WEBHOOK_URL" ]; then
+            echo "DOKPLOY_WEBHOOK_URL secret belum diset di GitHub Secrets."
+            echo "Setup: Dokploy -> Application -> Deployments -> Webhook URL -> masukkan ke GitHub Secrets sebagai DOKPLOY_WEBHOOK_URL."
+            exit 0
+          fi
+          echo "Triggering Dokploy deployment webhook..."
+          curl -f -s -S -X POST "$DOKPLOY_WEBHOOK_URL"
+          echo "Deployment berhasil ditrigger ke Dokploy."
