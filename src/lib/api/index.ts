@@ -445,7 +445,14 @@ async function request<T>(
     },
     body: body === undefined ? undefined : body instanceof FormData ? body : JSON.stringify(body),
   });
-  return unwrap(await response.json(), schema);
+  const text = await response.text().catch(() => "");
+  let json: unknown;
+  try {
+    json = JSON.parse(text);
+  } catch {
+    throw new ApiError("SERVER_ERROR", `Server analisis merespons galat HTTP ${response.status}.`);
+  }
+  return unwrap(json, schema);
 }
 
 const ok = z.unknown();
