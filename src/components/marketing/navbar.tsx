@@ -1,17 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useLenis } from "lenis/react";
+import { motion } from "motion/react";
 import { Menu, X } from "lucide-react";
 import { NAV_LINKS } from "@/content/landing";
 import { BrandSymbol, BrandWordmark } from "@/components/shell/brand";
 import { ContactLink } from "./contact-link";
 
-/** Navbar landing: transparan di atas, padat setelah scroll 24px; drawer kanan di < 1024px. */
+/** Animasi kapsul: pegas cepat tanpa pantulan berlebih (token gerak landing). */
+const PILL = { type: "spring", stiffness: 420, damping: 38, mass: 0.9 } as const;
+
+/**
+ * Navbar landing: lebar penuh di atas halaman; setelah scroll 24px menyusut ke tengah jadi kapsul
+ * membulat yang melayang (animasi `layout` Motion, berbasis transform). Drawer kanan di < 1200px.
+ * Reduced-motion: `MotionConfig reducedMotion="user"` di SmoothScroll mematikan animasinya.
+ */
 export function Navbar() {
-  const home = usePathname() === "/";
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const drawer = useRef<HTMLDialogElement>(null);
@@ -42,22 +48,36 @@ export function Navbar() {
     };
   }, [open, lenis]);
 
-  const solid = scrolled || !home;
   return (
-    <header className={`landing-nav ${solid ? "solid" : ""}`}>
-      <div className="landing-nav-inner">
-        <Link href="/" className="landing-brand" aria-label="AquaSeq, ke beranda">
-          <BrandSymbol />
-          <BrandWordmark />
-        </Link>
-        <nav className="landing-nav-links" aria-label="Navigasi landing">
+    <header className={`landing-nav ${scrolled ? "solid" : ""}`}>
+      <motion.div
+        layout
+        layoutDependency={scrolled}
+        transition={PILL}
+        className="landing-nav-inner"
+        // Radius lewat style supaya Motion mengoreksinya selama animasi skala.
+        style={{ borderRadius: scrolled ? 999 : 0 }}
+      >
+        <motion.div layout="position" layoutDependency={scrolled} transition={PILL}>
+          <Link href="/" className="landing-brand" aria-label="AquaSeq, ke beranda">
+            <BrandSymbol />
+            <BrandWordmark />
+          </Link>
+        </motion.div>
+        <motion.nav
+          layout="position"
+          layoutDependency={scrolled}
+          transition={PILL}
+          className="landing-nav-links"
+          aria-label="Navigasi landing"
+        >
           {NAV_LINKS.map((link) => (
             <Link key={link.href} href={link.href}>
               {link.label}
             </Link>
           ))}
-        </nav>
-        <div className="landing-nav-actions">
+        </motion.nav>
+        <motion.div layout="position" layoutDependency={scrolled} transition={PILL} className="landing-nav-actions">
           <Link href="/masuk" className="landing-nav-login">
             Masuk
           </Link>
@@ -72,8 +92,8 @@ export function Navbar() {
           >
             <Menu aria-hidden size={20} strokeWidth={1.75} />
           </button>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
       {open && (
         <dialog
           ref={drawer}

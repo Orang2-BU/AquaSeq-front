@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { Manrope } from "next/font/google";
 import "@/styles/landing.css";
 import { Footer } from "@/components/marketing/footer";
@@ -12,10 +11,7 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
   return (
     <div className={`landing ${manrope.variable}`}>
       <SmoothScroll>
-        {/* usePathname di navbar butuh Suspense (cacheComponents); fallback markup sama, mode transparan. */}
-        <Suspense fallback={<div className="landing-nav" />}>
-          <Navbar />
-        </Suspense>
+        <Navbar />
         <main id="konten">{children}</main>
         <Footer />
       </SmoothScroll>

@@ -3,7 +3,10 @@
 
 .landing {
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  background: var(--color-landing-canvas);
+  /* Latar gaya Iconly Pro: kanvas di atas memudar lembut ke putih di bawah. */
+  background:
+    linear-gradient(180deg, var(--color-landing-canvas) 0%, var(--color-landing-surface) 100%),
+    var(--color-landing-canvas);
   color: var(--color-landing-ink);
   font-family: var(--font-manrope), sans-serif;
   font-size: 16px;
@@ -145,31 +148,45 @@
   background: var(--color-landing-accent-soft);
 }
 
-/* Navbar */
+/* Navbar: lebar penuh di atas; setelah scroll 24px menyusut ke tengah jadi kapsul melayang (navbar.tsx). */
 .landing-nav {
   position: fixed;
   inset: 0 0 auto;
   z-index: 40;
-  height: 76px;
-  background: var(--color-landing-canvas);
-  border-bottom: 1px solid transparent;
-  transition:
-    background-color 250ms var(--ease-out),
-    border-color 250ms var(--ease-out);
-}
-.landing-nav.solid {
-  background: rgb(238 243 248 / 0.92);
-  border-bottom-color: var(--color-landing-line);
-  backdrop-filter: blur(12px);
+  padding: 0 16px;
+  /* Area kosong di kiri-kanan kapsul tidak menghalangi klik konten di bawahnya. */
+  pointer-events: none;
 }
 .landing-nav-inner {
+  pointer-events: auto;
   max-width: 1328px;
-  height: 100%;
+  height: 76px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 8px;
   display: flex;
   align-items: center;
   gap: 24px;
+  border: 1px solid transparent;
+  transition:
+    background-color 250ms var(--ease-out),
+    border-color 250ms var(--ease-out),
+    box-shadow 250ms var(--ease-out);
+}
+.landing-nav.solid .landing-nav-inner {
+  /* Selalu lebih sempit dari keadaan awal supaya terlihat menyusut ke tengah di semua lebar layar. */
+  max-width: min(1040px, calc(100% - 96px));
+  height: 60px;
+  margin-top: 12px;
+  padding: 0 8px 0 16px;
+  background: color-mix(in srgb, var(--color-landing-surface) 84%, transparent);
+  border-color: var(--color-landing-line);
+  box-shadow: 0 12px 32px -12px color-mix(in srgb, var(--color-landing-ink) 22%, transparent);
+  /* Blur supaya teks navbar tetap terbaca di atas foto dan kartu yang lewat di bawahnya. */
+  backdrop-filter: blur(14px);
+}
+/* Di dalam kapsul putih, sorotan hover tautan memakai kanvas supaya tetap terlihat. */
+.landing-nav.solid .landing-nav-links a:hover {
+  background: var(--color-landing-canvas);
 }
 .landing-brand,
 .landing-footer-brand {
@@ -185,8 +202,8 @@
   gap: 4px;
   margin: 0 auto;
   padding: 4px;
-  border-radius: var(--radius-full);
-  background: var(--color-landing-surface);
+  /* Transparan saat diam (tanpa kapsul); kapsul putih hanya untuk seluruh navbar setelah digulir. */
+  background: transparent;
 }
 .landing-nav-links a {
   display: inline-flex;
@@ -203,7 +220,7 @@
 }
 .landing-nav-links a:hover {
   color: var(--color-landing-ink);
-  background: var(--color-landing-canvas);
+  background: var(--color-landing-surface);
 }
 .landing-nav-actions {
   display: flex;
@@ -858,9 +875,20 @@
   .landing main {
     padding-top: 76px;
   }
-  .landing-container,
-  .landing-nav-inner {
+  .landing-container {
     padding: 0 16px;
+  }
+  .landing-nav {
+    padding: 0 8px;
+  }
+  .landing-nav-inner {
+    padding: 0 8px;
+  }
+  .landing-nav.solid .landing-nav-inner {
+    max-width: calc(100% - 16px);
+    height: 56px;
+    margin-top: 8px;
+    padding: 0 6px 0 14px;
   }
   .landing-nav-actions .pill-link,
   .landing-nav-login {
