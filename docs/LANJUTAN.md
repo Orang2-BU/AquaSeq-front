@@ -55,6 +55,12 @@ Atas izin user, kekurangan proposal (kecuali pengolahan Nanopore) dikerjakan jug
 - **Web**: skema + klien `api.samples.explanation/explain`, mock template, `components/app/science-explanation.tsx`, `sampel/[sampleId]/explain-button.tsx`, aksi `writeExplanation`.
 - **Batas**: penulis 22 detik (server `WriteTimeout` 30 detik), `effort: low`. Docker tidak terpasang di laptop; build Linux lewat `GOOS=linux go build` lolos.
 
+## 1e. Sesi 25 Okt (lanjutan): paket data sintetis
+- **Backend** (`feat/edna-kelimpahan`): `testdata/sintetis/` (generator `buat_data.py` seed tetap, 5 run qPCR DOC 14-42, kimia air, 19 tabel kelimpahan 16S, hasil siklus, `skenario.json`, README). Empat cerita kolam: B1 sehat, B2 memburuk pelan (kelas 1 ke 3), B3 wabah AHPND cepat (kelas 4), B4 sampel DOC 21 ditolak inhibitor. Paket `internal/sintetis` + tes memastikan cerita cocok dengan mesin; alat `go run ./cmd/uji-penjelasan` menjalankan 25 kasus penjelasan (tanpa kunci: 25/25 template).
+- **Temuan alat uji**: pemeriksa menolak nama penyakit mesin "... bukan bukti bebas penyakit" sebagai kata mutlak. Diperbaiki: teks mesin (nama penyakit, mitigasi) dikeluarkan sebelum memindai kata mutlak.
+- **Web**: `public/templates/aquaseq-data-sintetis.zip` + tombol "Paket data sintetis (zip)" di halaman Format.
+- Data sintetis hanya membuktikan alur berjalan, bukan akurasi model.
+
 ## 2. Cara menjalankan
 ```bash
 npm install

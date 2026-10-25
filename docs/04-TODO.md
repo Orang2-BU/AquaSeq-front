@@ -70,6 +70,7 @@
 | T55 | Uji integrasi live opt-in | ⛔ | `vitest.live.config.ts` + `tests/live/core.live.test.ts` via `npm run test:live`; bukti RED jujur ECONNREFUSED saat backend mati |
 | T56 | Kelimpahan 16S: keragaman, porsi Vibrio, penanda mingguan (Layar B/C proposal) | ✅ | 25 Okt (izin user): backend `feat/edna-kelimpahan` (POST `/samples/{id}/microbiome`, GET `/ponds/{id}/microbiome`, `engineered_features` di detail sampel; 175 tes Go) + web: kartu "Komunitas mikroba (16S)" dan form unggah di rincian skor, panel "Mikrobioma & penanda mingguan" di detail kolam, contoh CSV. Diuji mock dan live lokal (backend Go mode memori). Menunggu PR di-merge Hadi |
 | T57 | Penjelasan ilmiah per sampel (Opus menulis, Jev memilih, kode memeriksa) | ✅ | 25 Okt (izin user): backend `internal/science` + `GET/POST /samples/{id}/explanation` (184 tes Go), web kartu "Penjelasan ilmiah" + tombol tulis di rincian skor. Aktif otomatis bila `ANTHROPIC_API_KEY`/`AI_*` dan `JEV_API_KEY` ada di server; tanpa kunci memakai template. Belum diuji dengan kunci asli |
+| T58 | Paket data sintetis lengkap (deret waktu qPCR, kimia air, 16S, hasil siklus, set uji penjelasan) | ✅ | 25 Okt (izin user): backend `testdata/sintetis` + `internal/sintetis` (tes cerita 4 kolam) + `cmd/uji-penjelasan` (25 kasus); web zip di halaman Format. Berlabel SINTETIS; bukan bukti akurasi model |
 
 ## Alur Inti Check
 | Langkah | Status | Dicek |

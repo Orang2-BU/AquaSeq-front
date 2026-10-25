@@ -38,6 +38,10 @@ export default function Page() {
           </p>
         </div>
         <div className="page-actions">
+          <a className="button secondary" href="/templates/aquaseq-data-sintetis.zip" download>
+            <Icon icon={Download} />
+            Paket data sintetis (zip)
+          </a>
           <a className="button secondary" href="/templates/aquaseq-kelimpahan-contoh.csv" download>
             <Icon icon={Download} />
             Contoh kelimpahan 16S
